@@ -2,6 +2,45 @@
    AnnualFlip — Main JavaScript
    ============================================= */
 
+/* ---------- Hero: Cycling word rotator ---------- */
+(function initHeroCycle() {
+  const cycle = document.getElementById('hero-cycle-word');
+  if (!cycle) return;
+
+  const words = cycle.querySelectorAll('.hero-word');
+  let current = 0;
+  const total = words.length;
+
+  function next() {
+    words[current].classList.remove('active');
+    current = (current + 1) % total;
+    words[current].classList.add('active');
+    // Slide the stack up to show the active word
+    cycle.style.transform = `translateY(-${current * 1.15}em)`;
+  }
+
+  setInterval(next, 2400);
+})();
+
+/* ---------- Hero: Staggered section entry animations ---------- */
+(function initReveal() {
+  const targets = document.querySelectorAll(
+    '.hero-left, .hero-right, .hero-badge, .built-for-section, .fast-work-section, .solutions-section'
+  );
+  if (!('IntersectionObserver' in window)) return;
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  targets.forEach(el => io.observe(el));
+})();
+
 /* ---------- Navbar scroll shadow ---------- */
 const navbar = document.getElementById('navbar');
 if (navbar) {
