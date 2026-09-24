@@ -4,284 +4,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FlipPage — Turn any PDF into a beautiful flipbook</title>
-  <meta name="description"
-    content="Turn any PDF into a beautiful page-turning flipbook right in your browser. No install. No plugins. Works on every device.">
-  <meta property="og:title" content="FlipPage — Turn any PDF into a beautiful flipbook">
-  <meta property="og:description"
-    content="Turn any PDF into a beautiful page-turning flipbook right in your browser. No install. No plugins. Works on every device.">
-  <meta property="og:type" content="website">
+  <title>FlipPage — Your workspace</title>
+  <meta name="description" content="Sign in or create your FlipPage workspace.">
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-    rel="stylesheet">
-
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
-  <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/account.css
+  <link rel="stylesheet" href="css/account.css">
 </head>
 
 <body>
- 
-
-    <header id="header" role="banner">
-    <!-- Ambient atmospheric background -->
-  <div class="cyber-bg-wrap" aria-hidden="true">
-    <div class="cyber-bg-glow"></div>
-  </div>
-
-  <!-- ===== NAVBAR ===== -->
-  <nav id="navbar" role="navigation" aria-label="Main navigation">
-    <div class="wrap">
-      <div class="nav-inner">
-
-        <!-- Brand -->
-        <a class="brand" href="#" aria-label="FlipPage home">
-          <div class="brand-icon-wrap" aria-hidden="true">
-            <img src="scr/Logo.png" alt="" class="brand-logo">
-          </div>
-          <span class="brand-name">Flip<span class="brand-name-accent">Page</span></span>
-        </a>
-
-        <!-- Nav links -->
-        <ul class="nav-links" id="nav-links" role="list">
-
-          <!-- Products simple link -->
-          <li class="nav-item">
-            <a href="#fast-work" class="nav-link">
-              <span>Products</span>
-            </a>
-          </li>
-
-          <!-- Platform with Mega Dropdown -->
-          <li class="nav-item nav-item-dropdown">
-            <button class="nav-link nav-link-btn" aria-expanded="false" id="platform-dropdown-btn" type="button">
-              <span>Platform</span>
-              <svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-
-            <!-- Mega Dropdown Menu -->
-            <div class="mega-dropdown" id="platform-menu" role="region" aria-label="Platform menu">
-
-              <!-- Dropdown header -->
-              <div class="mega-header">
-                <span class="mega-header-tag">Platform</span>
-                <p class="mega-header-sub">Everything you need to publish beautiful, interactive documents.</p>
-              </div>
-
-              <div class="mega-dropdown-inner">
-
-                <!-- Col 1: How it works -->
-                <div class="mega-col">
-                  <span class="mega-category">HOW IT WORKS</span>
-
-                  <a href="#fast-work" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">Interactive 3D Engine</strong>
-                      <span class="mega-desc">Realistic physics, page curls, shadows &amp; dual-page spreads.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-
-                  <a href="#solutions" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="5" y="2" width="14" height="20" rx="2"/>
-                        <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">Touch &amp; Mobile Ready</strong>
-                      <span class="mega-desc">Fluid gesture swipe, pinch-zoom and responsive layout.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-                </div>
-
-                <!-- Col 2: Trust & Privacy -->
-                <div class="mega-col">
-                  <span class="mega-category">PRIVACY &amp; SPEED</span>
-
-                  <a href="#solutions" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">100% Client-Side Privacy</strong>
-                      <span class="mega-desc">Your PDFs never leave your browser — zero cloud storage.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-
-                  <a href="#solutions" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">Instant Rendering</strong>
-                      <span class="mega-desc">Hardware-accelerated PDF rendering with crisp vector typography.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-                </div>
-
-                <!-- Col 3: CTA card -->
-                <div class="mega-col mega-col-cta">
-                  <div class="mega-cta-card">
-                    <div class="mega-cta-icon" aria-hidden="true">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                    </div>
-                    <strong class="mega-cta-title">Try it free</strong>
-                    <p class="mega-cta-desc">No account needed. Drop in any PDF and watch it flip.</p>
-                    <a href="#fast-work" class="mega-cta-btn">Open demo →</a>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </li>
-
-          <!-- Solutions link -->
-          <li class="nav-item">
-            <a href="#solutions" class="nav-link"><span>Solutions</span></a>
-          </li>
-
-          <!-- Pricing link -->
-          <li class="nav-item">
-            <a href="#fast-work" class="nav-link"><span>Pricing</span></a>
-          </li>
-
-        </ul>
-
-        <!-- Right-side CTA group -->
-        <div class="nav-cta">
-          <a class="nav-signin" href="#" id="signin-btn">Sign in</a>
-          <a class="nav-getstarted" href="#fast-work" id="getstarted-btn">Get started</a>
-        </div>
-
-        <!-- Mobile hamburger -->
-        <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
-          <span class="ham-bar"></span>
-          <span class="ham-bar"></span>
-          <span class="ham-bar"></span>
-        </button>
-
+  <main class="account-shell">
+    <section class="account-art" aria-label="FlipPage workspace preview">
+      <div class="account-art-overlay"></div>
+      <a class="account-brand" href="index.html" aria-label="FlipPage home">
+        <img src="scr/Logo.png" alt="" class="account-brand-logo">
+        <span>Flip<span>Page</span></span>
+      </a>
+      <div class="account-art-copy">
+        <p class="eyebrow">A better way to publish</p>
+        <h1>Turn every page into a place worth staying.</h1>
+        <p>Build beautiful, interactive flipbooks for the work you want people to remember.</p>
       </div>
-    </div>
-  </nav>
+    </section>
 
-    </header>
-  
-  
-
-  
-
-
-  <!-- ===== FOOTER ===== -->
-  <footer id="footer">
-    <div class="footer-outer-wrap">
-      <div class="footer-card">
-
-        <!-- Top Columns -->
-        <div class="footer-grid">
-          <!-- Col 1: Brand & blurb -->
-          <div class="footer-col footer-col-brand">
-            <div class="footer-brand-header">
-              <span class="brand-title-dark">FLIP</span><span class="brand-title-blue">PAGE</span>
-            </div>
-            <p class="footer-brand-blurb">
-              FlipPage is the premier marketplace and document platform specializing in high-performance flipbook
-              rendering, client-side privacy, and interactive document experiences.
-            </p>
-          </div>
-
-          <!-- Col 2: Quick link -->
-          <div class="footer-col">
-            <h4 class="footer-col-title">Quick link</h4>
-            <ul class="footer-col-list">
-              <li><a href="#">Home</a></li>
-              <li><a href="#fast-work">Overview</a></li>
-              <li><a href="#solutions">Solutions</a></li>
-              <li><a href="#">FAQ</a></li>
-              <li><a href="#">Documentation</a></li>
-            </ul>
-          </div>
-
-          <!-- Col 3: Products -->
-          <div class="footer-col">
-            <h4 class="footer-col-title">Products</h4>
-            <ul class="footer-col-list">
-              <li><a href="#fast-work">PDF Documents</a></li>
-              <li><a href="#fast-work">Digital Catalogs</a></li>
-              <li><a href="#fast-work">Magazines & Press</a></li>
-              <li><a href="#fast-work">Annual Reports</a></li>
-              <li><a href="#fast-work">Brochures & Menus</a></li>
-              <li><a href="#fast-work">Portfolio Showcase</a></li>
-            </ul>
-          </div>
-
-          <!-- Col 4: Company -->
-          <div class="footer-col">
-            <h4 class="footer-col-title">Company</h4>
-            <ul class="footer-col-list">
-              <li><a href="#">Architecture</a></li>
-              <li><a href="#">System Reqs</a></li>
-              <li><a href="#">Client Privacy</a></li>
-              <li><a href="#">Refund Policy</a></li>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
-            </ul>
-          </div>
-
-          <!-- Col 5: Social -->
-          <div class="footer-col">
-            <h4 class="footer-col-title">Social</h4>
-            <ul class="footer-col-list">
-              <li><a href="https://discord.com" target="_blank" rel="noopener noreferrer">Discord Server</a></li>
-              <li><a href="https://t.me" target="_blank" rel="noopener noreferrer">Telegram Channel</a></li>
-              <li><a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-              <li><a href="https://youtube.com" target="_blank" rel="noopener noreferrer">YouTube Showcase</a></li>
-              <li><a href="#">24/7 Support</a></li>
-            </ul>
-          </div>
+    <section class="account-panel" aria-labelledby="account-title">
+      <div class="account-panel-inner">
+        <div class="account-heading">
+          <p class="mobile-brand">FlipPage workspace</p>
+          <h2 id="account-title">Welcome back</h2>
+          <p id="account-subtitle">Sign in to continue to your workspace.</p>
         </div>
 
-        <!-- Divider & Meta Row -->
-        <div class="footer-meta-row">
-          <span class="footer-copy-text">© 2026 FlipPage. All rights reserved.</span>
-          <span class="footer-powered-text">Engineered by FlipPage — Powered by Client-Side PDF Engine</span>
+        <div class="auth-switch" role="tablist" aria-label="Account action">
+          <button class="auth-tab is-active" id="signin-tab" type="button" role="tab" aria-selected="true">Sign in</button>
+          <button class="auth-tab" id="signup-tab" type="button" role="tab" aria-selected="false">Create account</button>
         </div>
 
-        <!-- Giant Bottom Watermark Typography -->
-        <div class="footer-watermark" aria-hidden="true">
-          <div class="watermark-word watermark-annual">FLIP</div>
-          <div class="watermark-word watermark-flip">PAGE</div>
+        <form class="account-form" id="account-form" novalidate>
+          <div class="name-fields" id="name-fields" hidden>
+            <label class="field">
+              <span>First name</span>
+              <input type="text" name="firstName" autocomplete="given-name" placeholder="Alex">
+            </label>
+            <label class="field">
+              <span>Last name</span>
+              <input type="text" name="lastName" autocomplete="family-name" placeholder="Morgan">
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Email address</span>
+            <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+          </label>
+
+          <label class="field">
+            <span>Password</span>
+            <span class="password-wrap">
+              <input id="password" type="password" name="password" autocomplete="current-password" placeholder="At least 8 characters" minlength="8" required>
+              <button class="password-toggle" id="password-toggle" type="button" aria-label="Show password">Show</button>
+            </span>
+          </label>
+
+          <div class="form-options">
+            <label class="check-label" id="remember-option">
+              <input type="checkbox" name="remember">
+              <span>Remember me</span>
+            </label>
+            <button class="text-button" id="forgot-button" type="button">Forgot password?</button>
+          </div>
+
+          <button class="primary-button" id="submit-button" type="submit">Sign in</button>
+          <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        </form>
+
+        <div class="divider"><span>or continue with</span></div>
+        <div class="social-actions">
+          <button class="social-button" type="button" data-provider="Google"><span class="google-mark">G</span> Google</button>
+          <button class="social-button" type="button" data-provider="Apple"><span class="apple-mark" aria-hidden="true">●</span> Apple</button>
         </div>
 
+        <p class="account-legal">By continuing, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
       </div>
-    </div>
-  </footer>
+    </section>
+  </main>
 
-  <!-- Scripts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="js/script.js"></script>
   <script src="js/account.js"></script>
-
 </body>
 
 </html>
