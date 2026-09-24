@@ -537,54 +537,66 @@ a { text-decoration: none; color: inherit; }
   border-color: rgba(255,255,255,0.5);
 }
 
-/* ---------- Nav CTA group ---------- */
-.nav-cta {
+/* ---------- Nav CTA group (Exact Screenshot Match) ---------- */
+.nav-cta,
+nav#navbar:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 12px;
   flex-shrink: 0;
 }
-.nav-signin {
-  font-size: 0.88rem;
+
+.nav-signin,
+nav#navbar:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > a#signin-btn:nth-of-type(1) {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.95rem;
   font-weight: 500;
   color: #4B5563;
-  padding: 8px 14px;
+  padding: 8px 12px;
   border-radius: 8px;
   text-decoration: none;
-  transition: color 0.18s ease, background 0.18s ease;
+  background: transparent;
+  border: none;
+  transition: color 0.15s ease;
   white-space: nowrap;
 }
-.nav-signin:hover { color: #111827; background: #F1F5F9; }
-.nav-getstarted {
+.nav-signin:hover,
+nav#navbar:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > a#signin-btn:nth-of-type(1):hover {
+  color: #0F172A;
+}
+
+.nav-getstarted,
+nav#navbar:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > a#getstarted-btn:nth-of-type(2) {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #7C3AED 100%);
-  color: #fff;
-  font-size: 0.88rem;
-  font-weight: 600;
+  justify-content: center;
+  background: #111111;
+  color: #FFFFFF;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
   padding: 9px 20px;
-  border-radius: 100px;
+  border-radius: 9999px;
   text-decoration: none;
-  letter-spacing: -0.01em;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  letter-spacing: -0.015em;
   white-space: nowrap;
-  position: relative;
-  overflow: hidden;
+  border: none;
+  box-shadow: none;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
-.nav-getstarted::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
-  border-radius: inherit;
-}
-.nav-getstarted:hover {
+
+.nav-getstarted:hover,
+nav#navbar:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > a#getstarted-btn:nth-of-type(2):hover {
+  background: #262626;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(37,99,235,0.4);
-  filter: brightness(1.05);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
 }
-.nav-getstarted:active { transform: translateY(0); box-shadow: none; }
+
+.nav-getstarted:active,
+nav#navbar:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > a#getstarted-btn:nth-of-type(2):active {
+  transform: translateY(0);
+  box-shadow: none;
+}
 
 /* ---------- Shared legacy button base (kept for hero/sections) ---------- */
 .btn {
@@ -982,263 +994,308 @@ a { text-decoration: none; color: inherit; }
   50%       { transform: scale(1.08); opacity: 1;   }
 }
 
-/* ---------- Floating stat chips ---------- */
+/* ---------- Floating stat chips (Exact Screenshot Match) ---------- */
 .hero-chip {
   position: absolute;
   display: flex;
   align-items: center;
-  gap: 7px;
-  background: #fff;
-  border: 1px solid #E5E7EB;
+  gap: 10px;
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, 0.95);
   border-radius: 100px;
-  padding: 8px 14px;
-  font-size: 0.78rem;
+  padding: 10px 22px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.94rem;
   font-weight: 600;
-  color: #374151;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  color: #1E293B;
+  letter-spacing: -0.015em;
+  box-shadow:
+    0 12px 28px -4px rgba(15, 23, 42, 0.08),
+    0 4px 10px -2px rgba(15, 23, 42, 0.04);
   white-space: nowrap;
-  z-index: 10;
+  z-index: 20;
   pointer-events: none;
+  transition: transform 0.25s ease;
 }
-.chip-top    { top: 8%;  right: -4%; animation: chipFloat1 3.8s ease-in-out infinite; }
-.chip-bottom { bottom: 8%; left: -4%; animation: chipFloat2 4.2s ease-in-out infinite; }
-.chip-mid    { top: 50%; right: -8%; transform: translateY(-50%); animation: chipFloat3 3.5s ease-in-out infinite; }
+
+.chip-top {
+  top: 2%;
+  right: -8%;
+  animation: chipFloat1 4.2s ease-in-out infinite;
+}
+.chip-mid {
+  top: 48%;
+  right: -18%;
+  animation: chipFloat3 3.8s ease-in-out infinite;
+}
+.chip-bottom {
+  bottom: 8%;
+  left: -18%;
+  animation: chipFloat2 4.6s ease-in-out infinite;
+}
 
 @keyframes chipFloat1 {
   0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-8px); }
+  50%       { transform: translateY(-7px); }
 }
 @keyframes chipFloat2 {
   0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(8px); }
+  50%       { transform: translateY(7px); }
 }
 @keyframes chipFloat3 {
-  0%, 100% { transform: translateY(-50%) translateX(0); }
-  50%       { transform: translateY(-50%) translateX(-6px); }
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
 }
 
-/* ---------- 3D Book scene ---------- */
+/* ---------- 3D Book Scene (Exact Screenshot Match) ---------- */
 .hero-book-scene {
   position: relative;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  width: 300px;
-  height: 380px;
-  animation: bookFloat 5s ease-in-out infinite;
-}
-@keyframes bookFloat {
-  0%, 100% { transform: translateY(0) rotate3d(1,0,0,2deg); }
-  50%       { transform: translateY(-14px) rotate3d(1,0,0,0deg); }
-}
-
-/* Perspective wrapper */
-.hero-book {
-  position: relative;
-  width: 220px;
-  height: 300px;
-  transform-style: preserve-3d;
-  transform: perspective(900px) rotateY(-22deg) rotateX(4deg);
-  transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
-  cursor: pointer;
-}
-.hero-book:hover {
-  transform: perspective(900px) rotateY(-10deg) rotateX(2deg);
-}
-
-/* Spine */
-.book-spine {
-  position: absolute;
-  left: -22px;
-  top: 0;
-  width: 22px;
-  height: 100%;
-  background: linear-gradient(180deg, #1E40AF 0%, #1D4ED8 40%, #1E3A8A 100%);
-  transform: rotateY(90deg);
-  transform-origin: right center;
-  border-radius: 2px 0 0 2px;
-  box-shadow: inset -4px 0 8px rgba(0,0,0,0.2);
-}
-
-/* Back cover */
-.book-back {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(160deg, #1E3A8A 0%, #1D4ED8 100%);
-  border-radius: 4px;
-  transform: translateZ(-6px);
-  padding: 24px;
-  display: flex;
   align-items: center;
   justify-content: center;
+  width: 390px;
+  height: 500px;
+  perspective: 1500px;
 }
-.book-back-lines { width: 100%; display: flex; flex-direction: column; gap: 10px; }
-.bbl {
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255,255,255,0.2);
-}
-.bbl.w70 { width: 70%; }
-.bbl.w90 { width: 90%; }
-.bbl.w55 { width: 55%; }
-.bbl.w80 { width: 80%; }
 
-/* Page stacks (visible edge) */
-.book-pages {
+/* Perspective 3D Book Container */
+.hero-book-3d {
+  position: relative;
+  width: 310px;
+  height: 420px;
+  transform-style: preserve-3d;
+  transform: rotateY(-18deg) rotateX(5deg) rotateZ(-1.2deg);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  animation: bookFloat3D 6s ease-in-out infinite;
+}
+
+.hero-book-3d:hover {
+  transform: rotateY(-10deg) rotateX(3deg) rotateZ(-0.5deg) translateY(-8px);
+}
+
+@keyframes bookFloat3D {
+  0%, 100% {
+    transform: rotateY(-18deg) rotateX(5deg) rotateZ(-1.2deg) translateY(0);
+  }
+  50% {
+    transform: rotateY(-15deg) rotateX(3deg) rotateZ(-0.8deg) translateY(-12px);
+  }
+}
+
+/* Left spine flap / crease */
+.book-spine-flap {
   position: absolute;
-  right: -4px;
-  top: 4px;
-  width: 100%;
+  left: -17px;
+  top: 0;
+  width: 18px;
   height: 100%;
-  pointer-events: none;
+  background: linear-gradient(90deg, #09287B 0%, #0E3BAA 100%);
+  border-radius: 4px 0 0 4px;
+  transform-origin: right center;
+  transform: rotateY(36deg);
+  box-shadow: -5px 8px 18px rgba(10, 20, 60, 0.35);
+  z-index: 10;
 }
-.book-page-stack {
-  position: absolute;
-  inset: 0;
-  border-radius: 4px;
-  border-right: 1px solid rgba(0,0,0,0.08);
-}
-.ps1 { background: #F1F5F9; transform: translateX(3px); }
-.ps2 { background: #E2E8F0; transform: translateX(5px); }
-.ps3 { background: #CBD5E1; transform: translateX(7px); }
 
-/* Front cover */
-.book-front {
+/* Main Front Cover */
+.book-cover-main {
   position: absolute;
   inset: 0;
-  background: linear-gradient(150deg, #1E40AF 0%, #2563EB 50%, #1D4ED8 100%);
-  border-radius: 4px;
-  overflow: hidden;
+  border-radius: 2px 8px 8px 2px;
+  background: linear-gradient(168deg, #1C5EE8 0%, #1552D8 45%, #0F42BE 100%);
+  padding: 30px 26px 26px 28px;
   display: flex;
   flex-direction: column;
-  padding: 20px 18px;
-  gap: 12px;
+  justify-content: space-between;
+  overflow: hidden;
   box-shadow:
-    4px 0 0 #1E3A8A,
-    8px 2px 16px rgba(0,0,0,0.25),
-    0 0 0 1px rgba(255,255,255,0.06) inset;
+    inset 1px 1px 0 rgba(255, 255, 255, 0.35),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.15),
+    14px 24px 44px -6px rgba(15, 23, 42, 0.34),
+    6px 10px 20px -2px rgba(15, 23, 42, 0.2);
+  z-index: 5;
 }
 
-/* Cover header row */
-.book-cover-header {
+/* Glossy reflection streak on left */
+.book-cover-sheen {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 38%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.16) 32%, transparent 100%);
+  pointer-events: none;
+  z-index: 8;
+}
+
+/* Cover Header */
+.book-hdr {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  position: relative;
+  z-index: 9;
 }
-.book-cover-logo {
-  width: 30px;
-  height: 30px;
-  border-radius: 7px;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(4px);
+
+.book-icon-badge {
+  color: #FFFFFF;
+  opacity: 0.95;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
-.book-cover-tag {
-  font-size: 0.62rem;
+
+.book-icon-badge svg {
+  width: 22px;
+  height: 22px;
+}
+
+.book-title-tag {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.86rem;
   font-weight: 700;
-  color: rgba(255,255,255,0.75);
-  letter-spacing: 0.04em;
+  color: #FFFFFF;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-/* Cover art area — animated bars + circle */
-.book-cover-art {
+/* Middle Art: Frosted Chart Bars + Pie */
+.book-center-art {
   flex: 1;
-  position: relative;
   display: flex;
   align-items: flex-end;
-  gap: 8px;
-  padding-bottom: 4px;
-}
-.bca-bar {
-  border-radius: 4px 4px 0 0;
-  width: 28px;
-  background: rgba(255,255,255,0.25);
-  animation: barGrow 2.5s cubic-bezier(0.4,0,0.2,1) infinite alternate;
-}
-.bca-bar.b1 { height: 55%; animation-delay: 0s; }
-.bca-bar.b2 { height: 80%; animation-delay: 0.3s; }
-.bca-bar.b3 { height: 40%; animation-delay: 0.6s; }
-@keyframes barGrow {
-  from { opacity: 0.5; transform: scaleY(0.85); }
-  to   { opacity: 1;   transform: scaleY(1); }
-}
-.bca-circle {
-  position: absolute;
-  right: 8px;
-  top: 8px;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: conic-gradient(rgba(255,255,255,0.6) 0deg 210deg, rgba(255,255,255,0.15) 210deg 360deg);
-  box-shadow: 0 0 12px rgba(255,255,255,0.15);
+  justify-content: space-between;
+  position: relative;
+  padding: 22px 0 12px;
+  z-index: 9;
 }
 
-/* Cover footer */
-.book-cover-footer {
+.book-chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 195px;
+}
+
+.b-bar {
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(2px);
+  transition: transform 0.3s ease;
+}
+
+.b-bar.bar-1 {
+  width: 35px;
+  height: 90px;
+}
+
+.b-bar.bar-2 {
+  width: 40px;
+  height: 175px;
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.14);
+}
+
+.b-bar.bar-3 {
+  width: 35px;
+  height: 65px;
+}
+
+/* Glowing pie chart */
+.book-pie-wrapper {
+  position: absolute;
+  right: 6px;
+  top: 14px;
+  filter: drop-shadow(0 6px 18px rgba(255, 255, 255, 0.3));
+}
+
+.book-pie-svg {
+  display: block;
+  width: 78px;
+  height: 78px;
+}
+
+/* Cover Footer */
+.book-ftr {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 14px;
+  padding-top: 6px;
+  position: relative;
+  z-index: 9;
 }
-.bcf-lines { display: flex; flex-direction: column; gap: 5px; flex: 1; }
-.bcf-line {
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(255,255,255,0.3);
+
+.book-ftr-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
-.bcf-line.w80 { width: 80%; }
-.bcf-line.w55 { width: 55%; }
-.bcf-badge {
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.3);
+
+.ftr-line {
+  height: 5.5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.4);
+  display: block;
+}
+
+.ftr-line.w-long  { width: 78px; }
+.ftr-line.w-short { width: 46px; }
+
+.book-pill-badge {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
   border-radius: 100px;
-  padding: 3px 10px;
-  font-size: 0.58rem;
+  padding: 6px 18px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.04em;
-  flex-shrink: 0;
+  color: #FFFFFF;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
 }
 
-/* Turning page animation overlay */
-.book-turning-page {
+/* Right Edge / Page Thickness */
+.book-edge-right {
   position: absolute;
-  inset: 0;
-  border-radius: 4px;
-  background: linear-gradient(135deg, #DBEAFE 0%, #EFF6FF 60%, transparent 100%);
+  top: 4px;
+  right: -16px;
+  width: 17px;
+  height: calc(100% - 8px);
+  background: linear-gradient(90deg, #94A3B8 0%, #CBD5E1 35%, #F1F5F9 85%, #FFFFFF 100%);
   transform-origin: left center;
-  animation: pageTurn 5s ease-in-out infinite 2s;
-  opacity: 0;
-  pointer-events: none;
-}
-@keyframes pageTurn {
-  0%           { transform: rotateY(0deg);    opacity: 0; }
-  8%           { opacity: 0.9; }
-  30%          { transform: rotateY(-140deg); opacity: 0.85; }
-  60%          { transform: rotateY(-140deg); opacity: 0.85; }
-  88%          { opacity: 0.9; }
-  100%         { transform: rotateY(0deg);    opacity: 0; }
+  transform: rotateY(90deg);
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.12);
+  border-radius: 1px 3px 3px 1px;
 }
 
-/* Book shadow on ground */
-.hero-book-shadow {
+/* Bottom Edge / Page Thickness */
+.book-edge-bottom {
   position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-30%);
-  width: 200px;
-  height: 24px;
-  background: radial-gradient(ellipse at center, rgba(15,23,42,0.2) 0%, transparent 70%);
-  border-radius: 50%;
-  animation: shadowPulse 5s ease-in-out infinite;
+  bottom: -13px;
+  left: 2px;
+  width: 100%;
+  height: 14px;
+  background: linear-gradient(180deg, #64748B 0%, #94A3B8 50%, #CBD5E1 100%);
+  transform-origin: top center;
+  transform: rotateX(-90deg);
 }
-@keyframes shadowPulse {
-  0%, 100% { transform: translateX(-30%) scaleX(1);    opacity: 0.8; }
-  50%       { transform: translateX(-30%) scaleX(0.85); opacity: 0.5; }
+
+/* Ground Shadow */
+.hero-book-ground-shadow {
+  position: absolute;
+  bottom: -30px;
+  left: 12%;
+  width: 88%;
+  height: 34px;
+  background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.3) 0%, rgba(15, 23, 42, 0.12) 45%, transparent 75%);
+  filter: blur(10px);
+  border-radius: 50%;
+  transform: rotateZ(-2deg);
+  pointer-events: none;
 }
 
 /* ---------- Floating ambient particles ---------- */
