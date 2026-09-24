@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlipPage — Workspace &amp; Publications</title>
+  <meta name="description" content="Manage your interactive 3D flipbooks, view reader analytics, and convert PDF documents in your FlipPage Workspace.">
+  <meta property="og:title" content="FlipPage — Workspace">
+  <meta property="og:description" content="Manage your interactive 3D flipbooks and convert PDF documents.">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/workspace.css">
+</head>
+
+<body>
+
+  <!-- Ambient atmospheric background -->
+  <div class="cyber-bg-wrap" aria-hidden="true">
+    <div class="cyber-bg-glow"></div>
+  </div>
+
+  <!-- ===== GLOBAL NAVBAR HEADER ===== -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <div class="wrap">
+      <div class="nav-inner">
+
+        <!-- Brand -->
+        <a class="brand" href="index.html" aria-label="FlipPage home">
+          <div class="brand-icon-wrap" aria-hidden="true">
+            <img src="scr/Logo.png" alt="" class="brand-logo">
+          </div>
+          <span class="brand-name">Flip<span class="brand-name-accent">Page</span></span>
+        </a>
+
+        <!-- Nav links -->
+        <ul class="nav-links" id="nav-links" role="list">
+
+          <!-- Products simple link -->
+          <li class="nav-item">
+            <a href="index.html#fast-work" class="nav-link">
+              <span>Products</span>
+            </a>
+          </li>
+
+          <!-- Platform with Mega Dropdown -->
+          <li class="nav-item nav-item-dropdown">
+            <button class="nav-link nav-link-btn" aria-expanded="false" id="platform-dropdown-btn" type="button">
+              <span>Platform</span>
+              <svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+
+            <!-- Mega Dropdown Menu -->
+            <div class="mega-dropdown" id="platform-menu" role="region" aria-label="Platform menu">
+              <div class="mega-header">
+                <span class="mega-header-tag">Platform</span>
+                <p class="mega-header-sub">Everything you need to publish beautiful, interactive documents.</p>
+              </div>
+
+              <div class="mega-dropdown-inner">
+                <!-- Col 1: How it works -->
+                <div class="mega-col">
+                  <span class="mega-category">HOW IT WORKS</span>
+
+                  <a href="index.html#fast-work" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">Interactive 3D Engine</strong>
+                      <span class="mega-desc">Realistic physics, page curls, shadows &amp; dual-page spreads.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+
+                  <a href="index.html#solutions" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2"/>
+                        <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5"/>
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">Touch &amp; Mobile Ready</strong>
+                      <span class="mega-desc">Fluid gesture swipe, pinch-zoom and responsive layout.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+                </div>
+
+                <!-- Col 2: Trust & Privacy -->
+                <div class="mega-col">
+                  <span class="mega-category">PRIVACY &amp; SPEED</span>
+
+                  <a href="index.html#solutions" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">100% Client-Side Privacy</strong>
+                      <span class="mega-desc">Your PDFs never leave your browser — zero cloud storage.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+
+                  <a href="index.html#solutions" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">Instant Rendering</strong>
+                      <span class="mega-desc">Hardware-accelerated PDF rendering with crisp vector typography.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+                </div>
+
+                <!-- Col 3: CTA card -->
+                <div class="mega-col mega-col-cta">
+                  <div class="mega-cta-card">
+                    <div class="mega-cta-icon" aria-hidden="true">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    </div>
+                    <strong class="mega-cta-title">Try it free</strong>
+                    <p class="mega-cta-desc">No account needed. Drop in any PDF and watch it flip.</p>
+                    <a href="index.html#fast-work" class="mega-cta-btn">Open demo →</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Solutions link -->
+          <li class="nav-item">
+            <a href="index.html#solutions" class="nav-link"><span>Solutions</span></a>
+          </li>
+
+          <!-- Pricing link -->
+          <li class="nav-item">
+            <a href="pricing.html" class="nav-link"><span>Pricing</span></a>
+          </li>
+
+        </ul>
+
+        <!-- Right-side CTA / User Profile section -->
+        <div class="nav-cta" id="nav-user-section">
+          <a class="nav-signin" href="account.html">Sign in</a>
+          <a class="nav-getstarted" href="account.html">Create account</a>
+        </div>
+
+        <!-- Mobile hamburger -->
+        <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
+          <span class="ham-bar"></span>
+          <span class="ham-bar"></span>
+          <span class="ham-bar"></span>
+        </button>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN WORKSPACE CONTENT ===== -->
+  <main class="workspace-main">
+    <div class="workspace-shell">
+
+      <!-- Top Header Row -->
+      <section class="workspace-header-row" aria-labelledby="user-greeting">
+        <div class="workspace-title-group">
+          <h1 id="user-greeting">Your FlipPage Workspace</h1>
+          <p id="user-subtitle">Manage your publications, live embeds, and client-side 3D flipbooks.</p>
+        </div>
+
+        <div class="workspace-cta-group">
+          <button class="btn-ghost-action" id="new-doc-btn" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>New Publication</span>
+          </button>
+          <button class="btn-upload-primary" id="open-upload-modal-btn" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Upload &amp; Convert PDF</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Stat Summary Cards -->
+      <section class="workspace-stats-grid" aria-label="Workspace metrics">
+        <div class="stat-card">
+          <div class="stat-icon-wrap">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Publications</span>
+            <span class="stat-value" id="stat-total-pubs">4</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap green">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Total Reads</span>
+            <span class="stat-value">18.0k</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap purple">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Avg. Engagement</span>
+            <span class="stat-value">3m 42s</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap amber">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Privacy Shield</span>
+            <span class="stat-value">100% Local</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Controls & Search -->
+      <div class="workspace-controls-bar">
+        <div class="search-box-wrap">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" id="pub-search-input" placeholder="Search publications by title...">
+        </div>
+
+        <div class="filter-pills-row">
+          <button class="filter-pill is-active" data-filter="all" type="button">All Publications</button>
+          <button class="filter-pill" data-filter="live" type="button">Live</button>
+          <button class="filter-pill" data-filter="locked" type="button">Protected</button>
+          <button class="filter-pill" data-filter="draft" type="button">Drafts</button>
+        </div>
+      </div>
+
+      <!-- Publications Grid -->
+      <section class="publications-grid" id="publications-grid" aria-label="Publications list">
+        <!-- Rendered dynamically via js/workspace.js -->
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ===== UPLOAD PDF MODAL ===== -->
+  <div class="modal-overlay" id="upload-modal" role="dialog" aria-modal="true" aria-labelledby="upload-modal-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="upload-modal-title">Upload &amp; Convert PDF</h3>
+        <button class="modal-close-btn" id="close-modal-btn" type="button" aria-label="Close modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="dropzone-area" id="modal-dropzone">
+        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p class="dropzone-text">Click or drag &amp; drop PDF files here</p>
+        <p class="dropzone-hint">Hardware-rendered with 100% client-side privacy. Up to 500MB.</p>
+        <input type="file" id="pdf-file-input" accept="application/pdf" style="display: none;">
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== GLOBAL FOOTER ===== -->
+  <footer id="footer">
+    <div class="footer-outer-wrap">
+      <div class="footer-card">
+
+        <!-- Top Columns -->
+        <div class="footer-grid">
+          <!-- Col 1: Brand & blurb -->
+          <div class="footer-col footer-col-brand">
+            <div class="footer-brand-header">
+              <span class="brand-title-dark">FLIP</span><span class="brand-title-blue">PAGE</span>
+            </div>
+            <p class="footer-brand-blurb">
+              FlipPage is the premier marketplace and document platform specializing in high-performance flipbook
+              rendering, client-side privacy, and interactive document experiences.
+            </p>
+          </div>
+
+          <!-- Col 2: Quick link -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Quick link</h4>
+            <ul class="footer-col-list">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="index.html#fast-work">Overview</a></li>
+              <li><a href="index.html#solutions">Solutions</a></li>
+              <li><a href="pricing.html">Pricing</a></li>
+              <li><a href="Workspace.html">Workspace</a></li>
+              <li><a href="account.html">Account</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3: Products -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Products</h4>
+            <ul class="footer-col-list">
+              <li><a href="index.html#fast-work">PDF Documents</a></li>
+              <li><a href="index.html#fast-work">Digital Catalogs</a></li>
+              <li><a href="index.html#fast-work">Magazines &amp; Press</a></li>
+              <li><a href="index.html#fast-work">Annual Reports</a></li>
+              <li><a href="index.html#fast-work">Brochures &amp; Menus</a></li>
+              <li><a href="index.html#fast-work">Portfolio Showcase</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 4: Company -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Company</h4>
+            <ul class="footer-col-list">
+              <li><a href="#">Architecture</a></li>
+              <li><a href="#">System Reqs</a></li>
+              <li><a href="#">Client Privacy</a></li>
+              <li><a href="#">Refund Policy</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 5: Social -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Social</h4>
+            <ul class="footer-col-list">
+              <li><a href="https://discord.com" target="_blank" rel="noopener noreferrer">Discord Server</a></li>
+              <li><a href="https://t.me" target="_blank" rel="noopener noreferrer">Telegram Channel</a></li>
+              <li><a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+              <li><a href="https://youtube.com" target="_blank" rel="noopener noreferrer">YouTube Showcase</a></li>
+              <li><a href="#">24/7 Support</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Divider & Meta Row -->
+        <div class="footer-meta-row">
+          <span class="footer-copy-text">© 2026 FlipPage. All rights reserved.</span>
+          <span class="footer-powered-text">Engineered by FlipPage — Powered by Client-Side PDF Engine</span>
+        </div>
+
+        <!-- Giant Bottom Watermark Typography -->
+        <div class="footer-watermark" aria-hidden="true">
+          <div class="watermark-word watermark-annual">FLIP</div>
+          <div class="watermark-word watermark-flip">PAGE</div>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="js/workspace.js"></script>
+
+</body>
+
+</html>

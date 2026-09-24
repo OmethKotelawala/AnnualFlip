@@ -859,34 +859,38 @@ nav#navbar:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of
   margin-bottom: 36px;
 }
 
-.btn-hero-primary {
+.btn-hero-primary,
+#hero-cta-primary {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: #111827;
-  color: #fff;
-  font-family: 'Inter', sans-serif;
+  justify-content: center;
+  background: #111111;
+  color: #FFFFFF;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 0.95rem;
-  font-weight: 600;
-  padding: 14px 28px;
-  border-radius: 100px;
+  font-weight: 700;
+  padding: 13px 26px;
+  border-radius: 9999px;
   border: none;
   cursor: pointer;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
   text-decoration: none;
+  white-space: nowrap;
 }
-.btn-hero-primary:hover {
-  background: #1D4ED8;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(37,99,235,0.35);
+
+.btn-hero-primary:hover,
+#hero-cta-primary:hover {
+  background: #262626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
-.btn-hero-primary:active { transform: translateY(0); box-shadow: none; }
-.btn-hero-primary.btn-arrow::after {
-  content: '→';
-  transition: transform 0.2s ease;
+
+.btn-hero-primary:active,
+#hero-cta-primary:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
-.btn-hero-primary.btn-arrow:hover::after { transform: translateX(4px); }
 
 .btn-hero-ghost {
   display: inline-flex;

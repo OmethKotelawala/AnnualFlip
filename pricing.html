@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlipPage — Pricing &amp; Plans</title>
+  <meta name="description" content="Simple, predictable pricing for creators and teams. Turn any PDF into interactive 3D flipbooks.">
+  <meta property="og:title" content="FlipPage — Pricing &amp; Plans">
+  <meta property="og:description" content="Simple, transparent pricing. Publish interactive 3D flipbooks with 100% privacy and instant rendering.">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pricing.css">
+</head>
+
+<body>
+
+  <!-- Ambient atmospheric background -->
+  <div class="cyber-bg-wrap" aria-hidden="true">
+    <div class="cyber-bg-glow"></div>
+  </div>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <div class="wrap">
+      <div class="nav-inner">
+
+        <!-- Brand -->
+        <a class="brand" href="index.html" aria-label="FlipPage home">
+          <div class="brand-icon-wrap" aria-hidden="true">
+            <img src="scr/Logo.png" alt="" class="brand-logo">
+          </div>
+          <span class="brand-name">Flip<span class="brand-name-accent">Page</span></span>
+        </a>
+
+        <!-- Nav links -->
+        <ul class="nav-links" id="nav-links" role="list">
+
+          <!-- Products simple link -->
+          <li class="nav-item">
+            <a href="index.html#fast-work" class="nav-link">
+              <span>Products</span>
+            </a>
+          </li>
+
+          <!-- Platform with Mega Dropdown -->
+          <li class="nav-item nav-item-dropdown">
+            <button class="nav-link nav-link-btn" aria-expanded="false" id="platform-dropdown-btn" type="button">
+              <span>Platform</span>
+              <svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+
+            <!-- Mega Dropdown Menu -->
+            <div class="mega-dropdown" id="platform-menu" role="region" aria-label="Platform menu">
+
+              <!-- Dropdown header -->
+              <div class="mega-header">
+                <span class="mega-header-tag">Platform</span>
+                <p class="mega-header-sub">Everything you need to publish beautiful, interactive documents.</p>
+              </div>
+
+              <div class="mega-dropdown-inner">
+
+                <!-- Col 1: How it works -->
+                <div class="mega-col">
+                  <span class="mega-category">HOW IT WORKS</span>
+
+                  <a href="index.html#fast-work" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">Interactive 3D Engine</strong>
+                      <span class="mega-desc">Realistic physics, page curls, shadows &amp; dual-page spreads.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+
+                  <a href="index.html#solutions" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2"/>
+                        <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5"/>
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">Touch &amp; Mobile Ready</strong>
+                      <span class="mega-desc">Fluid gesture swipe, pinch-zoom and responsive layout.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+                </div>
+
+                <!-- Col 2: Trust & Privacy -->
+                <div class="mega-col">
+                  <span class="mega-category">PRIVACY &amp; SPEED</span>
+
+                  <a href="index.html#solutions" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">100% Client-Side Privacy</strong>
+                      <span class="mega-desc">Your PDFs never leave your browser — zero cloud storage.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+
+                  <a href="index.html#solutions" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">Instant Rendering</strong>
+                      <span class="mega-desc">Hardware-accelerated PDF rendering with crisp vector typography.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+                </div>
+
+                <!-- Col 3: CTA card -->
+                <div class="mega-col mega-col-cta">
+                  <div class="mega-cta-card">
+                    <div class="mega-cta-icon" aria-hidden="true">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    </div>
+                    <strong class="mega-cta-title">Try it free</strong>
+                    <p class="mega-cta-desc">No account needed. Drop in any PDF and watch it flip.</p>
+                    <a href="index.html#fast-work" class="mega-cta-btn">Open demo →</a>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </li>
+
+          <!-- Solutions link -->
+          <li class="nav-item">
+            <a href="index.html#solutions" class="nav-link"><span>Solutions</span></a>
+          </li>
+
+          <!-- Pricing link (Active) -->
+          <li class="nav-item">
+            <a href="pricing.html" class="nav-link" aria-current="page" style="color: #2563EB; font-weight: 600;"><span>Pricing</span></a>
+          </li>
+
+        </ul>
+
+        <!-- Right-side CTA group -->
+        <div class="nav-cta">
+          <a class="nav-signin" href="account.html" id="signin-btn">Sign in</a>
+          <a class="nav-getstarted" href="index.html#fast-work" id="getstarted-btn">Get started</a>
+        </div>
+
+        <!-- Mobile hamburger -->
+        <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
+          <span class="ham-bar"></span>
+          <span class="ham-bar"></span>
+          <span class="ham-bar"></span>
+        </button>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN PRICING CONTENT ===== -->
+  <main class="pricing-section">
+    <div class="wrap">
+      
+      <!-- Header matching uploaded reference -->
+      <div class="pricing-header">
+        <span class="pricing-eyebrow">PRICING</span>
+        
+        <h1 class="pricing-title">
+          Three <span class="pricing-accent-services">services.</span><br>
+          Seven <span class="pricing-accent-days">days</span> <span class="pricing-accent-free">free.</span>
+        </h1>
+        
+        <p class="pricing-subtitle">
+          Chat, Connect and Scout are priced separately, so a busy desk on a quiet agent pays for a busy desk and a quiet agent. Start any of them free for a week. Every line of the bill is on this page.
+        </p>
+
+        <p class="pricing-subnote">
+          Prices in LKR, per project, billed monthly or annually, before tax. No one-time fee, no setup charge, and 7 days free before anything is invoiced.
+        </p>
+
+        <!-- Monthly & Annual Segmented Switcher matching uploaded design -->
+        <div class="billing-section-toggle">
+          <div class="billing-pill-container" role="radiogroup" aria-label="Billing frequency">
+            <button class="billing-pill-btn" id="btn-monthly" type="button" role="radio" aria-checked="false">Monthly</button>
+            <button class="billing-pill-btn is-active" id="btn-annual" type="button" role="radio" aria-checked="true">Annual</button>
+          </div>
+          <div class="annual-savings-text" id="annual-savings-indicator">Save more with annual billing</div>
+        </div>
+      </div>
+
+      <!-- Pricing Cards Grid matching uploaded design -->
+      <div class="pricing-grid">
+        
+        <!-- Card 1: Chat -->
+        <div class="pricing-card">
+          <div class="card-top">
+            <span class="card-tag">SUBSCRIPTION</span>
+            <h3 class="card-name">Chat</h3>
+            <p class="card-desc">Every conversation your customers start, in one inbox, with AI drafting the answers.</p>
+
+            <div class="card-price-block">
+              <div class="price-announcing-title">Announcing soon</div>
+              <div class="price-announcing-desc">We are finalising this one. Everything else on this card stands.</div>
+              <div class="price-free-trial">
+                <span class="trial-bullet"></span>
+                <span>Starts with 7 days free</span>
+              </div>
+            </div>
+
+            <a href="account.html" class="card-cta-btn">Get started</a>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <ul class="card-feature-list">
+            <li>
+              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>2,000 AI replies a month</span>
+            </li>
+            <li>
+              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>3 controller seats</span>
+            </li>
+            <li>
+              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>WhatsApp, Messenger, Instagram, Telegram and web chat</span>
+            </li>
+            <li>
+              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Assignment, labels, saved replies and the full history</span>
+            </li>
+          </ul>
+
+          <div class="card-divider"></div>
+
+          <div class="card-beyond">
+            <span class="beyond-tag">BEYOND THAT</span>
+            <p class="beyond-text">Announced with the monthly price.</p>
+          </div>
+        </div>
+
+        <!-- Card 2: Connect (Recommended with Dynamic Toggle) -->
+        <div class="pricing-card is-recommended">
+          <div class="card-top">
+            <div class="card-tag-row">
+              <span class="card-tag">SUBSCRIPTION</span>
+              <span class="card-badge-recommended">RECOMMENDED</span>
+            </div>
+            <h3 class="card-name">Connect</h3>
+            <p class="card-desc">Customers who reach you four different ways and expect one answer from one history.</p>
+
+            <!-- Price Block (Switches between Monthly and Annual) -->
+            <div class="card-price-block" id="connect-price-block">
+              <!-- Annual View (Default) -->
+              <div class="price-annual-view">
+                <div class="price-original-strikethrough">LKR 77,100</div>
+                <div class="price-highlight-row">
+                  <span class="price-currency-highlight">LKR</span>
+                  <span class="price-figure-highlight">48,250</span>
+                  <span class="price-period-highlight">/yr</span>
+                </div>
+                <div class="price-annual-note">for 1 year, LKR 64,250/yr after</div>
+              </div>
+
+              <!-- Monthly View -->
+              <div class="price-monthly-view" hidden>
+                <div class="price-main-row">
+                  <span class="price-unit">Rs</span>
+                  <span class="price-figure">6,000</span>
+                  <span class="price-discount-badge">60% off</span>
+                </div>
+                <div class="price-sub-row">for your first month</div>
+                <div class="price-renew-row">Then Rs 15,000 a month, per project</div>
+              </div>
+
+              <div class="price-free-trial">
+                <span class="trial-bullet"></span>
+                <span>Starts with 7 days free</span>
+              </div>
+            </div>
+
+            <a href="account.html" class="card-cta-btn">Get started</a>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <ul class="card-feature-list">
+            <li>
+              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>5,000 users and 250,000 messages a month</span>
+            </li>
+            <li>
+              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>3 controller seats</span>
+            </li>
+            <li>
+              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>WhatsApp, Messenger, Instagram, Telegram and web chat</span>
+            </li>
+            <li>
+              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Delivered and read state, live, with connection health</span>
+            </li>
+          </ul>
+
+          <div class="card-divider"></div>
+
+          <div class="card-beyond">
+            <span class="beyond-tag">BEYOND THAT</span>
+            <div class="beyond-row">
+              <span>Additional user</span>
+              <span class="beyond-val">Rs 3</span>
+            </div>
+            <div class="beyond-row">
+              <span>Additional controller seat</span>
+              <span class="beyond-val">Rs 2,500</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Scout -->
+        <div class="pricing-card">
+          <div class="card-top">
+            <span class="card-tag">SUBSCRIPTION</span>
+            <h3 class="card-name">Scout</h3>
+            <p class="card-desc">A desk that has stopped answering the same twenty questions by hand.</p>
+
+            <div class="card-price-block" id="scout-price-block">
+              <!-- Annual View -->
+              <div class="price-annual-view">
+                <div class="price-main-row">
+                  <span class="price-unit">LKR</span>
+                  <span class="price-figure">22,875</span>
+                  <span class="price-unit-period">/mo</span>
+                </div>
+                <div class="price-billing-note-chip">Monthly billing only</div>
+              </div>
+
+              <!-- Monthly View -->
+              <div class="price-monthly-view" hidden>
+                <div class="price-main-row">
+                  <span class="price-unit">Rs</span>
+                  <span class="price-figure">6,000</span>
+                  <span class="price-discount-badge">60% off</span>
+                </div>
+                <div class="price-sub-row">for your first month</div>
+                <div class="price-renew-row">Then Rs 15,000 a month, per project</div>
+              </div>
+
+              <div class="price-free-trial">
+                <span class="trial-bullet"></span>
+                <span>Starts with 7 days free</span>
+              </div>
+            </div>
+
+            <a href="account.html" class="card-cta-btn" id="scout-cta-btn">Get started</a>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <ul class="card-feature-list">
+            <li>
+              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Everything in Connect</span>
+            </li>
+            <li>
+              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>5,000 users and 250,000 messages a month</span>
+            </li>
+            <li>
+              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>3 controller seats</span>
+            </li>
+            <li>
+              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Automation, rules and logic: flows you draw, test and publish</span>
+            </li>
+          </ul>
+
+          <div class="card-divider"></div>
+
+          <div class="card-beyond">
+            <span class="beyond-tag">BEYOND THAT</span>
+            <div class="beyond-row">
+              <span>Additional user</span>
+              <span class="beyond-val">Rs 3</span>
+            </div>
+            <div class="beyond-row">
+              <span>Additional controller seat</span>
+              <span class="beyond-val">Rs 2,500</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Feature Comparison Table -->
+      <section class="comparison-section" aria-labelledby="comparison-heading">
+        <div class="comparison-header">
+          <h2 class="comparison-title" id="comparison-heading">Detailed Plan Comparison</h2>
+        </div>
+
+        <div class="table-responsive-wrapper">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Capabilities</th>
+                <th>Starter</th>
+                <th>Pro</th>
+                <th>Enterprise</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>3D Realistic Page Turning</strong></td>
+                <td>Included</td>
+                <td>Included</td>
+                <td>Included</td>
+              </tr>
+              <tr>
+                <td><strong>Client-Side Local Privacy</strong></td>
+                <td>100% Local</td>
+                <td>100% Local</td>
+                <td>100% Local</td>
+              </tr>
+              <tr>
+                <td><strong>Remove FlipPage Branding</strong></td>
+                <td>—</td>
+                <td>Included</td>
+                <td>Included</td>
+              </tr>
+              <tr>
+                <td><strong>Custom Domain CNAME</strong></td>
+                <td>—</td>
+                <td>1 Domain</td>
+                <td>Unlimited</td>
+              </tr>
+              <tr>
+                <td><strong>Password &amp; Access Lockdown</strong></td>
+                <td>—</td>
+                <td>Included</td>
+                <td>Advanced SSO / SAML</td>
+              </tr>
+              <tr>
+                <td><strong>Team Members &amp; Seats</strong></td>
+                <td>1 User</td>
+                <td>3 Users</td>
+                <td>Unlimited</td>
+              </tr>
+              <tr>
+                <td><strong>Analytics &amp; Heatmaps</strong></td>
+                <td>Basic views</td>
+                <td>Full analytics</td>
+                <td>Exportable BI logs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Frequently Asked Questions Accordion -->
+      <section class="pricing-faq-section" aria-labelledby="faq-heading">
+        <div class="faq-header">
+          <h2 class="faq-title" id="faq-heading">Frequently Asked Questions</h2>
+          <p class="faq-desc">Everything you need to know about our plans and billing.</p>
+        </div>
+
+        <div class="faq-list">
+          
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+              <span>How does FlipPage ensure 100% privacy?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>FlipPage processes all PDF rasterization, geometry generation, and page-turning animations directly inside your local browser sandbox using WebGL. Your document files are never uploaded to any remote server.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+              <span>Can I change or cancel my plan at any time?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Yes. You can upgrade, downgrade, or cancel your subscription whenever you wish from your account dashboard. When you cancel, you will maintain access until the end of your current billing period.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+              <span>Can I embed the flipbook on my WordPress or Webflow site?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Absolutely. Every publication generates an ultra-clean, responsive HTML embed snippet that works seamlessly on Shopify, WordPress, Webflow, Squarespace, Wix, or custom HTML sites.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+              <span>Do you offer discounts for educational institutions and non-profits?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Yes, we offer a 30% discount on all paid plans for accredited schools, universities, students, and registered non-profit organizations. Contact our support team to get your discount code.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer id="footer">
+    <div class="footer-outer-wrap">
+      <div class="footer-card">
+
+        <!-- Top Columns -->
+        <div class="footer-grid">
+          <!-- Col 1: Brand & blurb -->
+          <div class="footer-col footer-col-brand">
+            <div class="footer-brand-header">
+              <span class="brand-title-dark">FLIP</span><span class="brand-title-blue">PAGE</span>
+            </div>
+            <p class="footer-brand-blurb">
+              FlipPage is the premier marketplace and document platform specializing in high-performance flipbook
+              rendering, client-side privacy, and interactive document experiences.
+            </p>
+          </div>
+
+          <!-- Col 2: Quick link -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Quick link</h4>
+            <ul class="footer-col-list">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="index.html#fast-work">Overview</a></li>
+              <li><a href="index.html#solutions">Solutions</a></li>
+              <li><a href="pricing.html">Pricing</a></li>
+              <li><a href="Workspace.html">Workspace</a></li>
+              <li><a href="account.html">Account</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3: Products -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Products</h4>
+            <ul class="footer-col-list">
+              <li><a href="index.html#fast-work">PDF Documents</a></li>
+              <li><a href="index.html#fast-work">Digital Catalogs</a></li>
+              <li><a href="index.html#fast-work">Magazines &amp; Press</a></li>
+              <li><a href="index.html#fast-work">Annual Reports</a></li>
+              <li><a href="index.html#fast-work">Brochures &amp; Menus</a></li>
+              <li><a href="index.html#fast-work">Portfolio Showcase</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 4: Company -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Company</h4>
+            <ul class="footer-col-list">
+              <li><a href="#">Architecture</a></li>
+              <li><a href="#">System Reqs</a></li>
+              <li><a href="#">Client Privacy</a></li>
+              <li><a href="#">Refund Policy</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 5: Social -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Social</h4>
+            <ul class="footer-col-list">
+              <li><a href="https://discord.com" target="_blank" rel="noopener noreferrer">Discord Server</a></li>
+              <li><a href="https://t.me" target="_blank" rel="noopener noreferrer">Telegram Channel</a></li>
+              <li><a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+              <li><a href="https://youtube.com" target="_blank" rel="noopener noreferrer">YouTube Showcase</a></li>
+              <li><a href="#">24/7 Support</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Divider & Meta Row -->
+        <div class="footer-meta-row">
+          <span class="footer-copy-text">© 2026 FlipPage. All rights reserved.</span>
+          <span class="footer-powered-text">Engineered by FlipPage — Powered by Client-Side PDF Engine</span>
+        </div>
+
+        <!-- Giant Bottom Watermark Typography -->
+        <div class="footer-watermark" aria-hidden="true">
+          <div class="watermark-word watermark-annual">FLIP</div>
+          <div class="watermark-word watermark-flip">PAGE</div>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/pricing.js"></script>
+
+</body>
+
+</html>
