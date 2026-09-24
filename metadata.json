@@ -1,0 +1,7 @@
+{
+  "name": "AnnualFlip",
+  "description": "Turn any PDF into a beautiful page-turning flipbook right in your browser. No install. No plugins. Works on every device.",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
