@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AnnualFlip — Turn any PDF into a beautiful flipbook</title>
+  <meta name="description" content="AnnualFlip turns any PDF into a real page-turning flipbook right in your browser. No install. No plugins. Works on every device.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Grid background decorations -->
+<div class="grid-bg" aria-hidden="true"></div>
+<div class="grid-icons" aria-hidden="true"></div>
+
+<!-- ===== NAVBAR ===== -->
+<nav id="navbar" role="navigation" aria-label="Main navigation">
+  <div class="wrap">
+    <div class="nav-inner">
+
+      <!-- Brand -->
+      <a class="brand" href="#" aria-label="AnnualFlip home">
+        <img src="scr/Logo.png" alt="AnnualFlip logo" class="brand-logo">
+        <span class="brand-name">AnnualFlip</span>
+      </a>
+
+      <!-- Nav links -->
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#viewer">Products <span class="chevron">&#9662;</span></a></li>
+        <li><a href="#features">Platform <span class="chevron">&#9662;</span></a></li>
+        <li><a href="#">Docs <span class="chevron">&#9662;</span></a></li>
+        <li><a href="#">Pricing</a></li>
+      </ul>
+
+      <!-- CTA -->
+      <div class="nav-cta">
+        <a class="btn btn-ghost btn-sm" href="#" id="signin-btn">Sign in</a>
+        <a class="btn btn-dark btn-sm" href="#viewer" id="getstarted-btn">Get started</a>
+      </div>
+
+      <!-- Mobile toggle -->
+      <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<header id="hero" role="banner">
+  <div class="wrap">
+    <h1 class="hero-h1">
+      We make <span class="accent-blue">your documents</span><br>
+      <span class="accent-cyan">come alive.</span>
+    </h1>
+    <p class="hero-sub">
+      We built AnnualFlip to turn any PDF into a beautiful, page-turning flipbook — right in your browser.
+      Every catalog, every report, every magazine, whether one page or a thousand.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-dark btn-lg btn-arrow" href="#viewer" id="hero-cta-primary">Get started</a>
+      <a class="btn btn-ghost btn-lg" href="#" id="hero-signin">Sign in</a>
+    </div>
+  </div>
+</header>
+
+<!-- ===== WORKS WITH TICKER ===== -->
+<section id="works-with" aria-label="Compatible formats and use cases">
+  <div class="works-label">WORKS WITH</div>
+  <div class="ticker-track">
+    <div class="ticker-inner" aria-hidden="true">
+      <div class="ticker-item"><span class="ticker-icon">📄</span> PDF Documents</div>
+      <div class="ticker-item"><span class="ticker-icon">📘</span> Catalogs</div>
+      <div class="ticker-item"><span class="ticker-icon">📰</span> Magazines</div>
+      <div class="ticker-item"><span class="ticker-icon">📊</span> Annual Reports</div>
+      <div class="ticker-item"><span class="ticker-icon">🍽️</span> Menus</div>
+      <div class="ticker-item"><span class="ticker-icon">🗂️</span> Portfolios</div>
+      <div class="ticker-item"><span class="ticker-icon">📚</span> Textbooks</div>
+      <div class="ticker-item"><span class="ticker-icon">🖼️</span> Brochures</div>
+      <div class="ticker-item"><span class="ticker-icon">📋</span> Proposals</div>
+      <div class="ticker-item"><span class="ticker-icon">📑</span> Manuals</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== VIEWER / DEMO ===== -->
+<section id="viewer" aria-labelledby="viewer-heading">
+  <div class="wrap">
+    <p class="section-label">LIVE DEMO</p>
+    <h2 class="section-h2" id="viewer-heading">Try it right now</h2>
+    <p class="section-sub">
+      This is a live, working flipbook viewer — flip through the sample pages or upload your own PDF
+      to see it transformed instantly.
+    </p>
+
+    <div class="viewer-stage">
+      <!-- Book -->
+      <div class="book-wrap" id="book"></div>
+
+      <!-- Controls -->
+      <div class="book-controls">
+        <button class="icon-btn" id="prevBtn" aria-label="Previous page">‹</button>
+        <span class="page-count" id="pagecount" aria-live="polite">Page 1 of 4</span>
+        <button class="icon-btn" id="nextBtn" aria-label="Next page">›</button>
+      </div>
+
+      <!-- Upload -->
+      <div class="upload-box">
+        <label for="pdfInput">Upload PDF</label>
+        <input type="file" id="pdfInput" accept="application/pdf" aria-label="Upload your PDF file">
+        <p>Your file stays in your browser — nothing is uploaded anywhere.</p>
+      </div>
+
+      <p class="status-msg" id="status" role="status"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section id="features" aria-labelledby="features-heading">
+  <div class="wrap">
+    <p class="section-label">FEATURES</p>
+    <h2 class="section-h2" id="features-heading">Everything you need</h2>
+    <p class="section-sub">
+      A complete flipbook engine, built for the modern web with no compromises.
+    </p>
+
+    <div class="features-grid">
+      <article class="feat-card">
+        <div class="feat-icon" aria-hidden="true">📖</div>
+        <h3>Real page turns</h3>
+        <p>A physics-feeling flip animation instead of a flat scrolling PDF, so long documents feel like something worth reading.</p>
+      </article>
+
+      <article class="feat-card">
+        <div class="feat-icon" aria-hidden="true">⚡</div>
+        <h3>Runs in the browser</h3>
+        <p>Pages render client-side — no server upload, no waiting on conversion queues. Your files never leave your device.</p>
+      </article>
+
+      <article class="feat-card">
+        <div class="feat-icon" aria-hidden="true">📱</div>
+        <h3>Works on any device</h3>
+        <p>Touch, click, or use the arrow controls. The book resizes perfectly for phones, tablets, and desktops.</p>
+      </article>
+
+      <article class="feat-card">
+        <div class="feat-icon" aria-hidden="true">📂</div>
+        <h3>Any PDF, instantly</h3>
+        <p>Reports, menus, catalogs, or textbooks — if it's a PDF, AnnualFlip can page through it in seconds.</p>
+      </article>
+
+      <article class="feat-card">
+        <div class="feat-icon" aria-hidden="true">🔒</div>
+        <h3>100% private</h3>
+        <p>Everything runs locally in your browser. No data is ever sent to a server. Complete privacy guaranteed.</p>
+      </article>
+
+      <article class="feat-card">
+        <div class="feat-icon" aria-hidden="true">🎨</div>
+        <h3>Beautiful rendering</h3>
+        <p>High-quality PDF.js rendering ensures your documents look crisp and professional at every zoom level.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA BANNER ===== -->
+<section id="cta-banner" aria-labelledby="cta-heading">
+  <div class="wrap">
+    <div class="cta-box">
+      <h2 id="cta-heading">Ready to flip your documents?</h2>
+      <p>Join thousands of users who use AnnualFlip to bring their PDFs to life — for free, right in their browser.</p>
+      <a class="btn-cta" href="#viewer" id="cta-get-started">
+        Get started free →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer id="footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="scr/Logo.png" alt="AnnualFlip logo">
+        <span>AnnualFlip</span>
+      </div>
+      <p class="footer-copy">© 2026 AnnualFlip. Built for documents worth turning the page on.</p>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Docs</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<!-- Script -->
+<script src="js/script.js"></script>
+
+</body>
+</html>
