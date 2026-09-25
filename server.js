@@ -11,7 +11,7 @@ const HOST = '0.0.0.0';
 
 // Explicit clean route handlers
 app.get(['/workspace', '/workspace.html', '/Workspace.html'], (req, res) => {
-  res.sendFile(path.join(__dirname, 'Workspace.html'));
+  res.sendFile(path.join(__dirname, 'workspace.html'));
 });
 
 app.get(['/reader', '/reader.html', '/read', '/book'], (req, res) => {

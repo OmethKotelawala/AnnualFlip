@@ -46,14 +46,6 @@
           <div class="sidebar-category-label">WORKSPACE</div>
           <ul class="sidebar-menu-list">
             <li>
-              <button class="sidebar-item-link" id="nav-tab-chat" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-                </svg>
-                <span>Chat Assistant</span>
-              </button>
-            </li>
-            <li>
               <button class="sidebar-item-link is-active" id="nav-tab-pubs" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
@@ -181,7 +173,10 @@
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
             <div class="sidebar-user-text">
-              <span class="sidebar-user-name" id="sidebar-user-name">Guest User</span>
+              <div class="sidebar-user-name-row">
+                <span class="sidebar-user-name" id="sidebar-user-name">Guest User</span>
+                <span class="user-tier-badge" id="sidebar-user-tier-badge"></span>
+              </div>
               <span class="sidebar-user-email" id="sidebar-user-email" style="color: #2563EB; font-weight: 600;">Click to Sign In</span>
             </div>
           </div>
@@ -197,7 +192,10 @@
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
             <div class="switch-account-details">
-              <strong class="switch-account-name" id="switch-active-name">Guest User</strong>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <strong class="switch-account-name" id="switch-active-name">Guest User</strong>
+                <span class="user-tier-badge" id="switch-user-tier-badge"></span>
+              </div>
               <span class="switch-account-email" id="switch-active-email">Signed out • Local mode</span>
             </div>
             <div class="switch-account-check" id="switch-account-check" aria-label="Active status">
@@ -258,11 +256,6 @@
 
         <div class="topbar-right">
           <div class="topbar-datetime" id="topbar-clock">Fri, Sep 25 <strong>10:30 AM</strong></div>
-          
-          <a href="account.html" class="pub-btn" id="topbar-signin-btn" style="text-decoration:none; font-weight:700; gap:6px; color:#2563EB; border-color:#BFDBFE; background:#EFF6FF;">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-            <span id="topbar-signin-text">Sign In / Connect</span>
-          </a>
 
           <button class="btn-new-pub" id="btn-open-create-modal" type="button" title="Upload new PDF document">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -839,6 +832,10 @@
           Go to Sign In / Create Account
         </a>
 
+        <button type="button" id="auth-gate-guest-btn" style="background:transparent; border:1px dashed #CBD5E1; color:#475569; padding:10px 14px; border-radius:12px; font-size:0.9rem; font-weight:600; cursor:pointer;">
+          Explore Workspace as Guest / Demo
+        </button>
+
         <a href="index.html" style="font-size:0.85rem; color:#64748B; text-decoration:none; margin-top:6px; font-weight:500;">
           ← Back to Homepage
         </a>
@@ -850,12 +847,7 @@
   <!-- ===== FLOATING RIGHT-SIDE AI ASSISTANT WIDGET LAUNCHER (Matching Image) ===== -->
   <button type="button" class="floating-ai-launcher" id="btn-floating-ai-launcher" aria-label="Open Virtual Assistant" title="Open Virtual Assistant">
     <div class="floating-ai-badge">1</div>
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="ai-launcher-icon">
-      <!-- Crisp White Speech Bubble Container -->
-      <path d="M20 11C20 15.4183 16.4183 19 12 19C10.5365 19 9.16788 18.6074 7.98926 17.9221L4 19L5.07788 15.0107C4.39261 13.8321 4 12.4635 4 11C4 6.58172 7.58172 3 12 3C16.4183 3 20 6.58172 20 11Z" fill="#FFFFFF"/>
-      <!-- Crisp Brand Blue Question Mark -->
-      <path d="M12 7.8C11.1716 7.8 10.5 8.47157 10.5 9.3C10.5 9.71421 10.1642 10.05 9.75 10.05C9.33579 10.05 9 9.71421 9 9.3C9 7.64315 10.3431 6.3 12 6.3C13.6569 6.3 15 7.64315 15 9.3C15 10.4578 14.3333 11.2333 13.5283 11.837C12.8256 12.364 12.75 12.7226 12.75 13.2V13.5C12.75 13.9142 12.4142 14.25 12 14.25C11.5858 14.25 11.25 13.9142 11.25 13.5V13.2C11.25 12.1422 11.9167 11.5167 12.6217 10.988C13.2744 10.4985 13.5 10.1422 13.5 9.3C13.5 8.47157 12.8284 7.8 12 7.8ZM12 16.75C12.4142 16.75 12.75 16.4142 12.75 16C12.75 15.5858 12.4142 15.25 12 15.25C11.5858 15.25 11.25 15.5858 11.25 16C11.25 16.4142 11.5858 16.75 12 16.75Z" fill="#2563EB"/>
-    </svg>
+    <img src="scr/companion.svg" alt="Companion Assistant" class="ai-launcher-icon" />
   </button>
 
   <!-- Floating Drawer Popup -->
@@ -865,7 +857,7 @@
       <div class="ai-widget-header">
         <div class="ai-widget-header-left">
           <div class="ai-widget-avatar">
-            <img src="scr/Logo.png" alt="FlipPage Logo" />
+            <img src="scr/companion.svg" alt="Virtual Assistant" />
           </div>
           <h3 class="ai-widget-title" style="font-size:0.95rem;">Virtual Assistant</h3>
         </div>

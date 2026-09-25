@@ -518,6 +518,57 @@ div:nth-of-type(1) > aside:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type
   overflow: hidden;
 }
 
+.sidebar-user-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.user-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 6px;
+  line-height: 1.2;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.user-tier-badge.pro {
+  background: #FFFBEB;
+  color: #B45309;
+  border: 1px solid #FCD34D;
+  box-shadow: 0 1px 4px rgba(245, 158, 11, 0.2);
+}
+
+.user-tier-badge.free {
+  background: #F1F5F9;
+  color: #64748B;
+  border: 1px solid #CBD5E1;
+}
+
+.crown-svg-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.free-svg-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
 .sidebar-user-name,
 div:nth-of-type(1) > aside:nth-of-type(1) > div:nth-of-type(2) > button#sidebar-user-card:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > span#sidebar-user-name:nth-of-type(1) {
   font-size: 0.82rem;
@@ -527,8 +578,6 @@ div:nth-of-type(1) > aside:nth-of-type(1) > div:nth-of-type(2) > button#sidebar-
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
-  display: block;
-  width: 100%;
 }
 
 .sidebar-user-email {
@@ -2419,10 +2468,10 @@ div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > main#main-content
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: #2563EB;
-  color: #FFFFFF;
-  border: 0;
-  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4), 0 0 0 4px rgba(255, 255, 255, 0.9);
+  background: #FFFFFF;
+  color: #2563EB;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15), 0 0 0 4px rgba(255, 255, 255, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2433,16 +2482,18 @@ div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > main#main-content
 }
 
 .ai-launcher-icon {
-  width: 30px;
-  height: 30px;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
   display: block;
   flex-shrink: 0;
 }
 
 .floating-ai-launcher:hover {
   transform: scale(1.08) translateY(-2px);
-  box-shadow: 0 14px 36px rgba(37, 99, 235, 0.5), 0 0 0 4px rgba(255, 255, 255, 1);
+  background: #FFFFFF;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.22), 0 0 0 4px rgba(255, 255, 255, 1);
 }
 
 .floating-ai-launcher:active {

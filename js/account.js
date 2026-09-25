@@ -173,6 +173,8 @@ function parseAuthError(error) {
       return 'Network connection failed. Please check your internet connection.';
     case 'auth/too-many-requests':
       return 'Access temporarily disabled due to too many failed attempts. Reset password or try later.';
+    case 'auth/unauthorized-domain':
+      return `This domain (${window.location.hostname}) is not authorized in your Firebase Project. Please add it to Firebase Console > Authentication > Settings > Authorized Domains, or use Email sign in / Guest mode below.`;
     default:
       return error.message || 'An unexpected error occurred. Please try again.';
   }
@@ -384,9 +386,42 @@ form.addEventListener('submit', async (event) => {
 /**
  * Google Sign-In with Popup
  */
+const unauthorizedCard = document.getElementById('unauthorized-domain-card');
+const currentHostnameCode = document.getElementById('current-hostname-code');
+const btnUnauthorizedDemo = document.getElementById('btn-unauthorized-demo');
+const guestAuthBtn = document.getElementById('guest-auth-btn');
+
+function enterGuestMode() {
+  const guestUser = {
+    uid: 'guest-' + Date.now(),
+    displayName: 'Preview Explorer',
+    email: 'guest@flippage.preview',
+    photoURL: ''
+  };
+  localStorage.setItem('flippage_guest_user', JSON.stringify(guestUser));
+  localStorage.setItem('flippage_user_name', 'Preview Explorer');
+  showStatus('Entering workspace in Guest/Demo Mode...', false);
+  setTimeout(() => {
+    window.location.href = 'workspace.html';
+  }, 400);
+}
+
+if (guestAuthBtn) {
+  guestAuthBtn.addEventListener('click', () => {
+    enterGuestMode();
+  });
+}
+
+if (btnUnauthorizedDemo) {
+  btnUnauthorizedDemo.addEventListener('click', () => {
+    enterGuestMode();
+  });
+}
+
 if (googleAuthBtn) {
   googleAuthBtn.addEventListener('click', async () => {
     clearStatus();
+    if (unauthorizedCard) unauthorizedCard.style.display = 'none';
     googleAuthBtn.disabled = true;
 
     try {
@@ -412,7 +447,15 @@ if (googleAuthBtn) {
 
     } catch (error) {
       console.error('Google Sign-In Error:', error);
-      showStatus(parseAuthError(error), true);
+      const msg = parseAuthError(error);
+      showStatus(msg, true);
+      
+      if (error.code === 'auth/unauthorized-domain' && unauthorizedCard) {
+        if (currentHostnameCode) {
+          currentHostnameCode.textContent = window.location.hostname;
+        }
+        unauthorizedCard.style.display = 'block';
+      }
     } finally {
       googleAuthBtn.disabled = false;
     }
