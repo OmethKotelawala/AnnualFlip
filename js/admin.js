@@ -1,5 +1,5 @@
 /**
- * FlipPage Admin Portal Controller - User & Trial Duration Management
+ * FlipPage Admin Portal Controller - User, Brand & Free Trial Duration Management
  */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { 
@@ -15,7 +15,6 @@ import {
   doc, 
   getDoc, 
   setDoc, 
-  updateDoc, 
   onSnapshot, 
   getDocs 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -45,6 +44,8 @@ let usersData = [
     uid: 'u-101',
     displayName: 'Alex Morgan',
     email: 'alex.morgan@workspace.io',
+    brandName: 'Morgan Media Co.',
+    brandUrl: 'FlipPage.com/morgan-media',
     role: 'user',
     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
     trialDays: 14,
@@ -56,6 +57,8 @@ let usersData = [
     uid: 'u-102',
     displayName: 'Senuri Jayawardena',
     email: 'senuri@northbay.lk',
+    brandName: 'Northbay Finance',
+    brandUrl: 'FlipPage.com/northbay-finance',
     role: 'user',
     createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
     trialDays: 14,
@@ -67,6 +70,8 @@ let usersData = [
     uid: 'u-103',
     displayName: 'Dineth Abeysekara',
     email: 'dineth@apexcreative.co',
+    brandName: 'Apex Studio',
+    brandUrl: 'FlipPage.com/apex-studio',
     role: 'user',
     createdAt: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString(),
     trialDays: 14,
@@ -78,6 +83,8 @@ let usersData = [
     uid: 'u-104',
     displayName: 'Kavindi Perera',
     email: 'kavindi@designstudio.lk',
+    brandName: 'Perera Design Systems',
+    brandUrl: 'FlipPage.com/perera-design',
     role: 'user',
     createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     trialDays: 30,
@@ -89,6 +96,8 @@ let usersData = [
     uid: 'u-105',
     displayName: 'Ometh Ranhas',
     email: 'omethranhasacz@gmail.com',
+    brandName: 'FlipPage Core',
+    brandUrl: 'FlipPage.com/core',
     role: 'admin',
     createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
     trialDays: 365,
@@ -127,7 +136,7 @@ const searchInput = document.getElementById('admin-search-input');
 const filterBtns = document.querySelectorAll('.filter-btn-pill');
 const refreshBtn = document.getElementById('refresh-users-btn');
 
-// Modal DOM
+// Change Trial Modal DOM
 const trialModal = document.getElementById('trial-duration-modal');
 const modalTargetUser = document.getElementById('modal-target-user');
 const modalCurrentDuration = document.getElementById('modal-current-duration');
@@ -138,6 +147,19 @@ const presetBtns = document.querySelectorAll('.preset-day-btn');
 const btnCancelModal = document.getElementById('btn-cancel-modal');
 const btnCloseModalX = document.getElementById('btn-close-modal-x');
 const btnSaveTrialDuration = document.getElementById('btn-save-trial-duration');
+
+// Details Modal DOM
+const detailsModal = document.getElementById('user-details-modal');
+const btnCloseDetailsModal = document.getElementById('btn-close-details-modal');
+const btnCloseDetailsBottom = document.getElementById('btn-close-details-bottom');
+const detailUserAvatar = document.getElementById('detail-user-avatar');
+const detailUserName = document.getElementById('detail-user-name');
+const detailUserEmail = document.getElementById('detail-user-email');
+const detailBrandName = document.getElementById('detail-brand-name');
+const detailBrandUrl = document.getElementById('detail-brand-url');
+const detailTrialDuration = document.getElementById('detail-trial-duration');
+const detailTimeRemaining = document.getElementById('detail-time-remaining');
+const detailRegisteredDate = document.getElementById('detail-registered-date');
 
 document.addEventListener('DOMContentLoaded', () => {
   initAuthGuard();
@@ -152,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function initAuthGuard() {
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      // User is not signed in -> show login prompt
       showGuardLogin();
       return;
     }
@@ -170,11 +191,9 @@ function initAuthGuard() {
     } catch (_) {}
 
     if (isMasterAdmin || isFirestoreAdmin) {
-      // Unlock Admin Portal
       grantAdminAccess(user);
       listenToFirestoreUsers();
     } else {
-      // Access Denied
       showGuardDenied(user);
     }
   });
@@ -193,7 +212,7 @@ function showGuardLogin() {
   if (adminNavProfile) adminNavProfile.hidden = true;
 
   if (guardTitle) guardTitle.textContent = 'Admin Portal Authentication';
-  if (guardDesc) guardDesc.textContent = 'Please sign in with an authorized FlipPage administrator account to manage users and trial durations.';
+  if (guardDesc) guardDesc.textContent = 'Please sign in with an authorized FlipPage administrator account to manage users and customize free trial durations.';
   if (guardIconBox) {
     guardIconBox.className = 'guard-icon';
     guardIconBox.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
@@ -238,7 +257,15 @@ function grantAdminAccess(user) {
 
   const displayName = user.displayName || user.email?.split('@')[0] || 'Administrator';
   if (adminProfileName) adminProfileName.textContent = displayName;
-  if (adminAvatarInitial) adminAvatarInitial.textContent = (displayName.charAt(0) || 'A').toUpperCase();
+  if (adminAvatarInitial) {
+    if (user.photoURL) {
+      adminAvatarInitial.innerHTML = `<img src="${user.photoURL}" alt="${escapeHtml(displayName)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" referrerpolicy="no-referrer">`;
+      adminAvatarInitial.style.overflow = 'hidden';
+      adminAvatarInitial.style.padding = '0';
+    } else {
+      adminAvatarInitial.textContent = (displayName.charAt(0) || 'A').toUpperCase();
+    }
+  }
 
   renderMetrics();
   renderUsersTable();
@@ -260,6 +287,9 @@ function listenToFirestoreUsers() {
             uid: docSnap.id,
             displayName: data.displayName || data.name || 'User',
             email: data.email || 'user@example.com',
+            photoURL: data.photoURL || '',
+            brandName: data.brandName || '',
+            brandUrl: data.brandUrl || (data.brandName ? `FlipPage.com/${data.brandName.toLowerCase().replace(/\s+/g, '-')}` : 'FlipPage.com/workspace'),
             role: data.role || 'user',
             createdAt: data.createdAt || new Date().toISOString(),
             trialDays: data.trialDays || 14,
@@ -269,7 +299,6 @@ function listenToFirestoreUsers() {
           });
         });
 
-        // Merge firestore with defaults
         firestoreList.forEach(fUser => {
           const idx = usersData.findIndex(u => u.uid === fUser.uid || u.email.toLowerCase() === fUser.email.toLowerCase());
           if (idx !== -1) {
@@ -317,7 +346,7 @@ function getTrialRemainingDays(user) {
 }
 
 /**
- * Render Users Table
+ * Render Users Table with Brand and Trial Details
  */
 function renderUsersTable() {
   if (!usersTableBody) return;
@@ -326,7 +355,8 @@ function renderUsersTable() {
 
   const filtered = usersData.filter(user => {
     const matchesSearch = (user.displayName || '').toLowerCase().includes(query) || 
-                          (user.email || '').toLowerCase().includes(query);
+                          (user.email || '').toLowerCase().includes(query) ||
+                          (user.brandName || '').toLowerCase().includes(query);
 
     const remaining = getTrialRemainingDays(user);
 
@@ -347,7 +377,7 @@ function renderUsersTable() {
   if (filtered.length === 0) {
     usersTableBody.innerHTML = `
       <tr>
-        <td colspan="6" style="text-align: center; padding: 48px; color: var(--admin-text-muted);">
+        <td colspan="7" style="text-align: center; padding: 48px; color: var(--admin-text-muted);">
           No users matching the selected criteria.
         </td>
       </tr>
@@ -381,21 +411,32 @@ function renderUsersTable() {
       statusPill = `<span class="status-pill active">Active (${remainingDays}d left)</span>`;
     }
 
+    const brandDisplay = user.brandName ? `<span style="font-size: 0.78rem; color: #60A5FA; font-weight: 600;">🏷️ ${escapeHtml(user.brandName)}</span>` : `<span style="font-size: 0.78rem; color: var(--admin-text-muted); font-style: italic;">No brand set</span>`;
+    const brandUrlDisplay = user.brandUrl ? `<span style="font-size: 0.82rem; color: #34D399; font-family: monospace;">${escapeHtml(user.brandUrl)}</span>` : `<span style="font-size: 0.82rem; color: var(--admin-text-muted);">—</span>`;
+
+    const avatarHtml = user.photoURL
+      ? `<img src="${user.photoURL}" alt="${escapeHtml(user.displayName)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" referrerpolicy="no-referrer">`
+      : initial;
+
     return `
       <tr data-uid="${user.uid}">
         <!-- User Info -->
         <td>
           <div class="user-info-cell">
-            <div class="user-table-avatar">${initial}</div>
+            <div class="user-table-avatar" style="overflow: hidden; padding: 0;">${avatarHtml}</div>
             <div class="user-meta-names">
               <span class="user-meta-name">
                 ${escapeHtml(user.displayName || 'User')}
                 <span class="role-chip ${user.role}">${user.role}</span>
               </span>
               <span class="user-meta-email">${escapeHtml(user.email)}</span>
+              ${brandDisplay}
             </div>
           </div>
         </td>
+
+        <!-- Brand URL -->
+        <td>${brandUrlDisplay}</td>
 
         <!-- Registered Date -->
         <td style="color: var(--admin-text-secondary);">${createdDateFormatted}</td>
@@ -423,11 +464,14 @@ function renderUsersTable() {
         <!-- Actions -->
         <td>
           <div class="table-action-btns">
-            <button class="btn-change-trial btn-open-modal" type="button" data-uid="${user.uid}">
+            <button class="btn-change-trial btn-open-modal" type="button" data-uid="${user.uid}" title="Edit Trial Time Duration">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               <span>Change Trial</span>
             </button>
-            <button class="btn-icon-action btn-quick-add" type="button" data-uid="${user.uid}" title="Add +7 days trial">
+            <button class="btn-icon-action btn-view-details" type="button" data-uid="${user.uid}" title="View Details">
+              ℹ️
+            </button>
+            <button class="btn-icon-action btn-quick-add" type="button" data-uid="${user.uid}" title="Add +7 days">
               +7d
             </button>
           </div>
@@ -445,6 +489,14 @@ function renderUsersTable() {
     });
   });
 
+  document.querySelectorAll('.btn-view-details').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const uid = btn.dataset.uid;
+      const targetUser = usersData.find(u => u.uid === uid);
+      if (targetUser) openDetailsModal(targetUser);
+    });
+  });
+
   document.querySelectorAll('.btn-quick-add').forEach(btn => {
     btn.addEventListener('click', () => {
       const uid = btn.dataset.uid;
@@ -454,6 +506,38 @@ function renderUsersTable() {
       }
     });
   });
+}
+
+/**
+ * Open Modal to View User Details
+ */
+function openDetailsModal(user) {
+  const initial = (user.displayName?.charAt(0) || user.email?.charAt(0) || 'U').toUpperCase();
+  const remaining = getTrialRemainingDays(user);
+
+  if (detailUserAvatar) {
+    if (user.photoURL) {
+      detailUserAvatar.innerHTML = `<img src="${user.photoURL}" alt="${escapeHtml(user.displayName)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" referrerpolicy="no-referrer">`;
+      detailUserAvatar.style.overflow = 'hidden';
+      detailUserAvatar.style.padding = '0';
+    } else {
+      detailUserAvatar.textContent = initial;
+    }
+  }
+
+  if (detailUserName) detailUserName.textContent = user.displayName || 'User';
+  if (detailUserEmail) detailUserEmail.textContent = user.email || '';
+  if (detailBrandName) detailBrandName.textContent = user.brandName || 'Not specified';
+  if (detailBrandUrl) detailBrandUrl.textContent = user.brandUrl || 'FlipPage.com/workspace';
+  if (detailTrialDuration) detailTrialDuration.textContent = `${user.trialDays} Days`;
+  if (detailTimeRemaining) detailTimeRemaining.textContent = user.role === 'admin' ? 'Unlimited' : `${remaining} days remaining`;
+  if (detailRegisteredDate) detailRegisteredDate.textContent = new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  if (detailsModal) detailsModal.classList.add('is-open');
+}
+
+function closeDetailsModal() {
+  if (detailsModal) detailsModal.classList.remove('is-open');
 }
 
 /**
@@ -467,7 +551,6 @@ function openTrialModal(user) {
   if (modalCurrentDuration) modalCurrentDuration.textContent = `${user.trialDays} Days`;
   if (stepperInput) stepperInput.value = currentEditingDays;
 
-  // Highlight preset if matches
   presetBtns.forEach(p => {
     p.classList.toggle('is-selected', Number(p.dataset.days) === currentEditingDays);
   });
@@ -484,13 +567,22 @@ function initModalHandlers() {
   if (btnCancelModal) btnCancelModal.addEventListener('click', closeTrialModal);
   if (btnCloseModalX) btnCloseModalX.addEventListener('click', closeTrialModal);
 
+  if (btnCloseDetailsModal) btnCloseDetailsModal.addEventListener('click', closeDetailsModal);
+  if (btnCloseDetailsBottom) btnCloseDetailsBottom.addEventListener('click', closeDetailsModal);
+
   if (trialModal) {
     trialModal.addEventListener('click', (e) => {
       if (e.target === trialModal) closeTrialModal();
     });
   }
 
-  // Preset Buttons (7d, 14d, 30d, 60d, 90d, 180d)
+  if (detailsModal) {
+    detailsModal.addEventListener('click', (e) => {
+      if (e.target === detailsModal) closeDetailsModal();
+    });
+  }
+
+  // Preset Buttons (7d, 14d, 30d, 60d, 90d, 180d, 365d, 730d)
   presetBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       presetBtns.forEach(b => b.classList.remove('is-selected'));
@@ -547,7 +639,6 @@ function syncPresetHighlight() {
  * Persist Trial Duration to Firestore and Local State
  */
 async function updateUserTrialDuration(user, newDays) {
-  const oldDays = user.trialDays;
   user.trialDays = newDays;
 
   // Recalculate end date from start date
@@ -576,7 +667,7 @@ async function updateUserTrialDuration(user, newDays) {
     showToast(`Updated ${user.displayName}'s free trial to ${newDays} days!`, 'success');
   } catch (err) {
     console.error('Failed to update Firestore:', err);
-    showToast(`Updated local state to ${newDays} days (Firestore offline)`, 'success');
+    showToast(`Updated local state to ${newDays} days`, 'success');
   }
 
   renderMetrics();
@@ -608,7 +699,7 @@ function initRefresh() {
     refreshBtn.addEventListener('click', () => {
       renderMetrics();
       renderUsersTable();
-      showToast('User trials refreshed', 'success');
+      showToast('User trials and brand records refreshed', 'success');
     });
   }
 }

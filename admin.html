@@ -4,31 +4,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FlipPage — Turn any PDF into a beautiful flipbook</title>
-  <meta name="description"
-    content="Turn any PDF into a beautiful page-turning flipbook right in your browser. No install. No plugins. Works on every device.">
-  <meta property="og:title" content="FlipPage — Turn any PDF into a beautiful flipbook">
-  <meta property="og:description"
-    content="Turn any PDF into a beautiful page-turning flipbook right in your browser. No install. No plugins. Works on every device.">
-  <meta property="og:type" content="website">
+  <title>FlipPage — Admin Portal &amp; Free Trial Manager</title>
+  <meta name="description" content="FlipPage Administrator Portal — Manage registered users, brand company names, free trial durations, and system permissions.">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
-  <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/admin.css">
 </head>
 
 <body>
 
-  <!-- Ambient atmospheric background -->
+  <!-- Ambient background glow -->
   <div class="cyber-bg-wrap" aria-hidden="true">
     <div class="cyber-bg-glow"></div>
   </div>
@@ -39,7 +29,7 @@
       <div class="nav-inner">
 
         <!-- Brand -->
-        <a class="brand" href="#" aria-label="FlipPage home">
+        <a class="brand" href="index.html" aria-label="FlipPage home">
           <div class="brand-icon-wrap" aria-hidden="true">
             <img src="scr/Logo.png" alt="" class="brand-logo">
           </div>
@@ -48,128 +38,27 @@
 
         <!-- Nav links -->
         <ul class="nav-links" id="nav-links" role="list">
-
-          <!-- Products simple link -->
           <li class="nav-item">
-            <a href="#fast-work" class="nav-link">
-              <span>Products</span>
-            </a>
+            <a href="admin.html" class="nav-link" aria-current="page" style="color: #2563EB; font-weight: 700;"><span>Admin Trials</span></a>
           </li>
-
-          <!-- Platform with Mega Dropdown -->
-          <li class="nav-item nav-item-dropdown">
-            <button class="nav-link nav-link-btn" aria-expanded="false" id="platform-dropdown-btn" type="button">
-              <span>Platform</span>
-              <svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-
-            <!-- Mega Dropdown Menu -->
-            <div class="mega-dropdown" id="platform-menu" role="region" aria-label="Platform menu">
-
-              <!-- Dropdown header -->
-              <div class="mega-header">
-                <span class="mega-header-tag">Platform</span>
-                <p class="mega-header-sub">Everything you need to publish beautiful, interactive documents.</p>
-              </div>
-
-              <div class="mega-dropdown-inner">
-
-                <!-- Col 1: How it works -->
-                <div class="mega-col">
-                  <span class="mega-category">HOW IT WORKS</span>
-
-                  <a href="#fast-work" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">Interactive 3D Engine</strong>
-                      <span class="mega-desc">Realistic physics, page curls, shadows &amp; dual-page spreads.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-
-                  <a href="#solutions" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="5" y="2" width="14" height="20" rx="2"/>
-                        <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">Touch &amp; Mobile Ready</strong>
-                      <span class="mega-desc">Fluid gesture swipe, pinch-zoom and responsive layout.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-                </div>
-
-                <!-- Col 2: Trust & Privacy -->
-                <div class="mega-col">
-                  <span class="mega-category">PRIVACY &amp; SPEED</span>
-
-                  <a href="#solutions" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">100% Client-Side Privacy</strong>
-                      <span class="mega-desc">Your PDFs never leave your browser — zero cloud storage.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-
-                  <a href="#solutions" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">Instant Rendering</strong>
-                      <span class="mega-desc">Hardware-accelerated PDF rendering with crisp vector typography.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-                </div>
-
-                <!-- Col 3: CTA card -->
-                <div class="mega-col mega-col-cta">
-                  <div class="mega-cta-card">
-                    <div class="mega-cta-icon" aria-hidden="true">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                    </div>
-                    <strong class="mega-cta-title">Try it free</strong>
-                    <p class="mega-cta-desc">No account needed. Drop in any PDF and watch it flip.</p>
-                    <a href="#fast-work" class="mega-cta-btn">Open demo →</a>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </li>
-
-          <!-- Solutions link -->
           <li class="nav-item">
-            <a href="#solutions" class="nav-link"><span>Solutions</span></a>
+            <a href="Workspace.html" class="nav-link"><span>Workspace</span></a>
           </li>
-
-          <!-- Pricing link -->
           <li class="nav-item">
             <a href="pricing.html" class="nav-link"><span>Pricing</span></a>
           </li>
-
+          <li class="nav-item">
+            <a href="index.html" class="nav-link"><span>Main Site</span></a>
+          </li>
         </ul>
 
-        <!-- Right-side CTA group -->
-        <div class="nav-cta">
-          <a class="nav-signin" href="account.html" id="signin-btn">Sign in</a>
-          <a class="nav-getstarted" href="#fast-work" id="getstarted-btn">Get started</a>
+        <!-- Right-side Admin Profile -->
+        <div class="nav-cta" id="admin-header-nav-right">
+          <div class="admin-profile-chip" id="admin-nav-profile" hidden>
+            <div class="admin-avatar" id="admin-avatar-initial">A</div>
+            <span class="admin-profile-name" id="admin-profile-name">Administrator</span>
+          </div>
+          <button class="btn-admin-logout" id="btn-admin-logout" type="button">Log out</button>
         </div>
 
         <!-- Mobile hamburger -->
@@ -183,11 +72,223 @@
     </div>
   </nav>
 
-  
-  <!-- ===== SOLUTIONS / BEYOND MAKER SECTION (Screenshot Match) ===== -->
-  \
+  <!-- ===== AUTH GUARD / ACCESS DENIED SCREEN ===== -->
+  <div class="admin-auth-guard" id="auth-guard-container">
+    <div class="guard-card">
+      <div class="guard-icon" id="guard-icon-box">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h2 class="guard-title" id="guard-title">Admin Portal Authentication</h2>
+      <p class="guard-desc" id="guard-desc">Please sign in with an authorized FlipPage administrator account to view registered users and customize free trial durations.</p>
+      <button class="guard-btn-action" id="guard-action-btn" type="button">Sign in with Google</button>
+    </div>
+  </div>
 
-  <!-- ===== FOOTER ===== -->
+  <!-- ===== MAIN ADMIN MANAGEMENT PORTAL ===== -->
+  <main class="admin-main-wrap" id="admin-main-portal" hidden>
+
+    <!-- Top Title & Quick Actions Row -->
+    <div class="admin-header-title-row">
+      <div>
+        <h1>User Trials &amp; Brand Management</h1>
+        <p>Monitor user registrations, brand company names, 14-day free trials, and edit trial durations.</p>
+      </div>
+
+      <div class="admin-top-actions">
+        <button class="btn-secondary-outline" id="refresh-users-btn" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          <span>Refresh Data</span>
+        </button>
+        <a href="account.html" class="btn-primary-glow">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Register User / Add Brand</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Summary Metrics -->
+    <section class="admin-metrics-grid" aria-label="Trial statistics">
+      <div class="metric-card">
+        <div class="metric-icon-box blue">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Total Users</span>
+          <span class="metric-value" id="stat-total-users">5</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-box emerald">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Active Free Trials</span>
+          <span class="metric-value" id="stat-active-trials">4</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-box amber">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Expired Trials</span>
+          <span class="metric-value" id="stat-expired-trials">1</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-box purple">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Avg. Duration</span>
+          <span class="metric-value" id="stat-avg-duration">14 Days</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Users Table Container -->
+    <section class="admin-table-container">
+      
+      <!-- Toolbar -->
+      <div class="admin-table-toolbar">
+        <div class="search-input-wrap">
+          <svg class="search-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="admin-search-input" id="admin-search-input" placeholder="Search by name, brand name, or email...">
+        </div>
+
+        <div class="filter-button-group">
+          <button class="filter-btn-pill is-active" data-filter="all" type="button">All Users</button>
+          <button class="filter-btn-pill" data-filter="active" type="button">Active Trials</button>
+          <button class="filter-btn-pill" data-filter="expiring" type="button">Expiring Soon (≤3d)</button>
+          <button class="filter-btn-pill" data-filter="expired" type="button">Expired</button>
+          <button class="filter-btn-pill" data-filter="admins" type="button">Admins</button>
+        </div>
+      </div>
+
+      <!-- Table View -->
+      <div class="table-responsive">
+        <table class="admin-users-table">
+          <thead>
+            <tr>
+              <th>User &amp; Brand</th>
+              <th>Brand URL</th>
+              <th>Registered</th>
+              <th>Trial Duration</th>
+              <th>Time Remaining</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body">
+            <!-- Dynamically populated via js/admin.js -->
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ===== CHANGE TRIAL DURATION MODAL ===== -->
+  <div class="modal-overlay" id="trial-duration-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-content-card">
+      
+      <div class="modal-header-row">
+        <h3 id="modal-title">Adjust Free Trial Duration</h3>
+        <button class="btn-close-modal" id="btn-close-modal-x" type="button" aria-label="Close modal">✕</button>
+      </div>
+
+      <p style="color: var(--admin-text-secondary); font-size: 0.9rem; margin: 0 0 16px;">
+        Modifying trial duration for: <strong id="modal-target-user" style="color: #FFFFFF;">User</strong>
+      </p>
+
+      <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--admin-border); border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.85rem; color: var(--admin-text-secondary);">Current Setting:</span>
+        <strong id="modal-current-duration" style="color: #60A5FA; font-size: 1rem;">14 Days</strong>
+      </div>
+
+      <label style="font-size: 0.84rem; font-weight: 700; color: var(--admin-text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Quick Presets</label>
+      
+      <!-- Preset Buttons -->
+      <div class="preset-days-grid">
+        <button class="preset-day-btn" data-days="7" type="button">7 Days</button>
+        <button class="preset-day-btn is-selected" data-days="14" type="button">14 Days (Default)</button>
+        <button class="preset-day-btn" data-days="30" type="button">30 Days</button>
+        <button class="preset-day-btn" data-days="60" type="button">60 Days</button>
+        <button class="preset-day-btn" data-days="90" type="button">90 Days</button>
+        <button class="preset-day-btn" data-days="180" type="button">180 Days</button>
+        <button class="preset-day-btn" data-days="365" type="button">1 Year</button>
+        <button class="preset-day-btn" data-days="730" type="button">2 Years</button>
+      </div>
+
+      <!-- Custom Stepper Input -->
+      <div class="custom-days-input-wrap">
+        <label for="custom-days-input">Custom Duration (in Days)</label>
+        <div class="days-stepper">
+          <button class="stepper-btn" id="stepper-minus" type="button">−</button>
+          <input type="number" id="custom-days-input" class="stepper-input" min="1" max="3650" value="14">
+          <button class="stepper-btn" id="stepper-plus" type="button">+</button>
+        </div>
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="modal-actions">
+        <button class="btn-secondary-outline" id="btn-cancel-modal" type="button">Cancel</button>
+        <button class="btn-primary-glow" id="btn-save-trial-duration" type="button">Save Trial Duration</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== USER DETAILS MODAL ===== -->
+  <div class="modal-overlay" id="user-details-modal" role="dialog" aria-modal="true" aria-labelledby="user-details-modal-title">
+    <div class="modal-content-card">
+      <div class="modal-header-row">
+        <h3 id="user-details-modal-title">User &amp; Brand Profile</h3>
+        <button class="btn-close-modal" id="btn-close-details-modal" type="button" aria-label="Close modal">✕</button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding: 14px; background: rgba(255,255,255,0.04); border-radius: 12px;">
+        <div class="user-table-avatar" id="detail-user-avatar" style="width: 48px; height: 48px; font-size: 1.2rem;">U</div>
+        <div>
+          <h4 id="detail-user-name" style="margin: 0 0 4px; font-size: 1.1rem; color: #FFFFFF;">User Name</h4>
+          <span id="detail-user-email" style="color: var(--admin-text-secondary); font-size: 0.85rem;">user@example.com</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--admin-border); padding-bottom: 8px;">
+          <span style="color: var(--admin-text-muted);">Brand / Company Name:</span>
+          <strong id="detail-brand-name" style="color: #60A5FA;">Not specified</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--admin-border); padding-bottom: 8px;">
+          <span style="color: var(--admin-text-muted);">Brand Custom URL:</span>
+          <span id="detail-brand-url" style="color: #34D399; font-family: monospace;">FlipPage.com/</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--admin-border); padding-bottom: 8px;">
+          <span style="color: var(--admin-text-muted);">Free Trial Duration:</span>
+          <strong id="detail-trial-duration" style="color: #FFFFFF;">14 Days</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--admin-border); padding-bottom: 8px;">
+          <span style="color: var(--admin-text-muted);">Time Remaining:</span>
+          <strong id="detail-time-remaining" style="color: #34D399;">14 days</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--admin-text-muted);">Registration Date:</span>
+          <span id="detail-registered-date" style="color: #FFFFFF;">Jan 1, 2026</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-primary-glow" id="btn-close-details-bottom" type="button" style="width: 100%; justify-content: center;">Close Details</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== GLOBAL FOOTER ===== -->
   <footer id="footer">
     <div class="footer-outer-wrap">
       <div class="footer-card">
@@ -210,8 +311,8 @@
             <h4 class="footer-col-title">Quick link</h4>
             <ul class="footer-col-list">
               <li><a href="index.html">Home</a></li>
-              <li><a href="#fast-work">Overview</a></li>
-              <li><a href="#solutions">Solutions</a></li>
+              <li><a href="index.html#fast-work">Overview</a></li>
+              <li><a href="index.html#solutions">Solutions</a></li>
               <li><a href="pricing.html">Pricing</a></li>
               <li><a href="Workspace.html">Workspace</a></li>
               <li><a href="account.html">Account</a></li>
@@ -222,12 +323,12 @@
           <div class="footer-col">
             <h4 class="footer-col-title">Products</h4>
             <ul class="footer-col-list">
-              <li><a href="#fast-work">PDF Documents</a></li>
-              <li><a href="#fast-work">Digital Catalogs</a></li>
-              <li><a href="#fast-work">Magazines & Press</a></li>
-              <li><a href="#fast-work">Annual Reports</a></li>
-              <li><a href="#fast-work">Brochures & Menus</a></li>
-              <li><a href="#fast-work">Portfolio Showcase</a></li>
+              <li><a href="index.html#fast-work">PDF Documents</a></li>
+              <li><a href="index.html#fast-work">Digital Catalogs</a></li>
+              <li><a href="index.html#fast-work">Magazines &amp; Press</a></li>
+              <li><a href="index.html#fast-work">Annual Reports</a></li>
+              <li><a href="index.html#fast-work">Brochures &amp; Menus</a></li>
+              <li><a href="index.html#fast-work">Portfolio Showcase</a></li>
             </ul>
           </div>
 
@@ -274,9 +375,7 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="js/script.js"></script>
-  <script src="js/admin.js"></script>
+  <script type="module" src="js/admin.js"></script>
 
 </body>
 

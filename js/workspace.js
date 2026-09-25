@@ -81,12 +81,16 @@ function initAuthListener() {
         ? `Administrator session active • Manage user 14-day trials in Admin Portal.` 
         : `14-Day Free Trial Active • Enjoy unlimited client-side 3D flipbook creation.`;
 
+      const avatarContent = user.photoURL 
+        ? `<img src="${user.photoURL}" alt="${escapeHtml(name)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" referrerpolicy="no-referrer">` 
+        : `<span>${(name.charAt(0) || 'U').toUpperCase()}</span>`;
+
       if (navUserSection) {
         navUserSection.innerHTML = `
           ${isAdmin ? '<a class="nav-user-chip" style="background: rgba(139, 92, 246, 0.15); border-color: #C4B5FD; color: #7C3AED;" href="admin.html">👑 Admin Portal</a>' : ''}
           <a class="nav-user-chip" href="account.html" title="Account settings">
-            <span class="nav-user-avatar">${(name.charAt(0) || 'U').toUpperCase()}</span>
-            <span>${name}</span>
+            <span class="nav-user-avatar" style="overflow: hidden; padding: 0;">${avatarContent}</span>
+            <span>${escapeHtml(name)}</span>
           </a>
         `;
       }

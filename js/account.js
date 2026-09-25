@@ -1,5 +1,5 @@
 /**
- * Firebase Real Authentication Backend Controller - FlipPage
+ * Firebase Real Authentication & Brand URL Customization Backend Controller - FlipPage
  */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { 
@@ -42,43 +42,6 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
 
-/**
- * Ensure user document is provisioned with 14-day trial in Firestore
- */
-async function syncUserTrialRecord(user, customName = '') {
-  try {
-    const userRef = doc(db, 'users', user.uid);
-    const existingSnap = await getDoc(userRef);
-    const now = new Date();
-    const isAdmin = (user.email || '').toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase();
-
-    if (!existingSnap.exists()) {
-      const trialDays = 14;
-      const trialStartDate = now.toISOString();
-      const trialEndDate = new Date(now.getTime() + trialDays * 24 * 60 * 60 * 1000).toISOString();
-
-      await setDoc(userRef, {
-        uid: user.uid,
-        displayName: customName || user.displayName || (user.email ? user.email.split('@')[0] : 'User'),
-        email: user.email || '',
-        role: isAdmin ? 'admin' : 'user',
-        createdAt: trialStartDate,
-        trialDays: trialDays,
-        trialStartDate: trialStartDate,
-        trialEndDate: trialEndDate,
-        status: 'active',
-        lastLoginAt: trialStartDate
-      });
-    } else {
-      await setDoc(userRef, {
-        lastLoginAt: now.toISOString()
-      }, { merge: true });
-    }
-  } catch (err) {
-    console.warn('Firestore trial sync notice:', err);
-  }
-}
-
 // Initialize optional analytics safely
 isSupported().then(supported => {
   if (supported) {
@@ -86,7 +49,7 @@ isSupported().then(supported => {
   }
 });
 
-// DOM Elements
+// DOM Elements - Auth Form
 const authFormWrapper = document.getElementById('auth-form-wrapper');
 const signedInCard = document.getElementById('signedin-state');
 const userDisplayName = document.getElementById('user-display-name');
@@ -111,7 +74,17 @@ const passwordToggle = document.getElementById('password-toggle');
 const formStatus = document.getElementById('form-status');
 const googleAuthBtn = document.getElementById('google-auth-btn');
 
+// DOM Elements - Brand URL Customization Step (Screenshot Match)
+const brandStep = document.getElementById('brand-onboarding-step');
+const brandUserName = document.getElementById('brand-user-name');
+const brandUserEmail = document.getElementById('brand-user-email');
+const brandLogoutLink = document.getElementById('brand-logout-link');
+const brandNameInput = document.getElementById('brand-name-input');
+const saveBrandBtn = document.getElementById('save-brand-btn');
+const brandFormStatus = document.getElementById('brand-form-status');
+
 let currentMode = 'signin'; // 'signin' | 'signup'
+let activeFirebaseUser = null;
 
 /**
  * Switch Auth Mode (Sign in / Create account)
@@ -196,6 +169,140 @@ function parseAuthError(error) {
 }
 
 /**
+ * Ensure user document is provisioned with 14-day trial in Firestore
+ */
+async function syncUserTrialRecord(user, customName = '', customBrand = '') {
+  try {
+    const userRef = doc(db, 'users', user.uid);
+    const existingSnap = await getDoc(userRef);
+    const now = new Date();
+    const isAdmin = (user.email || '').toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase();
+
+    if (!existingSnap.exists()) {
+      const trialDays = 14;
+      const trialStartDate = now.toISOString();
+      const trialEndDate = new Date(now.getTime() + trialDays * 24 * 60 * 60 * 1000).toISOString();
+
+      await setDoc(userRef, {
+        uid: user.uid,
+        displayName: customName || user.displayName || (user.email ? user.email.split('@')[0] : 'User'),
+        email: user.email || '',
+        photoURL: user.photoURL || '',
+        role: isAdmin ? 'admin' : 'user',
+        brandName: customBrand || '',
+        brandUrl: customBrand ? `FlipPage.com/${customBrand.toLowerCase().replace(/\s+/g, '-')}` : '',
+        createdAt: trialStartDate,
+        trialDays: trialDays,
+        trialStartDate: trialStartDate,
+        trialEndDate: trialEndDate,
+        status: 'active',
+        lastLoginAt: trialStartDate
+      });
+    } else {
+      const updatePayload = { 
+        lastLoginAt: now.toISOString() 
+      };
+      if (user.photoURL) {
+        updatePayload.photoURL = user.photoURL;
+      }
+      if (customBrand) {
+        updatePayload.brandName = customBrand;
+        updatePayload.brandUrl = `FlipPage.com/${customBrand.toLowerCase().replace(/\s+/g, '-')}`;
+      }
+      await setDoc(userRef, updatePayload, { merge: true });
+    }
+  } catch (err) {
+    console.warn('Firestore trial sync notice:', err);
+  }
+}
+
+/**
+ * Show Customize Your URL / Brand Onboarding Screen
+ */
+async function presentBrandCustomizationStep(user) {
+  activeFirebaseUser = user;
+  
+  if (authFormWrapper) authFormWrapper.hidden = true;
+  if (signedInCard) signedInCard.hidden = true;
+  if (brandStep) brandStep.hidden = false;
+
+  const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+  if (brandUserName) brandUserName.textContent = displayName;
+  if (brandUserEmail) brandUserEmail.textContent = user.email || '';
+
+  const avatarBox = document.getElementById('brand-avatar-box');
+  if (avatarBox) {
+    if (user.photoURL) {
+      avatarBox.innerHTML = `<img src="${user.photoURL}" alt="${escapeHtml(displayName)}" class="brand-avatar-img" referrerpolicy="no-referrer">`;
+    } else {
+      avatarBox.textContent = (displayName.charAt(0) || 'U').toUpperCase();
+    }
+  }
+
+  // Check if existing brand is already set
+  try {
+    const userRef = doc(db, 'users', user.uid);
+    const snap = await getDoc(userRef);
+    if (snap.exists() && snap.data().brandName) {
+      if (brandNameInput) brandNameInput.value = snap.data().brandName;
+      if (saveBrandBtn) saveBrandBtn.textContent = 'Continue to Workspace';
+    }
+  } catch (_) {}
+}
+
+/**
+ * Dynamic button label on typing brand name
+ */
+if (brandNameInput && saveBrandBtn) {
+  brandNameInput.addEventListener('input', () => {
+    const val = brandNameInput.value.trim();
+    if (val.length > 0) {
+      saveBrandBtn.textContent = 'Continue & Start 14-Day Free Trial';
+    } else {
+      saveBrandBtn.textContent = 'Skip and Sign Up';
+    }
+  });
+}
+
+/**
+ * Save Brand Name & Enter Workspace
+ */
+if (saveBrandBtn) {
+  saveBrandBtn.addEventListener('click', async () => {
+    if (!activeFirebaseUser) {
+      window.location.href = 'Workspace.html';
+      return;
+    }
+
+    const brand = brandNameInput ? brandNameInput.value.trim() : '';
+    saveBrandBtn.disabled = true;
+    saveBrandBtn.textContent = 'Starting 14-day trial...';
+
+    await syncUserTrialRecord(activeFirebaseUser, activeFirebaseUser.displayName, brand);
+
+    if (brandFormStatus) {
+      brandFormStatus.textContent = '14-Day Free Trial Activated! Launching Workspace...';
+    }
+
+    setTimeout(() => {
+      window.location.href = 'Workspace.html';
+    }, 600);
+  });
+}
+
+/**
+ * Brand step log out button
+ */
+if (brandLogoutLink) {
+  brandLogoutLink.addEventListener('click', async (e) => {
+    e.preventDefault();
+    await signOut(auth);
+    if (brandStep) brandStep.hidden = true;
+    if (authFormWrapper) authFormWrapper.hidden = false;
+  });
+}
+
+/**
  * Handle Form Submit (Sign In or Sign Up)
  */
 form.addEventListener('submit', async (event) => {
@@ -240,20 +347,14 @@ form.addEventListener('submit', async (event) => {
 
       // Provision 14-day trial in Firestore
       await syncUserTrialRecord(user, fullName);
+      await presentBrandCustomizationStep(user);
 
-      showStatus('Account created successfully! Redirecting to Workspace...', false);
-      setTimeout(() => {
-        window.location.href = 'Workspace.html';
-      }, 700);
     } else {
       // Sign In with Firebase Auth
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      await syncUserTrialRecord(userCredential.user);
-
-      showStatus('Signed in successfully! Redirecting to Workspace...', false);
-      setTimeout(() => {
-        window.location.href = 'Workspace.html';
-      }, 700);
+      const user = userCredential.user;
+      await syncUserTrialRecord(user);
+      await presentBrandCustomizationStep(user);
     }
   } catch (error) {
     console.error('Firebase Auth Error:', error);
@@ -278,11 +379,8 @@ if (googleAuthBtn) {
       
       // Provision/sync 14-day trial in Firestore
       await syncUserTrialRecord(user);
+      await presentBrandCustomizationStep(user);
 
-      showStatus(`Welcome, ${user.displayName || user.email}! Redirecting to Workspace...`, false);
-      setTimeout(() => {
-        window.location.href = 'Workspace.html';
-      }, 700);
     } catch (error) {
       console.error('Google Sign-In Error:', error);
       showStatus(parseAuthError(error), true);
@@ -336,7 +434,7 @@ if (signoutButton) {
  */
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    // User is logged in
+    activeFirebaseUser = user;
     if (authFormWrapper) authFormWrapper.hidden = true;
     if (signedInCard) signedInCard.hidden = false;
 
@@ -345,12 +443,19 @@ onAuthStateChanged(auth, (user) => {
     if (userDisplayEmail) userDisplayEmail.textContent = user.email || '';
 
     if (userAvatarInitial) {
-      const initial = (displayName.charAt(0) || 'U').toUpperCase();
-      userAvatarInitial.textContent = initial;
+      if (user.photoURL) {
+        userAvatarInitial.innerHTML = `<img src="${user.photoURL}" alt="${escapeHtml(displayName)}" class="user-avatar-img" referrerpolicy="no-referrer">`;
+        userAvatarInitial.style.padding = '0';
+        userAvatarInitial.style.overflow = 'hidden';
+      } else {
+        const initial = (displayName.charAt(0) || 'U').toUpperCase();
+        userAvatarInitial.textContent = initial;
+      }
     }
   } else {
-    // User is logged out
+    activeFirebaseUser = null;
     if (authFormWrapper) authFormWrapper.hidden = false;
     if (signedInCard) signedInCard.hidden = true;
+    if (brandStep) brandStep.hidden = true;
   }
 });

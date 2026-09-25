@@ -58,6 +58,42 @@
             </div>
           </div>
 
+          <!-- Brand / URL Customization Step (Matches Screenshot) -->
+          <div id="brand-onboarding-step" hidden>
+            <div class="account-heading" style="text-align: center; margin-bottom: 24px;">
+              <h2 style="font-size: 1.8rem; font-weight: 800; color: #111827; letter-spacing: -0.03em; margin: 0 0 4px;">Customize Your URL</h2>
+            </div>
+
+            <!-- User Account Card -->
+            <div class="brand-user-card">
+              <div class="brand-avatar-box" id="brand-avatar-box">🌸</div>
+              <div class="brand-user-meta">
+                <strong class="brand-user-name" id="brand-user-name">User Name</strong>
+                <span class="brand-user-email" id="brand-user-email">user@gmail.com</span>
+              </div>
+            </div>
+
+            <div class="brand-switch-row">
+              <span>Want to change account?</span>
+              <button type="button" class="text-button" id="brand-logout-link" style="color: #2563EB; font-weight: 600; text-decoration: none;">Log out</button>
+            </div>
+
+            <!-- Brand Name & Custom URL input -->
+            <div class="brand-input-section">
+              <label class="brand-field-label" for="brand-name-input">
+                <strong>Brand URL</strong> <span style="color: #9CA3AF; font-weight: 400;">(optional)</span>
+              </label>
+
+              <div class="brand-url-field-box">
+                <span class="brand-prefix-tag">FlipPage.com /</span>
+                <input type="text" id="brand-name-input" class="brand-url-input" placeholder="your brand name" autocomplete="organization">
+              </div>
+            </div>
+
+            <button class="primary-button" id="save-brand-btn" type="button" style="background: #111827; border-radius: 10px; margin-top: 24px; padding: 14px; font-weight: 700;">Skip and Sign Up</button>
+            <p class="form-status" id="brand-form-status" role="status" aria-live="polite"></p>
+          </div>
+
           <!-- Auth Form Wrapper -->
           <div id="auth-form-wrapper">
             <div class="account-heading">
