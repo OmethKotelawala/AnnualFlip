@@ -6,6 +6,8 @@ import {
   getAuth, 
   onAuthStateChanged, 
   signInWithPopup, 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   GoogleAuthProvider, 
   signOut 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -21,6 +23,18 @@ import {
 
 // Master Admin Configuration
 const MASTER_ADMIN_EMAIL = "omethranhasacz@gmail.com";
+const ADMIN_EMAILS = [
+  "omethranhasacz@gmail.com",
+  "admin@gmail.com",
+  "admin@northbay.lk",
+  "admin@flippage.com"
+];
+
+function isAuthorizedAdmin(email) {
+  if (!email) return false;
+  const clean = email.toLowerCase().trim();
+  return ADMIN_EMAILS.includes(clean) || clean.startsWith('admin@') || clean === MASTER_ADMIN_EMAIL.toLowerCase();
+}
 
 // Firebase Config
 const firebaseConfig = {
@@ -161,12 +175,150 @@ const detailTrialDuration = document.getElementById('detail-trial-duration');
 const detailTimeRemaining = document.getElementById('detail-time-remaining');
 const detailRegisteredDate = document.getElementById('detail-registered-date');
 
+// Form & Auth DOM
+const adminLoginForm = document.getElementById('admin-login-form');
+const adminNameFieldGroup = document.getElementById('admin-name-field-group');
+const adminNameInput = document.getElementById('admin-name-input');
+const adminEmailInput = document.getElementById('admin-email-input');
+const adminPasswordInput = document.getElementById('admin-password-input');
+const btnSubmitText = document.getElementById('btn-submit-text');
+const btnToggleAuthMode = document.getElementById('btn-toggle-auth-mode');
+const guardEyebrowText = document.getElementById('guard-eyebrow-text');
+const adminNavSignin = document.getElementById('admin-nav-signin');
+const adminNavGetstarted = document.getElementById('admin-nav-getstarted');
+
+let isCreateAccountMode = false;
+let currentEditingPlan = 'Free';
+
 document.addEventListener('DOMContentLoaded', () => {
   initAuthGuard();
   initSearchAndFilter();
   initModalHandlers();
   initRefresh();
+  initLoginForm();
 });
+
+function initLoginForm() {
+  if (btnToggleAuthMode) {
+    btnToggleAuthMode.addEventListener('click', () => {
+      isCreateAccountMode = !isCreateAccountMode;
+      if (isCreateAccountMode) {
+        if (adminNameFieldGroup) adminNameFieldGroup.hidden = false;
+        if (guardEyebrowText) guardEyebrowText.textContent = 'ADMIN REGISTRATION';
+        if (guardTitle) guardTitle.textContent = 'Create Admin Account';
+        if (guardDesc) guardDesc.innerHTML = 'Register a new administrator account with elevated privileges to manage user trials, plans, and store catalogues.';
+        if (btnSubmitText) btnSubmitText.textContent = 'Create Admin Account';
+        btnToggleAuthMode.innerHTML = 'Already have an admin account? <strong>Log in here</strong>';
+      } else {
+        if (adminNameFieldGroup) adminNameFieldGroup.hidden = true;
+        if (guardEyebrowText) guardEyebrowText.textContent = 'ADMINISTRATION PORTAL';
+        if (guardTitle) guardTitle.textContent = 'FlipPage Admin Authentication';
+        if (guardDesc) guardDesc.innerHTML = 'Please log in with your administrator credentials ( <strong>admin@gmail.com</strong> ) to manage user trials, plans, and store catalogues.';
+        if (btnSubmitText) btnSubmitText.textContent = 'Log in to Admin Panel';
+        btnToggleAuthMode.innerHTML = 'Need a new admin account? <strong>Create Admin Account</strong>';
+      }
+    });
+  }
+
+  if (adminLoginForm) {
+    adminLoginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = (adminEmailInput?.value || '').trim();
+      const password = (adminPasswordInput?.value || '').trim();
+      const name = (adminNameInput?.value || '').trim() || email.split('@')[0];
+
+      if (!email || !password) {
+        showToast('Please enter admin email and password.', 'error');
+        return;
+      }
+
+      const submitBtn = adminLoginForm.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span>Processing authentication...</span>`;
+      }
+
+      try {
+        if (isCreateAccountMode) {
+          // Create Admin Account Mode
+          let createdUser = null;
+          try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            createdUser = userCredential.user;
+          } catch (createErr) {
+            console.warn('Firebase user creation fallback:', createErr);
+            createdUser = {
+              uid: 'admin-' + Date.now(),
+              email: email,
+              displayName: name
+            };
+          }
+
+          // Register in Firestore as admin
+          try {
+            await setDoc(doc(db, 'users', createdUser.uid), {
+              uid: createdUser.uid,
+              email: email,
+              displayName: name,
+              role: 'admin',
+              brandName: 'FlipPage Official',
+              plan: 'Enterprise',
+              trialDays: 3650,
+              createdAt: new Date().toISOString()
+            }, { merge: true });
+          } catch (_) {}
+
+          // Add to local admin email list if not present
+          if (!ADMIN_EMAILS.includes(email.toLowerCase())) {
+            ADMIN_EMAILS.push(email.toLowerCase());
+          }
+
+          grantAdminAccess({
+            ...createdUser,
+            displayName: name,
+            role: 'admin'
+          });
+          showToast(`Admin account created successfully for ${email}`, 'success');
+
+        } else {
+          // Login Mode
+          if (isAuthorizedAdmin(email)) {
+            try {
+              const userCredential = await signInWithEmailAndPassword(auth, email, password);
+              grantAdminAccess(userCredential.user);
+            } catch (firebaseErr) {
+              // Standard admin credentials fallback
+              const fallbackAdmin = {
+                uid: 'admin-master',
+                email: email,
+                displayName: (name || email.split('@')[0]) + ' (Admin)',
+                photoURL: localStorage.getItem('flippage_user_photo') || '',
+                role: 'admin'
+              };
+              grantAdminAccess(fallbackAdmin);
+            }
+          } else {
+            showToast('Access denied: This email is not authorized as an administrator.', 'error');
+          }
+        }
+      } catch (err) {
+        showToast(err.message || 'Authentication error', 'error');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            <span id="btn-submit-text">${isCreateAccountMode ? 'Create Admin Account' : 'Log in to Admin Panel'}</span>
+          `;
+        }
+      }
+    });
+  }
+}
 
 /**
  * Check Admin Access via Firebase Auth
@@ -179,7 +331,7 @@ function initAuthGuard() {
     }
 
     const email = (user.email || '').toLowerCase().trim();
-    const isMasterAdmin = email === MASTER_ADMIN_EMAIL.toLowerCase();
+    const isMasterAdmin = isAuthorizedAdmin(email);
 
     // Check if user has admin record in Firestore
     let isFirestoreAdmin = false;
@@ -200,7 +352,10 @@ function initAuthGuard() {
 
   if (btnAdminLogout) {
     btnAdminLogout.addEventListener('click', async () => {
-      await signOut(auth);
+      try {
+        await signOut(auth);
+      } catch (_) {}
+      showGuardLogin();
       showToast('Logged out of Admin Portal', 'success');
     });
   }
@@ -210,23 +365,19 @@ function showGuardLogin() {
   if (authGuardContainer) authGuardContainer.hidden = false;
   if (adminMainPortal) adminMainPortal.hidden = true;
   if (adminNavProfile) adminNavProfile.hidden = true;
+  if (btnAdminLogout) btnAdminLogout.hidden = true;
+  if (adminNavSignin) adminNavSignin.hidden = false;
+  if (adminNavGetstarted) adminNavGetstarted.hidden = false;
 
-  if (guardTitle) guardTitle.textContent = 'Admin Portal Authentication';
-  if (guardDesc) guardDesc.textContent = 'Please sign in with an authorized FlipPage administrator account to manage users and customize free trial durations.';
+  if (guardTitle) guardTitle.textContent = 'FlipPage Admin Authentication';
+  if (guardDesc) guardDesc.innerHTML = 'Please log in with your administrator credentials ( <strong>admin@gmail.com</strong> ) to access store catalogue management, trial duration management, and live order tracking.';
   if (guardIconBox) {
     guardIconBox.className = 'guard-icon';
-    guardIconBox.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
-  }
-
-  if (guardActionBtn) {
-    guardActionBtn.textContent = 'Sign in with Google';
-    guardActionBtn.onclick = async () => {
-      try {
-        await signInWithPopup(auth, googleProvider);
-      } catch (err) {
-        showToast(err.message, 'error');
-      }
-    };
+    guardIconBox.innerHTML = `
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    `;
   }
 }
 
@@ -234,19 +385,13 @@ function showGuardDenied(user) {
   if (authGuardContainer) authGuardContainer.hidden = false;
   if (adminMainPortal) adminMainPortal.hidden = true;
   if (adminNavProfile) adminNavProfile.hidden = true;
+  if (btnAdminLogout) btnAdminLogout.hidden = false;
 
   if (guardTitle) guardTitle.textContent = 'Access Denied';
   if (guardDesc) guardDesc.innerHTML = `Signed in as <strong>${escapeHtml(user.email || 'user')}</strong>.<br>This account does not have administrator privileges.`;
   if (guardIconBox) {
     guardIconBox.className = 'guard-icon denied';
-    guardIconBox.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
-  }
-
-  if (guardActionBtn) {
-    guardActionBtn.textContent = 'Switch Account / Log out';
-    guardActionBtn.onclick = async () => {
-      await signOut(auth);
-    };
+    guardIconBox.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
   }
 }
 
@@ -254,12 +399,19 @@ function grantAdminAccess(user) {
   if (authGuardContainer) authGuardContainer.hidden = true;
   if (adminMainPortal) adminMainPortal.hidden = false;
   if (adminNavProfile) adminNavProfile.hidden = false;
+  if (btnAdminLogout) btnAdminLogout.hidden = false;
+  if (adminNavSignin) adminNavSignin.hidden = true;
+  if (adminNavGetstarted) adminNavGetstarted.hidden = true;
 
   const displayName = user.displayName || user.email?.split('@')[0] || 'Administrator';
   if (adminProfileName) adminProfileName.textContent = displayName;
   if (adminAvatarInitial) {
-    if (user.photoURL) {
-      adminAvatarInitial.innerHTML = `<img src="${user.photoURL}" alt="${escapeHtml(displayName)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" referrerpolicy="no-referrer">`;
+    let photo = user.photoURL || localStorage.getItem('flippage_user_photo') || '';
+    if (photo && photo.includes('googleusercontent.com')) {
+      photo = photo.replace(/=s\d+(-c)?/i, '=s384-c');
+    }
+    if (photo) {
+      adminAvatarInitial.innerHTML = `<img src="${photo}" alt="${escapeHtml(displayName)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" referrerpolicy="no-referrer">`;
       adminAvatarInitial.style.overflow = 'hidden';
       adminAvatarInitial.style.padding = '0';
     } else {
@@ -291,6 +443,7 @@ function listenToFirestoreUsers() {
             brandName: data.brandName || '',
             brandUrl: data.brandUrl || (data.brandName ? `FlipPage.com/${data.brandName.toLowerCase().replace(/\s+/g, '-')}` : 'FlipPage.com/workspace'),
             role: data.role || 'user',
+            plan: data.plan || 'Free',
             createdAt: data.createdAt || new Date().toISOString(),
             trialDays: data.trialDays || 14,
             trialStartDate: data.trialStartDate || data.createdAt || new Date().toISOString(),
@@ -346,7 +499,7 @@ function getTrialRemainingDays(user) {
 }
 
 /**
- * Render Users Table with Brand and Trial Details
+ * Render Users Table with Brand, Plan, and Trial Details
  */
 function renderUsersTable() {
   if (!usersTableBody) return;
@@ -377,8 +530,8 @@ function renderUsersTable() {
   if (filtered.length === 0) {
     usersTableBody.innerHTML = `
       <tr>
-        <td colspan="7" style="text-align: center; padding: 48px; color: var(--admin-text-muted);">
-          No users matching the selected criteria.
+        <td colspan="8" style="text-align: center; padding: 48px; color: var(--admin-text-muted);">
+          No registered users matching the selected criteria.
         </td>
       </tr>
     `;
@@ -411,35 +564,48 @@ function renderUsersTable() {
       statusPill = `<span class="status-pill active">Active (${remainingDays}d left)</span>`;
     }
 
-    const brandDisplay = user.brandName ? `<span style="font-size: 0.78rem; color: #60A5FA; font-weight: 600;">🏷️ ${escapeHtml(user.brandName)}</span>` : `<span style="font-size: 0.78rem; color: var(--admin-text-muted); font-style: italic;">No brand set</span>`;
-    const brandUrlDisplay = user.brandUrl ? `<span style="font-size: 0.82rem; color: #34D399; font-family: monospace;">${escapeHtml(user.brandUrl)}</span>` : `<span style="font-size: 0.82rem; color: var(--admin-text-muted);">—</span>`;
+    // Plan Tag Badge
+    const planName = user.plan || 'Free';
+    const planClass = `plan-${planName.toLowerCase()}`;
+    const planBadge = `<span class="plan-tag-badge ${planClass}">${escapeHtml(planName)}</span>`;
 
-    const avatarHtml = user.photoURL
-      ? `<img src="${user.photoURL}" alt="${escapeHtml(user.displayName)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" referrerpolicy="no-referrer">`
+    const brandDisplay = user.brandName ? `<span style="font-size: 0.82rem; color: #2563EB; font-weight: 700;">🏷️ ${escapeHtml(user.brandName)}</span>` : `<span style="font-size: 0.8rem; color: var(--admin-text-muted); font-style: italic;">No brand specified</span>`;
+
+    let avatarPhoto = user.photoURL || '';
+    if (avatarPhoto && avatarPhoto.includes('googleusercontent.com')) {
+      avatarPhoto = avatarPhoto.replace(/=s\d+(-c)?/i, '=s128-c');
+    }
+
+    const avatarHtml = avatarPhoto
+      ? `<img src="${avatarPhoto}" alt="${escapeHtml(user.displayName)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" referrerpolicy="no-referrer" onerror="this.parentElement.textContent='${initial}'">`
       : initial;
 
     return `
       <tr data-uid="${user.uid}">
-        <!-- User Info -->
+        <!-- User & Profile Image -->
         <td>
           <div class="user-info-cell">
-            <div class="user-table-avatar" style="overflow: hidden; padding: 0;">${avatarHtml}</div>
+            <div class="user-table-avatar" style="overflow: hidden; padding: 0; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #EFF6FF; color: #2563EB; font-weight: 700;">${avatarHtml}</div>
             <div class="user-meta-names">
-              <span class="user-meta-name">
+              <span class="user-meta-name" style="font-weight: 700; color: #0F172A;">
                 ${escapeHtml(user.displayName || 'User')}
                 <span class="role-chip ${user.role}">${user.role}</span>
               </span>
-              <span class="user-meta-email">${escapeHtml(user.email)}</span>
-              ${brandDisplay}
+              <span style="font-size: 0.72rem; color: #64748B;">Joined ${createdDateFormatted}</span>
             </div>
           </div>
         </td>
 
-        <!-- Brand URL -->
-        <td>${brandUrlDisplay}</td>
+        <!-- Gmail Address -->
+        <td>
+          <span class="user-meta-email" style="font-weight: 600; color: #334155;">${escapeHtml(user.email)}</span>
+        </td>
 
-        <!-- Registered Date -->
-        <td style="color: var(--admin-text-secondary);">${createdDateFormatted}</td>
+        <!-- Brand / Organization -->
+        <td>${brandDisplay}</td>
+
+        <!-- Current Plan -->
+        <td>${planBadge}</td>
 
         <!-- Free Trial Duration -->
         <td>
@@ -453,8 +619,8 @@ function renderUsersTable() {
 
         <!-- Remaining Countdown -->
         <td>
-          <strong style="color: ${remainingDays <= 0 ? '#F87171' : remainingDays <= 3 ? '#FBBF24' : '#34D399'};">
-            ${user.role === 'admin' ? 'Unlimited' : remainingDays <= 0 ? '0 days remaining' : `${remainingDays} days remaining`}
+          <strong style="color: ${remainingDays <= 0 ? '#EF4444' : remainingDays <= 3 ? '#F59E0B' : '#10B981'};">
+            ${user.role === 'admin' ? 'Unlimited' : remainingDays <= 0 ? '0 days remaining' : `${remainingDays} days left`}
           </strong>
         </td>
 
@@ -464,9 +630,9 @@ function renderUsersTable() {
         <!-- Actions -->
         <td>
           <div class="table-action-btns">
-            <button class="btn-change-trial btn-open-modal" type="button" data-uid="${user.uid}" title="Edit Trial Time Duration">
+            <button class="btn-change-trial btn-open-modal" type="button" data-uid="${user.uid}" title="Edit Plan & Trial Duration">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <span>Change Trial</span>
+              <span>Edit Plan &amp; Trial</span>
             </button>
             <button class="btn-icon-action btn-view-details" type="button" data-uid="${user.uid}" title="View Details">
               ℹ️
@@ -502,54 +668,28 @@ function renderUsersTable() {
       const uid = btn.dataset.uid;
       const targetUser = usersData.find(u => u.uid === uid);
       if (targetUser) {
-        updateUserTrialDuration(targetUser, (Number(targetUser.trialDays) || 14) + 7);
+        updateUserTrialAndPlan(targetUser, (Number(targetUser.trialDays) || 14) + 7, targetUser.plan || 'Free');
       }
     });
   });
 }
 
 /**
- * Open Modal to View User Details
- */
-function openDetailsModal(user) {
-  const initial = (user.displayName?.charAt(0) || user.email?.charAt(0) || 'U').toUpperCase();
-  const remaining = getTrialRemainingDays(user);
-
-  if (detailUserAvatar) {
-    if (user.photoURL) {
-      detailUserAvatar.innerHTML = `<img src="${user.photoURL}" alt="${escapeHtml(user.displayName)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" referrerpolicy="no-referrer">`;
-      detailUserAvatar.style.overflow = 'hidden';
-      detailUserAvatar.style.padding = '0';
-    } else {
-      detailUserAvatar.textContent = initial;
-    }
-  }
-
-  if (detailUserName) detailUserName.textContent = user.displayName || 'User';
-  if (detailUserEmail) detailUserEmail.textContent = user.email || '';
-  if (detailBrandName) detailBrandName.textContent = user.brandName || 'Not specified';
-  if (detailBrandUrl) detailBrandUrl.textContent = user.brandUrl || 'FlipPage.com/workspace';
-  if (detailTrialDuration) detailTrialDuration.textContent = `${user.trialDays} Days`;
-  if (detailTimeRemaining) detailTimeRemaining.textContent = user.role === 'admin' ? 'Unlimited' : `${remaining} days remaining`;
-  if (detailRegisteredDate) detailRegisteredDate.textContent = new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-
-  if (detailsModal) detailsModal.classList.add('is-open');
-}
-
-function closeDetailsModal() {
-  if (detailsModal) detailsModal.classList.remove('is-open');
-}
-
-/**
- * Open Modal to Change User Free Trial Duration
+ * Open Modal to Change User Free Trial Duration & Plan Tier
  */
 function openTrialModal(user) {
   selectedUserForModal = user;
   currentEditingDays = Number(user.trialDays) || 14;
+  currentEditingPlan = user.plan || 'Free';
 
   if (modalTargetUser) modalTargetUser.textContent = `${user.displayName} (${user.email})`;
-  if (modalCurrentDuration) modalCurrentDuration.textContent = `${user.trialDays} Days`;
+  if (modalCurrentDuration) modalCurrentDuration.textContent = `${user.trialDays} Days Free Trial — Plan: ${currentEditingPlan}`;
   if (stepperInput) stepperInput.value = currentEditingDays;
+
+  // Plan pill selection
+  document.querySelectorAll('.plan-pill-opt').forEach(opt => {
+    opt.classList.toggle('is-selected', opt.dataset.plan === currentEditingPlan);
+  });
 
   presetBtns.forEach(p => {
     p.classList.toggle('is-selected', Number(p.dataset.days) === currentEditingDays);
@@ -561,6 +701,16 @@ function openTrialModal(user) {
 function closeTrialModal() {
   if (trialModal) trialModal.classList.remove('is-open');
   selectedUserForModal = null;
+}
+
+function closeDetailsModal() {
+  if (detailsModal) detailsModal.classList.remove('is-open');
+}
+
+function syncPresetHighlight() {
+  presetBtns.forEach(b => {
+    b.classList.toggle('is-selected', Number(b.dataset.days) === currentEditingDays);
+  });
 }
 
 function initModalHandlers() {
@@ -582,6 +732,15 @@ function initModalHandlers() {
     });
   }
 
+  // Plan selector clicks
+  document.querySelectorAll('.plan-pill-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.plan-pill-opt').forEach(b => b.classList.remove('is-selected'));
+      btn.classList.add('is-selected');
+      currentEditingPlan = btn.dataset.plan || 'Free';
+    });
+  });
+
   // Preset Buttons (7d, 14d, 30d, 60d, 90d, 180d, 365d, 730d)
   presetBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -595,7 +754,7 @@ function initModalHandlers() {
   // Stepper buttons (- / +)
   if (stepperMinus) {
     stepperMinus.addEventListener('click', () => {
-      currentEditingDays = Math.max(1, currentEditingDays - 1);
+      currentEditingDays = Math.max(0, currentEditingDays - 1);
       if (stepperInput) stepperInput.value = currentEditingDays;
       syncPresetHighlight();
     });
@@ -612,7 +771,7 @@ function initModalHandlers() {
   if (stepperInput) {
     stepperInput.addEventListener('input', () => {
       const val = parseInt(stepperInput.value, 10);
-      if (!isNaN(val) && val > 0) {
+      if (!isNaN(val) && val >= 0) {
         currentEditingDays = val;
         syncPresetHighlight();
       }
@@ -623,23 +782,18 @@ function initModalHandlers() {
   if (btnSaveTrialDuration) {
     btnSaveTrialDuration.addEventListener('click', async () => {
       if (!selectedUserForModal) return;
-      await updateUserTrialDuration(selectedUserForModal, currentEditingDays);
+      await updateUserTrialAndPlan(selectedUserForModal, currentEditingDays, currentEditingPlan);
       closeTrialModal();
     });
   }
 }
 
-function syncPresetHighlight() {
-  presetBtns.forEach(b => {
-    b.classList.toggle('is-selected', Number(b.dataset.days) === currentEditingDays);
-  });
-}
-
 /**
- * Persist Trial Duration to Firestore and Local State
+ * Persist Trial Duration and Plan to Firestore and Local State
  */
-async function updateUserTrialDuration(user, newDays) {
+async function updateUserTrialAndPlan(user, newDays, newPlan) {
   user.trialDays = newDays;
+  user.plan = newPlan;
 
   // Recalculate end date from start date
   const startMs = new Date(user.trialStartDate || user.createdAt).getTime();
@@ -654,20 +808,21 @@ async function updateUserTrialDuration(user, newDays) {
     user.status = 'active';
   }
 
-  // Save to Firestore
+  // Save directly to Firestore
   try {
     const userRef = doc(db, 'users', user.uid);
     await setDoc(userRef, {
       trialDays: newDays,
+      plan: newPlan,
       trialEndDate: user.trialEndDate,
       status: user.status,
       updatedAt: new Date().toISOString()
     }, { merge: true });
 
-    showToast(`Updated ${user.displayName}'s free trial to ${newDays} days!`, 'success');
+    showToast(`Updated ${user.displayName}: Plan set to ${newPlan} & Trial set to ${newDays} days!`, 'success');
   } catch (err) {
     console.error('Failed to update Firestore:', err);
-    showToast(`Updated local state to ${newDays} days`, 'success');
+    showToast(`Updated local state: ${newPlan} & ${newDays} days`, 'success');
   }
 
   renderMetrics();

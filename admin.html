@@ -23,7 +23,7 @@
     <div class="cyber-bg-glow"></div>
   </div>
 
-  <!-- ===== NAVBAR ===== -->
+  <!-- ===== NAVBAR (Exact match from index.html) ===== -->
   <nav id="navbar" role="navigation" aria-label="Main navigation">
     <div class="wrap">
       <div class="nav-inner">
@@ -38,27 +38,134 @@
 
         <!-- Nav links -->
         <ul class="nav-links" id="nav-links" role="list">
+
+          <!-- Products simple link -->
           <li class="nav-item">
-            <a href="admin.html" class="nav-link" aria-current="page" style="color: #2563EB; font-weight: 700;"><span>Admin Trials</span></a>
+            <a href="index.html#fast-work" class="nav-link">
+              <span>Products</span>
+            </a>
           </li>
+
+          <!-- Platform with Mega Dropdown -->
+          <li class="nav-item nav-item-dropdown">
+            <button class="nav-link nav-link-btn" aria-expanded="false" id="platform-dropdown-btn" type="button">
+              <span>Platform</span>
+              <svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+
+            <!-- Mega Dropdown Menu -->
+            <div class="mega-dropdown" id="platform-menu" role="region" aria-label="Platform menu">
+
+              <!-- Dropdown header -->
+              <div class="mega-header">
+                <span class="mega-header-tag">Platform</span>
+                <p class="mega-header-sub">Everything you need to publish beautiful, interactive documents.</p>
+              </div>
+
+              <div class="mega-dropdown-inner">
+
+                <!-- Col 1: How it works -->
+                <div class="mega-col">
+                  <span class="mega-category">HOW IT WORKS</span>
+
+                  <a href="index.html#fast-work" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">Interactive 3D Engine</strong>
+                      <span class="mega-desc">Realistic physics, page curls, shadows &amp; dual-page spreads.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+
+                  <a href="index.html#solutions" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2"/>
+                        <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5"/>
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">Touch &amp; Mobile Ready</strong>
+                      <span class="mega-desc">Fluid gesture swipe, pinch-zoom and responsive layout.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+                </div>
+
+                <!-- Col 2: Trust & Privacy -->
+                <div class="mega-col">
+                  <span class="mega-category">PRIVACY &amp; SPEED</span>
+
+                  <a href="index.html#solutions" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">100% Client-Side Privacy</strong>
+                      <span class="mega-desc">Your PDFs never leave your browser — zero cloud storage.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+
+                  <a href="index.html#solutions" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">Instant Rendering</strong>
+                      <span class="mega-desc">Hardware-accelerated PDF rendering with crisp vector typography.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+                </div>
+
+                <!-- Col 3: CTA card -->
+                <div class="mega-col mega-col-cta">
+                  <div class="mega-cta-card">
+                    <div class="mega-cta-icon" aria-hidden="true">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    </div>
+                    <strong class="mega-cta-title">Try it free</strong>
+                    <p class="mega-cta-desc">No account needed. Drop in any PDF and watch it flip.</p>
+                    <a href="index.html#fast-work" class="mega-cta-btn">Open demo →</a>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </li>
+
+          <!-- Solutions link -->
           <li class="nav-item">
-            <a href="Workspace.html" class="nav-link"><span>Workspace</span></a>
+            <a href="index.html#solutions" class="nav-link"><span>Solutions</span></a>
           </li>
+
+          <!-- Pricing link -->
           <li class="nav-item">
             <a href="pricing.html" class="nav-link"><span>Pricing</span></a>
           </li>
+
+          <!-- Workspace link -->
           <li class="nav-item">
-            <a href="index.html" class="nav-link"><span>Main Site</span></a>
+            <a href="Workspace.html" class="nav-link"><span>Workspace</span></a>
           </li>
+
         </ul>
 
         <!-- Right-side Admin Profile -->
         <div class="nav-cta" id="admin-header-nav-right">
-          <div class="admin-profile-chip" id="admin-nav-profile" hidden>
-            <div class="admin-avatar" id="admin-avatar-initial">A</div>
-            <span class="admin-profile-name" id="admin-profile-name">Administrator</span>
-          </div>
-          <button class="btn-admin-logout" id="btn-admin-logout" type="button">Log out</button>
+          <button class="btn-admin-logout" id="btn-admin-logout" type="button" hidden>Log out</button>
+          <a class="nav-signin" href="account.html" id="admin-nav-signin">Sign in</a>
+          <a class="nav-getstarted" href="index.html#fast-work" id="admin-nav-getstarted">Get started</a>
         </div>
 
         <!-- Mobile hamburger -->
@@ -72,15 +179,65 @@
     </div>
   </nav>
 
-  <!-- ===== AUTH GUARD / ACCESS DENIED SCREEN ===== -->
+  <!-- ===== AUTH GUARD / ACCESS SCREEN (Matches Reference Image) ===== -->
   <div class="admin-auth-guard" id="auth-guard-container">
     <div class="guard-card">
+      
+      <!-- Top Shield Icon Pill -->
       <div class="guard-icon" id="guard-icon-box">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
       </div>
-      <h2 class="guard-title" id="guard-title">Admin Portal Authentication</h2>
-      <p class="guard-desc" id="guard-desc">Please sign in with an authorized FlipPage administrator account to view registered users and customize free trial durations.</p>
-      <button class="guard-btn-action" id="guard-action-btn" type="button">Sign in with Google</button>
+
+      <div class="guard-eyebrow" id="guard-eyebrow-text">ADMINISTRATION PORTAL</div>
+      <h2 class="guard-title" id="guard-title">FlipPage Admin Authentication</h2>
+      <p class="guard-desc" id="guard-desc">
+        Please log in or create your administrator credentials ( <strong>admin@gmail.com</strong> ) to manage user trials, plans, and store catalogues.
+      </p>
+
+      <!-- Admin Auth Form (Login & Create Account) -->
+      <form id="admin-login-form" class="guard-form-wrap">
+        
+        <!-- Name Field (Visible during Create Admin Account mode) -->
+        <div class="guard-field-group" id="admin-name-field-group" hidden>
+          <label for="admin-name-input" class="guard-field-label">ADMIN FULL NAME</label>
+          <input type="text" id="admin-name-input" class="guard-input" placeholder="Ometh Ranhasa">
+        </div>
+
+        <div class="guard-field-group">
+          <label for="admin-email-input" class="guard-field-label">ADMIN EMAIL ADDRESS</label>
+          <input type="email" id="admin-email-input" class="guard-input" placeholder="admin@gmail.com" value="admin@gmail.com" required autocomplete="email">
+        </div>
+
+        <div class="guard-field-group">
+          <label for="admin-password-input" class="guard-field-label">ADMIN PASSWORD</label>
+          <input type="password" id="admin-password-input" class="guard-input" placeholder="Enter admin password" value="admin123" required autocomplete="current-password">
+        </div>
+
+        <button class="guard-btn-action" id="guard-action-btn" type="submit">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          <span id="btn-submit-text">Log in to Admin Panel</span>
+        </button>
+      </form>
+
+      <!-- Toggle between Login and Create Admin Account -->
+      <div class="admin-auth-toggle-box">
+        <button type="button" class="btn-toggle-auth-mode" id="btn-toggle-auth-mode">
+          Need a new admin account? <strong>Create Admin Account</strong>
+        </button>
+      </div>
+
+      <div class="guard-divider"></div>
+
+      <a href="index.html" class="guard-return-link">
+        <span>← Return to Store Front</span>
+      </a>
+
     </div>
   </div>
 
@@ -173,10 +330,11 @@
         <table class="admin-users-table">
           <thead>
             <tr>
-              <th>User &amp; Brand</th>
-              <th>Brand URL</th>
-              <th>Registered</th>
-              <th>Trial Duration</th>
+              <th>User &amp; Profile</th>
+              <th>Gmail Address</th>
+              <th>Brand / Organization</th>
+              <th>Current Plan</th>
+              <th>Free Trial Duration</th>
               <th>Time Remaining</th>
               <th>Status</th>
               <th>Actions</th>
@@ -192,25 +350,36 @@
 
   </main>
 
-  <!-- ===== CHANGE TRIAL DURATION MODAL ===== -->
+  <!-- ===== CHANGE PLAN & TRIAL DURATION MODAL ===== -->
   <div class="modal-overlay" id="trial-duration-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-content-card">
       
       <div class="modal-header-row">
-        <h3 id="modal-title">Adjust Free Trial Duration</h3>
+        <h3 id="modal-title">Adjust User Plan &amp; Free Trial</h3>
         <button class="btn-close-modal" id="btn-close-modal-x" type="button" aria-label="Close modal">✕</button>
       </div>
 
       <p style="color: var(--admin-text-secondary); font-size: 0.9rem; margin: 0 0 16px;">
-        Modifying trial duration for: <strong id="modal-target-user" style="color: #FFFFFF;">User</strong>
+        Modifying account settings for: <strong id="modal-target-user" style="color: #0F172A;">User</strong>
       </p>
 
-      <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--admin-border); border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 0.85rem; color: var(--admin-text-secondary);">Current Setting:</span>
-        <strong id="modal-current-duration" style="color: #60A5FA; font-size: 1rem;">14 Days</strong>
+      <!-- Plan Tier Selector -->
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 0.76rem; font-weight: 800; color: #1E293B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Plan Tier</label>
+        <div class="plan-select-grid" id="modal-plan-selector">
+          <button type="button" class="plan-pill-opt is-selected" data-plan="Free">Free ($0)</button>
+          <button type="button" class="plan-pill-opt" data-plan="Starter">Starter ($15)</button>
+          <button type="button" class="plan-pill-opt" data-plan="Professional">Professional ($35)</button>
+          <button type="button" class="plan-pill-opt" data-plan="Enterprise">Enterprise ($99)</button>
+        </div>
       </div>
 
-      <label style="font-size: 0.84rem; font-weight: 700; color: var(--admin-text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Quick Presets</label>
+      <div style="background: #F8FAFC; border: 1px solid var(--admin-border); border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.85rem; color: var(--admin-text-secondary);">Current Setting:</span>
+        <strong id="modal-current-duration" style="color: #2563EB; font-size: 1rem;">14 Days Free Trial</strong>
+      </div>
+
+      <label style="font-size: 0.76rem; font-weight: 800; color: #1E293B; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">Quick Trial Presets</label>
       
       <!-- Preset Buttons -->
       <div class="preset-days-grid">
@@ -221,15 +390,15 @@
         <button class="preset-day-btn" data-days="90" type="button">90 Days</button>
         <button class="preset-day-btn" data-days="180" type="button">180 Days</button>
         <button class="preset-day-btn" data-days="365" type="button">1 Year</button>
-        <button class="preset-day-btn" data-days="730" type="button">2 Years</button>
+        <button class="preset-day-btn" data-days="730" type="button">Unlimited</button>
       </div>
 
       <!-- Custom Stepper Input -->
       <div class="custom-days-input-wrap">
-        <label for="custom-days-input">Custom Duration (in Days)</label>
+        <label for="custom-days-input">Custom Free Trial Days</label>
         <div class="days-stepper">
           <button class="stepper-btn" id="stepper-minus" type="button">−</button>
-          <input type="number" id="custom-days-input" class="stepper-input" min="1" max="3650" value="14">
+          <input type="number" id="custom-days-input" class="stepper-input" min="0" max="3650" value="14">
           <button class="stepper-btn" id="stepper-plus" type="button">+</button>
         </div>
       </div>
@@ -237,7 +406,7 @@
       <!-- Modal Actions -->
       <div class="modal-actions">
         <button class="btn-secondary-outline" id="btn-cancel-modal" type="button">Cancel</button>
-        <button class="btn-primary-glow" id="btn-save-trial-duration" type="button">Save Trial Duration</button>
+        <button class="btn-primary-glow" id="btn-save-trial-duration" type="button">Save Changes</button>
       </div>
 
     </div>

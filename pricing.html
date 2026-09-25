@@ -4,11 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FlipPage — Pricing &amp; Plans</title>
-  <meta name="description" content="Simple, predictable pricing for creators and teams. Turn any PDF into interactive 3D flipbooks.">
-  <meta property="og:title" content="FlipPage — Pricing &amp; Plans">
-  <meta property="og:description" content="Simple, transparent pricing. Publish interactive 3D flipbooks with 100% privacy and instant rendering.">
-  <meta property="og:type" content="website">
+  <title>Pricing plans — FlipPage Digital Flipbooks</title>
+  <meta name="description" content="Choose the right plan for your needs. Simple, transparent pricing for 3D interactive flipbooks and client-side PDF conversions.">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,12 +19,7 @@
 
 <body>
 
-  <!-- Ambient atmospheric background -->
-  <div class="cyber-bg-wrap" aria-hidden="true">
-    <div class="cyber-bg-glow"></div>
-  </div>
-
-  <!-- ===== NAVBAR ===== -->
+  <!-- ===== NAVBAR (Matches index.html exactly) ===== -->
   <nav id="navbar" role="navigation" aria-label="Main navigation">
     <div class="wrap">
       <div class="nav-inner">
@@ -153,9 +145,9 @@
             <a href="index.html#solutions" class="nav-link"><span>Solutions</span></a>
           </li>
 
-          <!-- Pricing link (Active) -->
+          <!-- Pricing link -->
           <li class="nav-item">
-            <a href="pricing.html" class="nav-link" aria-current="page" style="color: #2563EB; font-weight: 600;"><span>Pricing</span></a>
+            <a href="pricing.html" class="nav-link active"><span>Pricing</span></a>
           </li>
 
         </ul>
@@ -177,363 +169,255 @@
     </div>
   </nav>
 
-  <!-- ===== MAIN PRICING CONTENT ===== -->
-  <main class="pricing-section">
-    <div class="wrap">
-      
-      <!-- Header matching uploaded reference -->
-      <div class="pricing-header">
-        <span class="pricing-eyebrow">PRICING</span>
-        
-        <h1 class="pricing-title">
-          Three <span class="pricing-accent-services">services.</span><br>
-          Seven <span class="pricing-accent-days">days</span> <span class="pricing-accent-free">free.</span>
-        </h1>
-        
-        <p class="pricing-subtitle">
-          Chat, Connect and Scout are priced separately, so a busy desk on a quiet agent pays for a busy desk and a quiet agent. Start any of them free for a week. Every line of the bill is on this page.
-        </p>
+  <!-- ===== MAIN PRICING SECTION ===== -->
+  <main class="pricing-main-wrap">
 
-        <p class="pricing-subnote">
-          Prices in LKR, per project, billed monthly or annually, before tax. No one-time fee, no setup charge, and 7 days free before anything is invoiced.
-        </p>
+    <!-- Header Block -->
+    <header class="pricing-header-block">
+      <h1 class="pricing-main-title">Pricing plans</h1>
+      <p class="pricing-main-subtitle">Choose the right plan for your needs.</p>
+    </header>
 
-        <!-- Monthly & Annual Segmented Switcher matching uploaded design -->
-        <div class="billing-section-toggle">
-          <div class="billing-pill-container" role="radiogroup" aria-label="Billing frequency">
-            <button class="billing-pill-btn" id="btn-monthly" type="button" role="radio" aria-checked="false">Monthly</button>
-            <button class="billing-pill-btn is-active" id="btn-annual" type="button" role="radio" aria-checked="true">Annual</button>
-          </div>
-          <div class="annual-savings-text" id="annual-savings-indicator">Save more with annual billing</div>
-        </div>
+    <!-- Monthly / Yearly Switcher -->
+    <div class="billing-switcher-container">
+      <div class="billing-toggle-shell" role="tablist" aria-label="Billing switcher">
+        <button class="billing-toggle-btn is-active" id="tab-monthly" role="tab" aria-selected="true" type="button">Monthly</button>
+        <button class="billing-toggle-btn" id="tab-yearly" role="tab" aria-selected="false" type="button">Yearly</button>
+        <span class="billing-badge-save">Save up to 35%</span>
       </div>
+    </div>
 
-      <!-- Pricing Cards Grid matching uploaded design -->
-      <div class="pricing-grid">
-        
-        <!-- Card 1: Chat -->
-        <div class="pricing-card">
-          <div class="card-top">
-            <span class="card-tag">SUBSCRIPTION</span>
-            <h3 class="card-name">Chat</h3>
-            <p class="card-desc">Every conversation your customers start, in one inbox, with AI drafting the answers.</p>
+    <!-- 4 Layered Floating Plan Cards -->
+    <div class="pricing-matrix-grid">
 
-            <div class="card-price-block">
-              <div class="price-announcing-title">Announcing soon</div>
-              <div class="price-announcing-desc">We are finalising this one. Everything else on this card stands.</div>
-              <div class="price-free-trial">
-                <span class="trial-bullet"></span>
-                <span>Starts with 7 days free</span>
-              </div>
-            </div>
-
-            <a href="account.html" class="card-cta-btn">Get started</a>
+      <!-- 1. FREE -->
+      <article class="layered-plan-card">
+        <div class="card-upper-block">
+          <span class="plan-pill-tag">Free</span>
+          <div class="plan-price-wrap">
+            <span class="plan-price-num">$0</span>
+            <span class="plan-price-freq">/month</span>
           </div>
+          <p class="plan-desc-note">Perfect For Small Projects</p>
+          <a href="account.html" class="plan-action-pill-btn">Get Started</a>
+        </div>
 
-          <div class="card-divider"></div>
-
-          <ul class="card-feature-list">
-            <li>
-              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>2,000 AI replies a month</span>
+        <div class="card-lower-tray">
+          <ul class="plan-features-list">
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>5 flipbooks per Day</span>
             </li>
-            <li>
-              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>3 controller seats</span>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>90+ Templates</span>
             </li>
-            <li>
-              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>WhatsApp, Messenger, Instagram, Telegram and web chat</span>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>6 Pre-designed Layouts</span>
             </li>
-            <li>
-              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Assignment, labels, saved replies and the full history</span>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>1 Bookcase</span>
+            </li>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>Share &amp; Embed</span>
+            </li>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>Mobile Friendly</span>
             </li>
           </ul>
+        </div>
+      </article>
 
-          <div class="card-divider"></div>
-
-          <div class="card-beyond">
-            <span class="beyond-tag">BEYOND THAT</span>
-            <p class="beyond-text">Announced with the monthly price.</p>
+      <!-- 2. STARTER -->
+      <article class="layered-plan-card">
+        <div class="card-upper-block">
+          <span class="plan-pill-tag">Starter</span>
+          <div class="plan-price-wrap">
+            <span class="plan-price-num" id="val-price-starter">$15</span>
+            <span class="plan-price-freq">/month</span>
           </div>
+          <p class="plan-desc-note" id="note-price-starter">Perfect For Creators &amp; Authors</p>
+          <a href="account.html" class="plan-action-pill-btn">Start Trial</a>
         </div>
 
-        <!-- Card 2: Connect (Recommended with Dynamic Toggle) -->
-        <div class="pricing-card is-recommended">
-          <div class="card-top">
-            <div class="card-tag-row">
-              <span class="card-tag">SUBSCRIPTION</span>
-              <span class="card-badge-recommended">RECOMMENDED</span>
-            </div>
-            <h3 class="card-name">Connect</h3>
-            <p class="card-desc">Customers who reach you four different ways and expect one answer from one history.</p>
-
-            <!-- Price Block (Switches between Monthly and Annual) -->
-            <div class="card-price-block" id="connect-price-block">
-              <!-- Annual View (Default) -->
-              <div class="price-annual-view">
-                <div class="price-original-strikethrough">LKR 77,100</div>
-                <div class="price-highlight-row">
-                  <span class="price-currency-highlight">LKR</span>
-                  <span class="price-figure-highlight">48,250</span>
-                  <span class="price-period-highlight">/yr</span>
-                </div>
-                <div class="price-annual-note">for 1 year, LKR 64,250/yr after</div>
-              </div>
-
-              <!-- Monthly View -->
-              <div class="price-monthly-view" hidden>
-                <div class="price-main-row">
-                  <span class="price-unit">Rs</span>
-                  <span class="price-figure">6,000</span>
-                  <span class="price-discount-badge">60% off</span>
-                </div>
-                <div class="price-sub-row">for your first month</div>
-                <div class="price-renew-row">Then Rs 15,000 a month, per project</div>
-              </div>
-
-              <div class="price-free-trial">
-                <span class="trial-bullet"></span>
-                <span>Starts with 7 days free</span>
-              </div>
-            </div>
-
-            <a href="account.html" class="card-cta-btn">Get started</a>
-          </div>
-
-          <div class="card-divider"></div>
-
-          <ul class="card-feature-list">
-            <li>
-              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>5,000 users and 250,000 messages a month</span>
+        <div class="card-lower-tray">
+          <ul class="plan-features-list">
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span><strong>Unlimited Flipbooks</strong></span>
             </li>
-            <li>
-              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>3 controller seats</span>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span><strong>Ads Free &amp; Custom Logo</strong></span>
             </li>
-            <li>
-              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>WhatsApp, Messenger, Instagram, Telegram and web chat</span>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>Link Detection from PDF</span>
             </li>
-            <li>
-              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Delivered and read state, live, with connection health</span>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>Add Trackable Links</span>
+            </li>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>Multi-format Downloads</span>
+            </li>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>3 Teams</span>
             </li>
           </ul>
+        </div>
+      </article>
 
-          <div class="card-divider"></div>
-
-          <div class="card-beyond">
-            <span class="beyond-tag">BEYOND THAT</span>
-            <div class="beyond-row">
-              <span>Additional user</span>
-              <span class="beyond-val">Rs 3</span>
-            </div>
-            <div class="beyond-row">
-              <span>Additional controller seat</span>
-              <span class="beyond-val">Rs 2,500</span>
-            </div>
+      <!-- 3. PROFESSIONAL (Featured) -->
+      <article class="layered-plan-card is-featured">
+        <div class="card-upper-block">
+          <span class="plan-pill-tag">Professional</span>
+          <div class="plan-price-wrap">
+            <span class="plan-price-num" id="val-price-pro">$35</span>
+            <span class="plan-price-freq">/month</span>
           </div>
+          <p class="plan-desc-note" id="note-price-pro">Perfect For Growing Brands</p>
+          <a href="account.html" class="plan-action-pill-btn">Start Trial</a>
         </div>
 
-        <!-- Card 3: Scout -->
-        <div class="pricing-card">
-          <div class="card-top">
-            <span class="card-tag">SUBSCRIPTION</span>
-            <h3 class="card-name">Scout</h3>
-            <p class="card-desc">A desk that has stopped answering the same twenty questions by hand.</p>
-
-            <div class="card-price-block" id="scout-price-block">
-              <!-- Annual View -->
-              <div class="price-annual-view">
-                <div class="price-main-row">
-                  <span class="price-unit">LKR</span>
-                  <span class="price-figure">22,875</span>
-                  <span class="price-unit-period">/mo</span>
-                </div>
-                <div class="price-billing-note-chip">Monthly billing only</div>
-              </div>
-
-              <!-- Monthly View -->
-              <div class="price-monthly-view" hidden>
-                <div class="price-main-row">
-                  <span class="price-unit">Rs</span>
-                  <span class="price-figure">6,000</span>
-                  <span class="price-discount-badge">60% off</span>
-                </div>
-                <div class="price-sub-row">for your first month</div>
-                <div class="price-renew-row">Then Rs 15,000 a month, per project</div>
-              </div>
-
-              <div class="price-free-trial">
-                <span class="trial-bullet"></span>
-                <span>Starts with 7 days free</span>
-              </div>
-            </div>
-
-            <a href="account.html" class="card-cta-btn" id="scout-cta-btn">Get started</a>
-          </div>
-
-          <div class="card-divider"></div>
-
-          <ul class="card-feature-list">
-            <li>
-              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Everything in Connect</span>
+        <div class="card-lower-tray">
+          <ul class="plan-features-list">
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span><strong>Everything in Starter</strong></span>
             </li>
-            <li>
-              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>5,000 users and 250,000 messages a month</span>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>3 Accounts</span>
             </li>
-            <li>
-              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>3 controller seats</span>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>Add images, videos &amp; audio</span>
             </li>
-            <li>
-              <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Automation, rules and logic: flows you draw, test and publish</span>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span><strong>Custom Domain</strong></span>
+            </li>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>Batch PDF Conversion</span>
+            </li>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>10 Teams</span>
             </li>
           </ul>
+        </div>
+      </article>
 
-          <div class="card-divider"></div>
-
-          <div class="card-beyond">
-            <span class="beyond-tag">BEYOND THAT</span>
-            <div class="beyond-row">
-              <span>Additional user</span>
-              <span class="beyond-val">Rs 3</span>
-            </div>
-            <div class="beyond-row">
-              <span>Additional controller seat</span>
-              <span class="beyond-val">Rs 2,500</span>
-            </div>
+      <!-- 4. ENTERPRISE -->
+      <article class="layered-plan-card">
+        <div class="card-upper-block">
+          <span class="plan-pill-tag">Enterprise</span>
+          <div class="plan-price-wrap">
+            <span class="plan-price-num" id="val-price-ent">$99</span>
+            <span class="plan-price-freq">/month</span>
           </div>
+          <p class="plan-desc-note" id="note-price-ent">For Large Organizations</p>
+          <a href="account.html" class="plan-action-pill-btn">Contact Sales</a>
         </div>
 
-      </div>
-
-      <!-- Feature Comparison Table -->
-      <section class="comparison-section" aria-labelledby="comparison-heading">
-        <div class="comparison-header">
-          <h2 class="comparison-title" id="comparison-heading">Detailed Plan Comparison</h2>
+        <div class="card-lower-tray">
+          <ul class="plan-features-list">
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span><strong>Everything in Pro</strong></span>
+            </li>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>10 Accounts</span>
+            </li>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>Interactive Dynamic Widgets</span>
+            </li>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>Single Sign-On (SSO)</span>
+            </li>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>API Access &amp; Webhooks</span>
+            </li>
+            <li class="plan-feature-row">
+              <span class="feature-subtle-check">✓</span>
+              <span>20 Teams &amp; Priority SLA</span>
+            </li>
+          </ul>
         </div>
-
-        <div class="table-responsive-wrapper">
-          <table class="comparison-table">
-            <thead>
-              <tr>
-                <th>Capabilities</th>
-                <th>Starter</th>
-                <th>Pro</th>
-                <th>Enterprise</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>3D Realistic Page Turning</strong></td>
-                <td>Included</td>
-                <td>Included</td>
-                <td>Included</td>
-              </tr>
-              <tr>
-                <td><strong>Client-Side Local Privacy</strong></td>
-                <td>100% Local</td>
-                <td>100% Local</td>
-                <td>100% Local</td>
-              </tr>
-              <tr>
-                <td><strong>Remove FlipPage Branding</strong></td>
-                <td>—</td>
-                <td>Included</td>
-                <td>Included</td>
-              </tr>
-              <tr>
-                <td><strong>Custom Domain CNAME</strong></td>
-                <td>—</td>
-                <td>1 Domain</td>
-                <td>Unlimited</td>
-              </tr>
-              <tr>
-                <td><strong>Password &amp; Access Lockdown</strong></td>
-                <td>—</td>
-                <td>Included</td>
-                <td>Advanced SSO / SAML</td>
-              </tr>
-              <tr>
-                <td><strong>Team Members &amp; Seats</strong></td>
-                <td>1 User</td>
-                <td>3 Users</td>
-                <td>Unlimited</td>
-              </tr>
-              <tr>
-                <td><strong>Analytics &amp; Heatmaps</strong></td>
-                <td>Basic views</td>
-                <td>Full analytics</td>
-                <td>Exportable BI logs</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Frequently Asked Questions Accordion -->
-      <section class="pricing-faq-section" aria-labelledby="faq-heading">
-        <div class="faq-header">
-          <h2 class="faq-title" id="faq-heading">Frequently Asked Questions</h2>
-          <p class="faq-desc">Everything you need to know about our plans and billing.</p>
-        </div>
-
-        <div class="faq-list">
-          
-          <div class="faq-item">
-            <button class="faq-question" type="button" aria-expanded="false">
-              <span>How does FlipPage ensure 100% privacy?</span>
-              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="faq-answer">
-              <p>FlipPage processes all PDF rasterization, geometry generation, and page-turning animations directly inside your local browser sandbox using WebGL. Your document files are never uploaded to any remote server.</p>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <button class="faq-question" type="button" aria-expanded="false">
-              <span>Can I change or cancel my plan at any time?</span>
-              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="faq-answer">
-              <p>Yes. You can upgrade, downgrade, or cancel your subscription whenever you wish from your account dashboard. When you cancel, you will maintain access until the end of your current billing period.</p>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <button class="faq-question" type="button" aria-expanded="false">
-              <span>Can I embed the flipbook on my WordPress or Webflow site?</span>
-              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="faq-answer">
-              <p>Absolutely. Every publication generates an ultra-clean, responsive HTML embed snippet that works seamlessly on Shopify, WordPress, Webflow, Squarespace, Wix, or custom HTML sites.</p>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <button class="faq-question" type="button" aria-expanded="false">
-              <span>Do you offer discounts for educational institutions and non-profits?</span>
-              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="faq-answer">
-              <p>Yes, we offer a 30% discount on all paid plans for accredited schools, universities, students, and registered non-profit organizations. Contact our support team to get your discount code.</p>
-            </div>
-          </div>
-
-        </div>
-      </section>
+      </article>
 
     </div>
+
+    <!-- Trust & Guarantee -->
+    <div class="pricing-trust-bar">
+      <div class="trust-flex-items">
+        <div class="trust-single-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Purchase with PayPal or Credit Card</span>
+        </div>
+        <div class="trust-single-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+          <span>14-Day Money-Back Guarantee</span>
+        </div>
+        <div class="trust-single-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Cancel or Switch Anytime</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Frequently Asked Questions -->
+    <section class="faq-wrap-section" aria-label="Frequently Asked Questions">
+      <h3 class="faq-title-main">Frequently Asked Questions</h3>
+      
+      <div class="faq-items-stack">
+        <div class="faq-box-card">
+          <button class="faq-trigger-btn" type="button">
+            <span>What happens after the 14-day free trial?</span>
+            <svg class="faq-arrow-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-body-text">
+            You can continue using the Free tier indefinitely with up to 5 flipbooks per day, or upgrade to Starter/Professional to keep unlimited flipbooks, custom branding, and custom domains active.
+          </div>
+        </div>
+
+        <div class="faq-box-card">
+          <button class="faq-trigger-btn" type="button">
+            <span>How does 100% client-side conversion keep my files private?</span>
+            <svg class="faq-arrow-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-body-text">
+            FlipPage renders and processes your PDF files directly inside your web browser using WebAssembly and WebGL shaders. Your raw confidential documents never touch external cloud servers.
+          </div>
+        </div>
+
+        <div class="faq-box-card">
+          <button class="faq-trigger-btn" type="button">
+            <span>Can I connect my own custom domain for publications?</span>
+            <svg class="faq-arrow-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-body-text">
+            Yes! Both Professional and Enterprise plans allow you to map custom subdomains (e.g. <code>catalog.yourbrand.com</code>) with automated SSL encryption and white-label branding.
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
-  <!-- ===== FOOTER ===== -->
+  <!-- ===== FOOTER (Matches index.html exactly) ===== -->
   <footer id="footer">
     <div class="footer-outer-wrap">
       <div class="footer-card">
@@ -620,7 +504,62 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="js/pricing.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabMonthly = document.getElementById('tab-monthly');
+      const tabYearly = document.getElementById('tab-yearly');
+      
+      const valStarter = document.getElementById('val-price-starter');
+      const valPro = document.getElementById('val-price-pro');
+      const valEnt = document.getElementById('val-price-ent');
+
+      const noteStarter = document.getElementById('note-price-starter');
+      const notePro = document.getElementById('note-price-pro');
+      const noteEnt = document.getElementById('note-price-ent');
+
+      function updatePricing(isYearly) {
+        if (isYearly) {
+          tabYearly.classList.add('is-active');
+          tabYearly.setAttribute('aria-selected', 'true');
+          tabMonthly.classList.remove('is-active');
+          tabMonthly.setAttribute('aria-selected', 'false');
+
+          if (valStarter) valStarter.textContent = '$9';
+          if (valPro) valPro.textContent = '$22';
+          if (valEnt) valEnt.textContent = '$59';
+
+          if (noteStarter) noteStarter.textContent = 'Billed annually ($108/yr)';
+          if (notePro) notePro.textContent = 'Billed annually ($264/yr)';
+          if (noteEnt) noteEnt.textContent = 'Billed annually ($708/yr)';
+        } else {
+          tabMonthly.classList.add('is-active');
+          tabMonthly.setAttribute('aria-selected', 'true');
+          tabYearly.classList.remove('is-active');
+          tabYearly.setAttribute('aria-selected', 'false');
+
+          if (valStarter) valStarter.textContent = '$15';
+          if (valPro) valPro.textContent = '$35';
+          if (valEnt) valEnt.textContent = '$99';
+
+          if (noteStarter) noteStarter.textContent = 'Perfect For Creators & Authors';
+          if (notePro) notePro.textContent = 'Perfect For Growing Brands';
+          if (noteEnt) noteEnt.textContent = 'For Large Organizations';
+        }
+      }
+
+      tabMonthly.addEventListener('click', () => updatePricing(false));
+      tabYearly.addEventListener('click', () => updatePricing(true));
+
+      // FAQ Accordion
+      document.querySelectorAll('.faq-trigger-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const item = btn.closest('.faq-box-card');
+          item.classList.toggle('is-active');
+        });
+      });
+    });
+  </script>
 
 </body>
 

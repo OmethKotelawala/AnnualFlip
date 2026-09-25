@@ -1,10 +1,11 @@
 /**
- * FlipPage Workspace Interactive Controller
+ * FlipPage Enterprise Workspace Interactive Flipbook Studio Controller
  */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Firebase Config
+// Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyC7EHsN6CiX5JlbRiLFo_f_-OfWIj4VIIo",
   authDomain: "flippage-e7f06.firebaseapp.com",
@@ -17,231 +18,395 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Initial publications data
+// Digital Flipbook Publications Dataset
 let publications = [
   {
-    id: 'pub-1',
+    id: 'p1',
     title: 'Annual Sustainability Report 2026',
+    slug: 'sustainability-2026',
     pages: 28,
-    views: '4.2k',
+    reads: '4,210',
+    avgTime: '3m 42s',
+    updated: '09:41 AM',
     status: 'live',
-    updated: '2 hours ago'
+    tag: { label: 'Live • 14d Trial', type: 'live' },
+    thumbBg: '#BBF7D0',
+    thumbColor: '#166534',
+    thumbEmoji: '📖',
+    previewText: '28 pages • 4.2k reads • Dual spread active',
+    spreads: [
+      { left: 2, right: 3, title: 'Executive Summary', graphic: '📊 Key Financial Highlights' },
+      { left: 4, right: 5, title: 'Environmental Footprint', graphic: '🌱 Carbon Offset Metrics' },
+      { left: 6, right: 7, title: 'Social & Governance', graphic: '🤝 Global Team Initiatives' }
+    ]
   },
   {
-    id: 'pub-2',
+    id: 'p2',
     title: 'Spring Lookbook & Product Catalog',
+    slug: 'spring-lookbook',
     pages: 44,
-    views: '12.8k',
+    reads: '12,850',
+    avgTime: '5m 12s',
+    updated: '09:38 AM',
     status: 'live',
-    updated: 'Yesterday'
+    tag: { label: 'Live • Featured', type: 'live' },
+    thumbBg: '#E0E7FF',
+    thumbColor: '#3730A3',
+    thumbEmoji: '👗',
+    previewText: '44 pages • 12.8k reads • Touch zoom ready',
+    spreads: [
+      { left: 2, right: 3, title: 'Collection Overview', graphic: '✨ High-Res Vector Editorial' },
+      { left: 4, right: 5, title: 'Apparel & Fabrics', graphic: '🎨 Spring Palette Gallery' }
+    ]
   },
   {
-    id: 'pub-3',
+    id: 'p3',
     title: 'Brand Architecture & Design System',
+    slug: 'brand-guidelines',
     pages: 18,
-    views: '940',
+    reads: '940',
+    avgTime: '2m 15s',
+    updated: '09:20 AM',
     status: 'locked',
-    updated: '3 days ago'
+    tag: { label: 'Protected • Password', type: 'locked' },
+    thumbBg: '#F3E8FF',
+    thumbColor: '#6B21A8',
+    thumbEmoji: '🎨',
+    previewText: '18 pages • 940 reads • Protected access',
+    spreads: [
+      { left: 2, right: 3, title: 'Typography & Colors', graphic: '📐 8pt Grid & Hierarchy' }
+    ]
   },
   {
-    id: 'pub-4',
+    id: 'p4',
     title: 'Executive Pitch Deck Q3',
+    slug: 'executive-deck-q3',
     pages: 14,
-    views: '120',
+    reads: '120',
+    avgTime: '1m 45s',
+    updated: 'Yesterday',
     status: 'draft',
-    updated: '5 days ago'
+    tag: { label: 'Draft', type: 'draft' },
+    thumbBg: '#CFFAFE',
+    thumbColor: '#155E75',
+    thumbEmoji: '📈',
+    previewText: '14 pages • 120 reads • Client review in progress',
+    spreads: [
+      { left: 2, right: 3, title: 'Market Opportunity', graphic: '🚀 Growth Trajectory' }
+    ]
   }
 ];
 
+let activePubId = 'p1';
+let currentFilter = 'all';
+let currentSpreadIndex = 0;
+
 document.addEventListener('DOMContentLoaded', () => {
-  initAuthListener();
-  initSearchAndFilters();
+  initClock();
+  initAuthProfile();
+  initPublicationsList();
+  renderActivePublication(activePubId);
+  initSearch();
+  initTabs();
+  init3DFlipbookControls();
   initUploadModal();
-  initNav();
-  renderPublications(publications);
+  initActions();
 });
 
 /**
- * Real-time Firebase Auth Status
+ * Top bar live time updater
  */
-function initAuthListener() {
-  const userGreeting = document.getElementById('user-greeting');
-  const userSubtitle = document.getElementById('user-subtitle');
-  const navUserSection = document.getElementById('nav-user-section');
+function initClock() {
+  const clockEl = document.getElementById('topbar-clock');
+  function update() {
+    const now = new Date();
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    const day = days[now.getDay()];
+    const month = months[now.getMonth()];
+    const date = now.getDate();
+    
+    let hours = now.getHours();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    const minutes = String(now.getMinutes()).padStart(2, '0');
 
-  onAuthStateChanged(auth, (user) => {
+    if (clockEl) {
+      clockEl.innerHTML = `${day}, ${month} ${date} <strong>${hours}:${minutes} ${ampm}</strong>`;
+    }
+  }
+  update();
+  setInterval(update, 10000);
+}
+
+/**
+ * Listen for user auth & brand to populate profile in sidebar & topbar
+ */
+function initAuthProfile() {
+  const userNameEl = document.getElementById('sidebar-user-name');
+  const userEmailEl = document.getElementById('sidebar-user-email');
+  const avatarInitialEl = document.getElementById('sidebar-avatar-initial');
+  const breadcrumbBrand = document.getElementById('breadcrumb-brand-name');
+  const breadcrumbAvatar = document.getElementById('breadcrumb-brand-avatar');
+  const creatorNameEl = document.getElementById('details-creator-name');
+  const creatorAvatarEl = document.getElementById('details-creator-avatar');
+  const sidebarPlanLabel = document.getElementById('sidebar-plan-label');
+
+  onAuthStateChanged(auth, async (user) => {
     if (user) {
-      const name = user.displayName || user.email?.split('@')[0] || 'Creator';
-      const email = (user.email || '').toLowerCase();
-      const isAdmin = email === 'omethranhasacz@gmail.com';
+      let name = user.displayName || user.email?.split('@')[0] || 'Anjana Wickrama';
+      let email = user.email || 'anjana@northbay.lk';
+      let brand = 'Northbay Finance';
+      let trialDays = 14;
 
-      if (userGreeting) userGreeting.textContent = `Welcome back, ${name}! 👋`;
-      if (userSubtitle) userSubtitle.textContent = isAdmin 
-        ? `Administrator session active • Manage user 14-day trials in Admin Portal.` 
-        : `14-Day Free Trial Active • Enjoy unlimited client-side 3D flipbook creation.`;
+      try {
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.brandName) brand = data.brandName;
+          if (data.displayName) name = data.displayName;
+          if (data.trialDays) trialDays = data.trialDays;
+        }
+      } catch (_) {}
 
-      const avatarContent = user.photoURL 
-        ? `<img src="${user.photoURL}" alt="${escapeHtml(name)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" referrerpolicy="no-referrer">` 
-        : `<span>${(name.charAt(0) || 'U').toUpperCase()}</span>`;
+      if (userNameEl) userNameEl.textContent = name;
+      if (userEmailEl) userEmailEl.textContent = email;
+      if (breadcrumbBrand) breadcrumbBrand.textContent = brand;
+      if (breadcrumbAvatar) breadcrumbAvatar.textContent = (brand.charAt(0) || 'B').toUpperCase();
+      if (creatorNameEl) creatorNameEl.textContent = `${name} (${brand})`;
+      if (sidebarPlanLabel) sidebarPlanLabel.textContent = `${trialDays}-Day Pro Trial`;
 
-      if (navUserSection) {
-        navUserSection.innerHTML = `
-          ${isAdmin ? '<a class="nav-user-chip" style="background: rgba(139, 92, 246, 0.15); border-color: #C4B5FD; color: #7C3AED;" href="admin.html">👑 Admin Portal</a>' : ''}
-          <a class="nav-user-chip" href="account.html" title="Account settings">
-            <span class="nav-user-avatar" style="overflow: hidden; padding: 0;">${avatarContent}</span>
-            <span>${escapeHtml(name)}</span>
-          </a>
-        `;
+      if (avatarInitialEl) {
+        if (user.photoURL) {
+          avatarInitialEl.innerHTML = `<img src="${user.photoURL}" alt="${escapeHtml(name)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" referrerpolicy="no-referrer">`;
+        } else {
+          avatarInitialEl.textContent = (name.charAt(0) || 'U').toUpperCase();
+        }
       }
-    } else {
-      if (userGreeting) userGreeting.textContent = `Your FlipPage Workspace`;
-      if (userSubtitle) userSubtitle.textContent = `Sign in to sync publications across devices and unlock custom domains.`;
-      
-      if (navUserSection) {
-        navUserSection.innerHTML = `
-          <a class="nav-signin" href="account.html">Sign in</a>
-          <a class="nav-getstarted" href="account.html">Create account</a>
-        `;
+
+      if (creatorAvatarEl) {
+        if (user.photoURL) {
+          creatorAvatarEl.innerHTML = `<img src="${user.photoURL}" alt="${escapeHtml(name)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" referrerpolicy="no-referrer">`;
+        } else {
+          creatorAvatarEl.textContent = (name.charAt(0) || 'U').toUpperCase();
+        }
       }
     }
   });
 }
 
 /**
- * Filter & Search Publications
+ * Render Publications List in Column 1
  */
-function initSearchAndFilters() {
-  const searchInput = document.getElementById('pub-search-input');
-  const filterPills = document.querySelectorAll('.filter-pill');
+function initPublicationsList() {
+  const container = document.getElementById('pub-list-container');
+  if (!container) return;
 
-  let activeFilter = 'all';
+  const filtered = publications.filter(p => {
+    if (currentFilter === 'live') return p.status === 'live';
+    if (currentFilter === 'draft') return p.status === 'draft';
+    return true;
+  });
 
-  function applyFilter() {
-    const query = (searchInput?.value || '').toLowerCase().trim();
-    
-    const filtered = publications.filter(pub => {
-      const matchesQuery = pub.title.toLowerCase().includes(query);
-      const matchesFilter = activeFilter === 'all' || pub.status === activeFilter;
-      return matchesQuery && matchesFilter;
-    });
+  container.innerHTML = filtered.map(item => {
+    const isSelected = item.id === activePubId;
+    const tagHtml = item.tag ? `<span class="pub-tag ${item.tag.type}">${escapeHtml(item.tag.label)}</span>` : '';
 
-    renderPublications(filtered);
-  }
+    return `
+      <div class="pub-item ${isSelected ? 'is-selected' : ''}" data-id="${item.id}">
+        <div class="pub-thumb-wrap">
+          <div class="pub-thumb-box" style="background: ${item.thumbBg}; color: ${item.thumbColor};">
+            ${item.thumbEmoji}
+          </div>
+          <span class="format-icon-badge">3D</span>
+        </div>
 
-  if (searchInput) {
-    searchInput.addEventListener('input', applyFilter);
-  }
+        <div class="pub-item-content">
+          <div class="pub-item-top">
+            <span class="pub-item-title">${escapeHtml(item.title)}</span>
+            <span class="pub-time-badge">${item.updated}</span>
+          </div>
+          
+          <div class="pub-item-bottom">
+            <p class="pub-preview-sub">${escapeHtml(item.previewText)}</p>
+            ${tagHtml}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
 
-  filterPills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      filterPills.forEach(p => p.classList.remove('is-active'));
-      pill.classList.add('is-active');
-      activeFilter = pill.dataset.filter || 'all';
-      applyFilter();
+  // Click to switch active flipbook
+  container.querySelectorAll('.pub-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.dataset.id;
+      activePubId = id;
+      currentSpreadIndex = 0;
+      initPublicationsList();
+      renderActivePublication(id);
     });
   });
 }
 
 /**
- * Render Publications to DOM
+ * Render Active Flipbook in Column 2 & Column 3
  */
-function renderPublications(items) {
-  const grid = document.getElementById('publications-grid');
-  const countEl = document.getElementById('stat-total-pubs');
-  if (countEl) countEl.textContent = publications.length;
+function renderActivePublication(id) {
+  const pub = publications.find(p => p.id === id);
+  if (!pub) return;
 
-  if (!grid) return;
+  // Center Header
+  const activeThumb = document.getElementById('active-pub-thumb');
+  const activeTitle = document.getElementById('active-pub-title');
+  const activeUrl = document.getElementById('active-pub-url');
+  const activeTag = document.getElementById('active-tag-badge');
 
-  if (items.length === 0) {
-    grid.innerHTML = `
-      <div style="grid-column: 1 / -1; padding: 60px 20px; text-align: center; background: #FFF; border: 1.5px dashed #CBD5E1; border-radius: 18px;">
-        <h3 style="margin: 0 0 8px; font-size: 1.2rem; color: #0F172A;">No publications found</h3>
-        <p style="margin: 0 0 20px; color: #64748B; font-size: 0.92rem;">Try a different search query or upload a new PDF document.</p>
-        <button class="btn-upload-primary" id="empty-state-upload" type="button">Upload PDF Now</button>
-      </div>
-    `;
-    const btn = document.getElementById('empty-state-upload');
-    if (btn) btn.addEventListener('click', openUploadModal);
-    return;
+  if (activeThumb) {
+    activeThumb.textContent = pub.thumbEmoji;
+    activeThumb.style.background = pub.thumbBg;
+    activeThumb.style.color = pub.thumbColor;
+  }
+  if (activeTitle) activeTitle.textContent = pub.title;
+  if (activeUrl) activeUrl.textContent = `FlipPage.com/northbay/${pub.slug}`;
+  if (activeTag) {
+    activeTag.textContent = pub.tag?.label || 'Live';
+    activeTag.className = `active-tag-badge ${pub.status}`;
   }
 
-  grid.innerHTML = items.map(pub => {
-    const statusLabel = pub.status === 'live' ? 'Live' : pub.status === 'locked' ? 'Protected' : 'Draft';
-    return `
-      <article class="pub-card" data-id="${pub.id}">
-        <div class="pub-preview-wrap">
-          <span class="pub-badge-status ${pub.status}">${statusLabel}</span>
-          
-          <div class="pub-preview-canvas-mock">
-            <div class="mock-line-title"></div>
-            <div class="mock-line"></div>
-            <div class="mock-line short"></div>
-            <div class="mock-art-block">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-              </svg>
-            </div>
-          </div>
+  // Right Details Panel
+  const detailsThumb = document.getElementById('details-large-thumb');
+  const detailsName = document.getElementById('details-pub-name');
+  const detailsUrl = document.getElementById('details-pub-url');
+  const detailsLabel = document.getElementById('details-label-pill');
+  const metricReads = document.getElementById('metric-total-reads');
+  const metricAvgTime = document.getElementById('metric-avg-time');
 
-          <a href="index.html#fast-work" class="pub-quick-preview-btn" title="Open 3D Viewer">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            <span>Preview</span>
-          </a>
-        </div>
+  if (detailsThumb) {
+    detailsThumb.textContent = pub.thumbEmoji;
+    detailsThumb.style.background = pub.thumbBg;
+    detailsThumb.style.color = pub.thumbColor;
+  }
+  if (detailsName) detailsName.textContent = pub.title;
+  if (detailsUrl) detailsUrl.textContent = `FlipPage.com/northbay/${pub.slug}`;
+  if (detailsLabel) detailsLabel.textContent = `${pub.tag?.label || 'Live'}`;
+  if (metricReads) metricReads.textContent = pub.reads;
+  if (metricAvgTime) metricAvgTime.textContent = pub.avgTime;
 
-        <div class="pub-body">
-          <h3 class="pub-title">${escapeHtml(pub.title)}</h3>
-          
-          <div class="pub-meta-row">
-            <span class="pub-meta-item">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              ${pub.pages} pages
-            </span>
-            <span class="pub-meta-item">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              ${pub.views} reads
-            </span>
-            <span>${pub.updated}</span>
-          </div>
+  // Update 3D Spread Page Numbers
+  updateSpreadDisplay(pub);
+}
 
-          <div class="pub-actions-row">
-            <a href="index.html#fast-work" class="pub-btn-open">
-              <span>Open in 3D Reader</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-            <button class="pub-btn-icon btn-share-pub" type="button" title="Share link" data-id="${pub.id}">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-            </button>
-            <button class="pub-btn-icon btn-delete-pub" type="button" title="Delete" data-id="${pub.id}">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-            </button>
-          </div>
-        </div>
-      </article>
-    `;
-  }).join('');
+function updateSpreadDisplay(pub) {
+  const scrubber = document.getElementById('page-scrubber');
+  const scrubberLabel = document.getElementById('scrubber-label');
+  const pageLeftNum = document.getElementById('page-left-num');
+  const pageRightNum = document.getElementById('page-right-num');
+  const bookShell = document.getElementById('book-spread-shell');
 
-  // Wire action buttons
-  document.querySelectorAll('.btn-share-pub').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const pubId = btn.dataset.id;
-      const pub = publications.find(p => p.id === pubId);
-      if (pub && navigator.clipboard) {
-        navigator.clipboard.writeText(`${window.location.origin}/index.html#pub-${pubId}`);
-        alert(`Link for "${pub.title}" copied to clipboard!`);
+  const spread = pub.spreads[currentSpreadIndex] || { left: 2, right: 3 };
+
+  if (scrubber) {
+    scrubber.max = pub.pages;
+    scrubber.value = spread.right;
+  }
+  if (scrubberLabel) {
+    scrubberLabel.textContent = `${spread.left}-${spread.right} / ${pub.pages}`;
+  }
+  if (pageLeftNum) pageLeftNum.textContent = `Page ${spread.left}`;
+  if (pageRightNum) pageRightNum.textContent = `Page ${spread.right}`;
+
+  if (bookShell) {
+    bookShell.style.transform = 'scale(0.98) rotateY(-4deg)';
+    setTimeout(() => {
+      bookShell.style.transform = 'scale(1) rotateY(0deg)';
+    }, 180);
+  }
+}
+
+/**
+ * 3D Flipbook Navigation & Page Turner
+ */
+function init3DFlipbookControls() {
+  const btnPrev = document.getElementById('btn-prev-page');
+  const btnNext = document.getElementById('btn-next-page');
+  const scrubber = document.getElementById('page-scrubber');
+  const zoomBtn = document.getElementById('btn-zoom-in');
+  const bookWrapper = document.getElementById('book-3d-wrapper');
+
+  let isZoomed = false;
+
+  if (btnPrev) {
+    btnPrev.addEventListener('click', () => {
+      const pub = publications.find(p => p.id === activePubId);
+      if (pub && currentSpreadIndex > 0) {
+        currentSpreadIndex--;
+        updateSpreadDisplay(pub);
       }
     });
-  });
+  }
 
-  document.querySelectorAll('.btn-delete-pub').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const pubId = btn.dataset.id;
-      if (confirm('Are you sure you want to delete this publication?')) {
-        publications = publications.filter(p => p.id !== pubId);
-        renderPublications(publications);
+  if (btnNext) {
+    btnNext.addEventListener('click', () => {
+      const pub = publications.find(p => p.id === activePubId);
+      if (pub && currentSpreadIndex < (pub.spreads.length - 1)) {
+        currentSpreadIndex++;
+        updateSpreadDisplay(pub);
       }
+    });
+  }
+
+  if (scrubber) {
+    scrubber.addEventListener('input', () => {
+      const pub = publications.find(p => p.id === activePubId);
+      if (!pub) return;
+      const val = parseInt(scrubber.value, 10);
+      const idx = Math.min(pub.spreads.length - 1, Math.floor((val / pub.pages) * pub.spreads.length));
+      currentSpreadIndex = Math.max(0, idx);
+      updateSpreadDisplay(pub);
+    });
+  }
+
+  if (zoomBtn && bookWrapper) {
+    zoomBtn.addEventListener('click', () => {
+      isZoomed = !isZoomed;
+      bookWrapper.style.transform = isZoomed ? 'scale(1.15)' : 'scale(1)';
+      zoomBtn.textContent = isZoomed ? '🔍−' : '🔍+';
+    });
+  }
+}
+
+/**
+ * Search filter for publications
+ */
+function initSearch() {
+  const searchBox = document.getElementById('pub-search-box');
+  if (!searchBox) return;
+
+  searchBox.addEventListener('input', () => {
+    const q = searchBox.value.toLowerCase().trim();
+    const items = document.querySelectorAll('.pub-item');
+
+    items.forEach(el => {
+      const text = el.textContent.toLowerCase();
+      el.style.display = text.includes(q) ? 'flex' : 'none';
+    });
+  });
+}
+
+/**
+ * Filter Tabs (Recent / Live / Draft)
+ */
+function initTabs() {
+  const tabs = document.querySelectorAll('.pub-tab-pill');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('is-active'));
+      tab.classList.add('is-active');
+      currentFilter = tab.dataset.tab || 'all';
+      initPublicationsList();
     });
   });
 }
@@ -250,117 +415,219 @@ function renderPublications(items) {
  * Upload PDF Modal Logic
  */
 function initUploadModal() {
-  const modalOverlay = document.getElementById('upload-modal');
-  const openBtns = [document.getElementById('open-upload-modal-btn'), document.getElementById('new-doc-btn')];
+  const modal = document.getElementById('upload-modal');
+  const openBtns = [
+    document.getElementById('open-upload-btn'), 
+    document.getElementById('btn-quick-new-pub'),
+    document.getElementById('btn-empty-upload')
+  ];
   const closeBtn = document.getElementById('close-modal-btn');
   const dropzone = document.getElementById('modal-dropzone');
   const fileInput = document.getElementById('pdf-file-input');
 
   openBtns.forEach(btn => {
-    if (btn) btn.addEventListener('click', openUploadModal);
+    if (btn) btn.addEventListener('click', () => modal?.classList.add('is-visible'));
   });
 
   if (closeBtn) {
-    closeBtn.addEventListener('click', closeUploadModal);
+    closeBtn.addEventListener('click', () => modal?.classList.remove('is-visible'));
   }
 
-  if (modalOverlay) {
-    modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) closeUploadModal();
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('is-visible');
     });
   }
 
   if (dropzone && fileInput) {
     dropzone.addEventListener('click', () => fileInput.click());
-
-    dropzone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropzone.classList.add('drag-active');
-    });
-
-    ['dragleave', 'dragend'].forEach(type => {
-      dropzone.addEventListener(type, () => dropzone.classList.remove('drag-active'));
-    });
-
-    dropzone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropzone.classList.remove('drag-active');
-      if (e.dataTransfer.files?.length) {
-        handleFileSelected(e.dataTransfer.files[0]);
-      }
-    });
-
     fileInput.addEventListener('change', (e) => {
       if (e.target.files?.length) {
-        handleFileSelected(e.target.files[0]);
+        const file = e.target.files[0];
+        const title = file.name.replace(/\.[^/.]+$/, '');
+        const newPub = {
+          id: `p-${Date.now()}`,
+          title: title || 'New Digital Flipbook',
+          slug: title.toLowerCase().replace(/\s+/g, '-'),
+          pages: 16,
+          reads: '1',
+          avgTime: '0m 45s',
+          updated: 'Just now',
+          status: 'live',
+          tag: { label: 'Live • New', type: 'live' },
+          thumbBg: '#DBEAFE',
+          thumbColor: '#1E40AF',
+          thumbEmoji: '📄',
+          previewText: '16 pages • Converted instantly in browser',
+          spreads: [
+            { left: 2, right: 3, title: title, graphic: '✨ 3D Render Ready' }
+          ]
+        };
+
+        publications.unshift(newPub);
+        activePubId = newPub.id;
+        currentSpreadIndex = 0;
+        initPublicationsList();
+        renderActivePublication(activePubId);
+        modal.classList.remove('is-visible');
       }
     });
   }
-}
-
-function openUploadModal() {
-  const modal = document.getElementById('upload-modal');
-  if (modal) modal.classList.add('is-visible');
-}
-
-function closeUploadModal() {
-  const modal = document.getElementById('upload-modal');
-  if (modal) modal.classList.remove('is-visible');
-}
-
-function handleFileSelected(file) {
-  if (!file) return;
-
-  const title = file.name.replace(/\.[^/.]+$/, '');
-  const newPub = {
-    id: `pub-${Date.now()}`,
-    title: title || 'New Publication',
-    pages: Math.floor(Math.random() * 20) + 6,
-    views: '1',
-    status: 'live',
-    updated: 'Just now'
-  };
-
-  publications.unshift(newPub);
-  renderPublications(publications);
-  closeUploadModal();
 }
 
 /**
- * Navbar Mega Dropdown & Mobile Handlers
+ * Embed Code & Export Actions
  */
-function initNav() {
-  const navToggle = document.getElementById('nav-toggle');
-  const navLinks = document.getElementById('nav-links');
+function initActions() {
+  const shareBtn = document.getElementById('btn-share-link');
+  const embedBtn = document.getElementById('btn-copy-embed');
+  const exportBtn = document.getElementById('btn-export-pub');
 
-  if (navToggle && navLinks) {
-    navToggle.addEventListener('click', () => {
-      const isOpen = navLinks.classList.contains('is-open');
-      navLinks.classList.toggle('is-open', !isOpen);
-      navToggle.setAttribute('aria-expanded', String(!isOpen));
-    });
-  }
-
-  const platformBtn = document.getElementById('platform-dropdown-btn');
-  const platformMenu = document.getElementById('platform-menu');
-
-  if (platformBtn && platformMenu) {
-    platformBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isExpanded = platformBtn.getAttribute('aria-expanded') === 'true';
-      platformBtn.setAttribute('aria-expanded', String(!isExpanded));
-      platformMenu.classList.toggle('is-open', !isExpanded);
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!platformMenu.contains(e.target) && !platformBtn.contains(e.target)) {
-        platformBtn.setAttribute('aria-expanded', 'false');
-        platformMenu.classList.remove('is-open');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', () => {
+      const pub = publications.find(p => p.id === activePubId);
+      if (pub && navigator.clipboard) {
+        navigator.clipboard.writeText(`${window.location.origin}/index.html#${pub.slug}`);
+        alert(`Public 3D Flipbook link for "${pub.title}" copied to clipboard!`);
       }
     });
   }
+
+  if (embedBtn) {
+    embedBtn.addEventListener('click', () => {
+      const pub = publications.find(p => p.id === activePubId);
+      if (pub && navigator.clipboard) {
+        const embedCode = `<iframe src="${window.location.origin}/index.html#${pub.slug}" width="100%" height="600" frameborder="0" allowfullscreen></iframe>`;
+        navigator.clipboard.writeText(embedCode);
+        alert(`iFrame Embed Code copied to clipboard!\n\n${embedCode}`);
+      }
+    });
+  }
+
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      const pub = publications.find(p => p.id === activePubId);
+      if (pub) {
+        alert(`Preparing high-resolution PDF download package for "${pub.title}"...`);
+      }
+    });
+  }
+}
+
+/**
+ * Switch Accounts Popup & Auth Controller
+ */
+function initSwitchAccountsPopup() {
+  const userTrigger = document.getElementById('sidebar-user-card');
+  const popup = document.getElementById('switch-accounts-popup');
+  const btnAddAccount = document.getElementById('btn-add-account');
+  const btnSwitchLogout = document.getElementById('btn-switch-logout');
+
+  const sidebarAvatar = document.getElementById('sidebar-avatar-initial');
+  const sidebarName = document.getElementById('sidebar-user-name');
+  const sidebarEmail = document.getElementById('sidebar-user-email');
+
+  const switchAvatar = document.getElementById('switch-active-avatar');
+  const switchName = document.getElementById('switch-active-name');
+  const switchEmail = document.getElementById('switch-active-email');
+
+  // Toggle Popup
+  if (userTrigger && popup) {
+    userTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isHidden = popup.hidden;
+      popup.hidden = !isHidden;
+      userTrigger.setAttribute('aria-expanded', String(isHidden));
+    });
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+      if (!popup.contains(e.target) && !userTrigger.contains(e.target)) {
+        popup.hidden = true;
+        userTrigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        popup.hidden = true;
+        userTrigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  // Add another account
+  if (btnAddAccount) {
+    btnAddAccount.addEventListener('click', () => {
+      window.location.href = 'account.html';
+    });
+  }
+
+  // Log out
+  if (btnSwitchLogout) {
+    btnSwitchLogout.addEventListener('click', async () => {
+      try {
+        const { signOut } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+        await signOut(auth);
+        localStorage.removeItem('flippage_user_photo');
+        localStorage.removeItem('flippage_user_name');
+        window.location.href = 'account.html';
+      } catch (err) {
+        console.error('Logout error:', err);
+        window.location.href = 'account.html';
+      }
+    });
+  }
+
+  // Sync real Firebase authenticated user
+  onAuthStateChanged(auth, (user) => {
+    let name = 'Ometh Ranhasa';
+    let email = 'omethranhasa123@gmail.com';
+    let photo = localStorage.getItem('flippage_user_photo') || '';
+
+    if (user) {
+      name = user.displayName || (user.email ? user.email.split('@')[0] : name);
+      email = user.email || email;
+      photo = user.photoURL || user.providerData?.[0]?.photoURL || photo;
+    }
+
+    if (photo && photo.includes('googleusercontent.com')) {
+      photo = photo.replace(/=s\d+(-c)?/i, '=s384-c');
+    }
+
+    if (sidebarName) sidebarName.textContent = name;
+    if (sidebarEmail) sidebarEmail.textContent = email;
+    if (switchName) switchName.textContent = name;
+    if (switchEmail) switchEmail.textContent = email;
+
+    const initial = (name.charAt(0) || 'O').toUpperCase();
+
+    if (sidebarAvatar) {
+      if (photo) {
+        sidebarAvatar.innerHTML = `<img src="${photo}" alt="${escapeHtml(name)}" class="brand-avatar-img" referrerpolicy="no-referrer" onerror="this.parentElement.textContent='${initial}'">`;
+        sidebarAvatar.style.padding = '0';
+        sidebarAvatar.style.overflow = 'hidden';
+      } else {
+        sidebarAvatar.textContent = initial;
+      }
+    }
+
+    if (switchAvatar) {
+      if (photo) {
+        switchAvatar.innerHTML = `<img src="${photo}" alt="${escapeHtml(name)}" referrerpolicy="no-referrer" onerror="this.parentElement.textContent='${initial}'">`;
+      } else {
+        switchAvatar.textContent = initial;
+      }
+    }
+  });
 }
 
 function escapeHtml(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  initSwitchAccountsPopup();
+});

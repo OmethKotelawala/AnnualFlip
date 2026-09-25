@@ -231,11 +231,17 @@ async function presentBrandCustomizationStep(user) {
   if (brandUserEmail) brandUserEmail.textContent = user.email || '';
 
   const avatarBox = document.getElementById('brand-avatar-box');
+  let userPhoto = user.photoURL || user.providerData?.[0]?.photoURL || '';
+  if (userPhoto && userPhoto.includes('googleusercontent.com')) {
+    // Request HD quality from Google profile photo server
+    userPhoto = userPhoto.replace(/=s\d+(-c)?/i, '=s384-c');
+  }
+
   if (avatarBox) {
-    if (user.photoURL) {
-      avatarBox.innerHTML = `<img src="${user.photoURL}" alt="${escapeHtml(displayName)}" class="brand-avatar-img" referrerpolicy="no-referrer">`;
+    if (userPhoto) {
+      avatarBox.innerHTML = `<img src="${userPhoto}" alt="${escapeHtml(displayName)}" class="brand-avatar-img" referrerpolicy="no-referrer" onerror="this.parentElement.textContent='${(displayName.charAt(0) || 'U').toUpperCase()}';">`;
     } else {
-      avatarBox.textContent = (displayName.charAt(0) || 'U').toUpperCase();
+      avatarBox.textContent = (displayName.charAt(0) || user.email?.charAt(0) || 'U').toUpperCase();
     }
   }
 
@@ -377,6 +383,19 @@ if (googleAuthBtn) {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       
+      console.log('--- Google Authenticated User Profile ---');
+      console.log('User Display Name:', user.displayName);
+      console.log('User Email:', user.email);
+      console.log('User Photo URL (Google Chrome Icon):', user.photoURL);
+      console.log('User UID:', user.uid);
+
+      if (user.photoURL) {
+        try {
+          localStorage.setItem('flippage_user_photo', user.photoURL);
+          localStorage.setItem('flippage_user_name', user.displayName || '');
+        } catch (_) {}
+      }
+
       // Provision/sync 14-day trial in Firestore
       await syncUserTrialRecord(user);
       await presentBrandCustomizationStep(user);
@@ -443,8 +462,13 @@ onAuthStateChanged(auth, (user) => {
     if (userDisplayEmail) userDisplayEmail.textContent = user.email || '';
 
     if (userAvatarInitial) {
-      if (user.photoURL) {
-        userAvatarInitial.innerHTML = `<img src="${user.photoURL}" alt="${escapeHtml(displayName)}" class="user-avatar-img" referrerpolicy="no-referrer">`;
+      let photo = user.photoURL || user.providerData?.[0]?.photoURL || localStorage.getItem('flippage_user_photo') || '';
+      console.log('Rendering signed-in profile avatar photoURL:', photo);
+      if (photo && photo.includes('googleusercontent.com')) {
+        photo = photo.replace(/=s\d+(-c)?/i, '=s384-c');
+      }
+      if (photo) {
+        userAvatarInitial.innerHTML = `<img src="${photo}" alt="${escapeHtml(displayName)}" class="user-avatar-img" referrerpolicy="no-referrer" onerror="this.parentElement.textContent='${(displayName.charAt(0) || 'U').toUpperCase()}';">`;
         userAvatarInitial.style.padding = '0';
         userAvatarInitial.style.overflow = 'hidden';
       } else {

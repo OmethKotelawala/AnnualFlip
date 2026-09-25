@@ -4,284 +4,266 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FlipPage — Workspace &amp; Publications</title>
-  <meta name="description" content="Manage your interactive 3D flipbooks, view reader analytics, and convert PDF documents in your FlipPage Workspace.">
-  <meta property="og:title" content="FlipPage — Workspace">
-  <meta property="og:description" content="Manage your interactive 3D flipbooks and convert PDF documents.">
-  <meta property="og:type" content="website">
+  <title>FlipPage Workspace — Interactive Digital Flipbook Studio</title>
+  <meta name="description" content="Manage interactive 3D digital flipbooks, client-side PDF conversions, and reader analytics in your FlipPage enterprise workspace.">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/workspace.css">
 </head>
 
 <body>
 
-  <!-- Ambient atmospheric background -->
-  <div class="cyber-bg-wrap" aria-hidden="true">
-    <div class="cyber-bg-glow"></div>
-  </div>
+  <div class="app-viewport">
 
-  <!-- ===== GLOBAL NAVBAR HEADER ===== -->
-  <nav id="navbar" role="navigation" aria-label="Main navigation">
-    <div class="wrap">
-      <div class="nav-inner">
+    <!-- ===== LEFT SIDEBAR (Screenshot Match) ===== -->
+    <aside class="app-sidebar" aria-label="Sidebar navigation">
+      
+      <div>
+        <!-- Sidebar Brand -->
+        <div class="sidebar-header">
+          <a class="sidebar-brand-group brand" href="index.html" aria-label="FlipPage home">
+            <div class="brand-icon-wrap" aria-hidden="true">
+              <img src="scr/Logo.png" alt="" class="brand-logo">
+            </div>
+            <div class="sidebar-brand-info">
+              <span class="brand-name sidebar-brand-name">Flip<span class="brand-name-accent">Page</span></span>
+            </div>
+          </a>
+          <span class="sidebar-version-badge">v4.13</span>
+        </div>
 
-        <!-- Brand -->
-        <a class="brand" href="index.html" aria-label="FlipPage home">
-          <div class="brand-icon-wrap" aria-hidden="true">
-            <img src="scr/Logo.png" alt="" class="brand-logo">
+        <!-- Nav Items Scroll -->
+        <div class="sidebar-nav-scroll">
+          
+          <div class="sidebar-category-label">WORKSPACE</div>
+          <ul class="sidebar-menu-list">
+            <li>
+              <button class="sidebar-item-link is-active" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                <span>Publications</span>
+              </button>
+            </li>
+            <li>
+              <button class="sidebar-item-link" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                <span>Collections</span>
+              </button>
+            </li>
+            <li>
+              <button class="sidebar-item-link" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                <span>Templates</span>
+              </button>
+            </li>
+          </ul>
+
+          <div class="sidebar-category-label">ANALYTICS</div>
+          <ul class="sidebar-menu-list">
+            <li>
+              <button class="sidebar-item-link" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span>Reader Insights</span>
+              </button>
+            </li>
+            <li>
+              <button class="sidebar-item-link" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Engagement Time</span>
+              </button>
+            </li>
+          </ul>
+
+          <div class="sidebar-category-label">PLAN &amp; STORAGE</div>
+          <ul class="sidebar-menu-list">
+            <li>
+              <button class="sidebar-item-link" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span id="sidebar-plan-label">14-Day Pro Trial</span>
+              </button>
+            </li>
+          </ul>
+
+          <div class="sidebar-category-label">CONFIGURE</div>
+          <ul class="sidebar-menu-list">
+            <li>
+              <button class="sidebar-item-link" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <span>Settings</span>
+              </button>
+            </li>
+            <li>
+              <button class="sidebar-item-link" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v7.31L4.5 20.5A2 2 0 0 0 6.24 23h11.52a2 2 0 0 0 1.74-2.5L14 9.31V2"/></svg>
+                <span>3D Engine Lab</span>
+              </button>
+            </li>
+          </ul>
+
+        </div>
+      </div>
+
+      <!-- Sidebar Footer User Profile -->
+      <div class="sidebar-footer">
+        <div class="sidebar-online-indicator">
+          <div class="online-avatars-stack">
+            <span class="mini-avatar">O</span>
+            <span class="mini-avatar">T</span>
           </div>
-          <span class="brand-name">Flip<span class="brand-name-accent">Page</span></span>
+          <span>2 online</span>
+        </div>
+
+        <a href="index.html#solutions" class="sidebar-status-link">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>100% Client-Side Active</span>
         </a>
 
-        <!-- Nav links -->
-        <ul class="nav-links" id="nav-links" role="list">
-
-          <!-- Products simple link -->
-          <li class="nav-item">
-            <a href="index.html#fast-work" class="nav-link">
-              <span>Products</span>
-            </a>
-          </li>
-
-          <!-- Platform with Mega Dropdown -->
-          <li class="nav-item nav-item-dropdown">
-            <button class="nav-link nav-link-btn" aria-expanded="false" id="platform-dropdown-btn" type="button">
-              <span>Platform</span>
-              <svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-
-            <!-- Mega Dropdown Menu -->
-            <div class="mega-dropdown" id="platform-menu" role="region" aria-label="Platform menu">
-              <div class="mega-header">
-                <span class="mega-header-tag">Platform</span>
-                <p class="mega-header-sub">Everything you need to publish beautiful, interactive documents.</p>
-              </div>
-
-              <div class="mega-dropdown-inner">
-                <!-- Col 1: How it works -->
-                <div class="mega-col">
-                  <span class="mega-category">HOW IT WORKS</span>
-
-                  <a href="index.html#fast-work" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">Interactive 3D Engine</strong>
-                      <span class="mega-desc">Realistic physics, page curls, shadows &amp; dual-page spreads.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-
-                  <a href="index.html#solutions" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="5" y="2" width="14" height="20" rx="2"/>
-                        <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">Touch &amp; Mobile Ready</strong>
-                      <span class="mega-desc">Fluid gesture swipe, pinch-zoom and responsive layout.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-                </div>
-
-                <!-- Col 2: Trust & Privacy -->
-                <div class="mega-col">
-                  <span class="mega-category">PRIVACY &amp; SPEED</span>
-
-                  <a href="index.html#solutions" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">100% Client-Side Privacy</strong>
-                      <span class="mega-desc">Your PDFs never leave your browser — zero cloud storage.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-
-                  <a href="index.html#solutions" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">Instant Rendering</strong>
-                      <span class="mega-desc">Hardware-accelerated PDF rendering with crisp vector typography.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-                </div>
-
-                <!-- Col 3: CTA card -->
-                <div class="mega-col mega-col-cta">
-                  <div class="mega-cta-card">
-                    <div class="mega-cta-icon" aria-hidden="true">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                    </div>
-                    <strong class="mega-cta-title">Try it free</strong>
-                    <p class="mega-cta-desc">No account needed. Drop in any PDF and watch it flip.</p>
-                    <a href="index.html#fast-work" class="mega-cta-btn">Open demo →</a>
-                  </div>
-                </div>
-              </div>
+        <!-- User Trigger Button -->
+        <button type="button" class="sidebar-user-card" id="sidebar-user-card" aria-haspopup="true" aria-expanded="false" title="Switch accounts">
+          <div class="sidebar-user-meta">
+            <div class="sidebar-user-avatar" id="sidebar-avatar-initial">AW</div>
+            <div class="sidebar-user-text">
+              <span class="sidebar-user-name" id="sidebar-user-name">Ometh Ranhasa</span>
+              <span class="sidebar-user-email" id="sidebar-user-email">omethranhasa123@gmail.com</span>
             </div>
-          </li>
-
-          <!-- Solutions link -->
-          <li class="nav-item">
-            <a href="index.html#solutions" class="nav-link"><span>Solutions</span></a>
-          </li>
-
-          <!-- Pricing link -->
-          <li class="nav-item">
-            <a href="pricing.html" class="nav-link"><span>Pricing</span></a>
-          </li>
-
-        </ul>
-
-        <!-- Right-side CTA / User Profile section -->
-        <div class="nav-cta" id="nav-user-section">
-          <a class="nav-signin" href="account.html">Sign in</a>
-          <a class="nav-getstarted" href="account.html">Create account</a>
-        </div>
-
-        <!-- Mobile hamburger -->
-        <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
-          <span class="ham-bar"></span>
-          <span class="ham-bar"></span>
-          <span class="ham-bar"></span>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.2"><polyline points="7 15 12 20 17 15"/><polyline points="7 9 12 4 17 9"/></svg>
         </button>
 
-      </div>
-    </div>
-  </nav>
+        <!-- Switch Accounts Popup Menu (Matches Reference Design) -->
+        <div class="switch-accounts-popup" id="switch-accounts-popup" hidden>
+          <div class="switch-accounts-header">Switch accounts</div>
 
-  <!-- ===== MAIN WORKSPACE CONTENT ===== -->
-  <main class="workspace-main">
-    <div class="workspace-shell">
-
-      <!-- Top Header Row -->
-      <section class="workspace-header-row" aria-labelledby="user-greeting">
-        <div class="workspace-title-group">
-          <h1 id="user-greeting">Your FlipPage Workspace</h1>
-          <p id="user-subtitle">Manage your publications, live embeds, and client-side 3D flipbooks.</p>
-        </div>
-
-        <div class="workspace-cta-group">
-          <button class="btn-ghost-action" id="new-doc-btn" type="button">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            <span>New Publication</span>
-          </button>
-          <button class="btn-upload-primary" id="open-upload-modal-btn" type="button">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <span>Upload &amp; Convert PDF</span>
-          </button>
-        </div>
-      </section>
-
-      <!-- Stat Summary Cards -->
-      <section class="workspace-stats-grid" aria-label="Workspace metrics">
-        <div class="stat-card">
-          <div class="stat-icon-wrap">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <!-- Active Account Card (Blue outlined) -->
+          <div class="switch-account-active-item" id="switch-account-active-card">
+            <div class="switch-account-avatar-box" id="switch-active-avatar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="switch-account-details">
+              <strong class="switch-account-name" id="switch-active-name">Ometh Ranhasa</strong>
+              <span class="switch-account-email" id="switch-active-email">omethranhasa123@gmail.com</span>
+            </div>
+            <div class="switch-account-check" aria-label="Active account">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
           </div>
-          <div class="stat-info">
-            <span class="stat-label">Publications</span>
-            <span class="stat-value" id="stat-total-pubs">4</span>
-          </div>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-icon-wrap green">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">Total Reads</span>
-            <span class="stat-value">18.0k</span>
-          </div>
-        </div>
+          <div class="switch-accounts-divider"></div>
 
-        <div class="stat-card">
-          <div class="stat-icon-wrap purple">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">Avg. Engagement</span>
-            <span class="stat-value">3m 42s</span>
-          </div>
-        </div>
+          <!-- Actions List -->
+          <div class="switch-accounts-actions-list">
+            <button type="button" class="switch-action-row" id="btn-add-account">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>Add another account</span>
+            </button>
 
-        <div class="stat-card">
-          <div class="stat-icon-wrap amber">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">Privacy Shield</span>
-            <span class="stat-value">100% Local</span>
-          </div>
-        </div>
-      </section>
+            <a href="account.html" class="switch-action-row" id="btn-manage-accounts">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span>Manage accounts</span>
+            </a>
 
-      <!-- Controls & Search -->
-      <div class="workspace-controls-bar">
-        <div class="search-box-wrap">
-          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" class="search-input" id="pub-search-input" placeholder="Search publications by title...">
-        </div>
-
-        <div class="filter-pills-row">
-          <button class="filter-pill is-active" data-filter="all" type="button">All Publications</button>
-          <button class="filter-pill" data-filter="live" type="button">Live</button>
-          <button class="filter-pill" data-filter="locked" type="button">Protected</button>
-          <button class="filter-pill" data-filter="draft" type="button">Drafts</button>
+            <button type="button" class="switch-action-row text-danger" id="btn-switch-logout">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              <span>Log out</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Publications Grid -->
-      <section class="publications-grid" id="publications-grid" aria-label="Publications list">
-        <!-- Rendered dynamically via js/workspace.js -->
-      </section>
+    </aside>
+
+    <!-- ===== MAIN WORKSPACE CONTENT (Top Bar + 3 Columns) ===== -->
+    <div class="app-main-content">
+
+      <!-- Top Bar (Screenshot Match) -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="topbar-icon-btn" type="button" aria-label="Toggle layout">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          </button>
+
+          <div class="topbar-breadcrumbs">
+            <span class="breadcrumb-chip">
+              <span class="chip-avatar">FP</span>
+              <span>FlipPage</span>
+            </span>
+            <span>/</span>
+            <span class="breadcrumb-chip">
+              <span class="chip-avatar" id="breadcrumb-brand-avatar">N</span>
+              <span id="breadcrumb-brand-name">Northbay Finance</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+            <span>/</span>
+            <span class="breadcrumb-chip">
+              <span class="chip-avatar">P</span>
+              <span>Publications</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+            <strong style="color: #0F172A; margin-left: 4px;">Digital Flipbooks</strong>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="topbar-datetime" id="topbar-clock">Fri, Sep 25 <strong>8:30 AM</strong></div>
+          
+          <button class="topbar-icon-btn" id="open-upload-btn" type="button" title="Upload new PDF document">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </button>
+
+          <button class="topbar-work-btn" type="button">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            <span>Live Mode</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+
+          <button class="topbar-icon-btn" type="button" title="Theme toggle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Workspace Main View -->
+      <div class="workspace-columns-layout">
+        <div class="workspace-empty-container" style="flex: 1; display: flex; align-items: center; justify-content: center; width: 100%;">
+          <div class="workspace-card-shell" style="max-width: 600px; width: 100%; padding: 48px 36px; text-align: center; margin: auto;">
+            <div style="width: 56px; height: 56px; border-radius: 14px; background: #EFF6FF; color: #2563EB; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.5rem;">📖</div>
+            <h2 style="font-size: 1.4rem; font-weight: 800; color: #0F172A; margin: 0 0 8px;">Your FlipPage Workspace</h2>
+            <p style="color: #64748B; font-size: 0.95rem; line-height: 1.5; margin: 0 0 24px;">Upload any PDF document to instantly convert it into a physics-driven 3D page-turning flipbook.</p>
+            <button class="btn-open-3d-reader" id="btn-empty-upload" type="button" style="padding: 12px 24px; font-size: 0.95rem; margin: 0 auto;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Upload PDF Document</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
     </div>
-  </main>
+
+  </div>
 
   <!-- ===== UPLOAD PDF MODAL ===== -->
   <div class="modal-overlay" id="upload-modal" role="dialog" aria-modal="true" aria-labelledby="upload-modal-title">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 class="modal-title" id="upload-modal-title">Upload &amp; Convert PDF</h3>
-        <button class="modal-close-btn" id="close-modal-btn" type="button" aria-label="Close modal">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
+        <h3 class="modal-title" id="upload-modal-title">Upload &amp; Convert PDF to 3D Flipbook</h3>
+        <button class="modal-close-btn" id="close-modal-btn" type="button" aria-label="Close modal">✕</button>
       </div>
 
       <div class="dropzone-area" id="modal-dropzone">
-        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <p class="dropzone-text">Click or drag &amp; drop PDF files here</p>
-        <p class="dropzone-hint">Hardware-rendered with 100% client-side privacy. Up to 500MB.</p>
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.8" style="margin-bottom: 12px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p style="margin: 0 0 6px; font-weight: 700; color: #0F172A; font-size: 1rem;">Click or drag &amp; drop PDF files here</p>
+        <p style="margin: 0; color: #64748B; font-size: 0.85rem;">100% client-side privacy. Up to 500MB.</p>
         <input type="file" id="pdf-file-input" accept="application/pdf" style="display: none;">
       </div>
     </div>
   </div>
 
-  
   <!-- Scripts -->
   <script type="module" src="js/workspace.js"></script>
 
