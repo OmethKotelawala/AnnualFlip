@@ -106,13 +106,15 @@ button {
   padding: 20px 0;
 }
 
-/* Auth Card Box — styled matching the black rectangular frame in the prompt */
-.auth-box {
+/* Auth Card Box — styled matching the frame */
+.auth-box,
+div:nth-of-type(1) > main:nth-of-type(1) > div:nth-of-type(2) > section:nth-of-type(1) {
   width: 100%;
   max-width: 440px;
   background: var(--card-bg);
   backdrop-filter: blur(14px);
-  border: 2.5px solid var(--card-border);
+  border: none;
+  margin: 0;
   border-radius: 18px;
   padding: 34px 32px;
   box-shadow:
