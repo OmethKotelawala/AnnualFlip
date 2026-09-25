@@ -7,7 +7,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { 
   getAuth, 
   onAuthStateChanged, 
-  signOut 
+  signOut,
+  signInWithPopup,
+  GoogleAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { 
   getFirestore, 
@@ -189,7 +191,7 @@ const TEMPLATES_CATALOG = [
 
 let selectedPubId = 'p1';
 let activeFilter = 'all';
-let currentTab = 'pubs'; // 'pubs' | 'collections' | 'templates' | 'analytics'
+let currentTab = 'pubs'; // 'pubs' | 'collections' | 'users' | 'reported' | 'calls' | 'activity' | 'usage' | 'lab'
 let activeFirebaseUser = null;
 let newPubTierSelected = 'free'; // 'free' | 'paid'
 
@@ -225,8 +227,15 @@ const detailSpecUrl = document.getElementById('detail-spec-url');
 const detailSpreadsList = document.getElementById('detail-spreads-list');
 
 // Navigation Tabs
+const navTabChat = document.getElementById('nav-tab-chat');
 const navTabPubs = document.getElementById('nav-tab-pubs');
 const navTabCollections = document.getElementById('nav-tab-collections');
+const navTabUsers = document.getElementById('nav-tab-users');
+const navTabReported = document.getElementById('nav-tab-reported');
+const navTabCalls = document.getElementById('nav-tab-calls');
+const navTabActivity = document.getElementById('nav-tab-activity');
+const navTabUsage = document.getElementById('nav-tab-usage');
+const navTabLab = document.getElementById('nav-tab-lab');
 const navTabTemplates = document.getElementById('nav-tab-templates');
 const navTabAnalytics = document.getElementById('nav-tab-analytics');
 const currentViewTitle = document.getElementById('current-view-title');
@@ -884,21 +893,52 @@ function initTemplatesTab() {
 function switchTab(tab) {
   currentTab = tab;
   
+  const tabViewChat = document.getElementById('tab-view-chat');
   const tabViewPubs = document.getElementById('tab-view-pubs');
   const tabViewCollections = document.getElementById('tab-view-collections');
+  const tabViewUsers = document.getElementById('tab-view-users');
+  const tabViewReported = document.getElementById('tab-view-reported');
+  const tabViewCalls = document.getElementById('tab-view-calls');
+  const tabViewActivity = document.getElementById('tab-view-activity');
+  const tabViewUsage = document.getElementById('tab-view-usage');
+  const tabViewLab = document.getElementById('tab-view-lab');
   const tabViewTemplates = document.getElementById('tab-view-templates');
   const tabViewAnalytics = document.getElementById('tab-view-analytics');
 
-  [navTabPubs, navTabCollections, navTabTemplates, navTabAnalytics].forEach(btn => {
+  const allNavTabs = [
+    navTabChat, 
+    navTabPubs, 
+    navTabCollections, 
+    navTabUsers, 
+    navTabReported, 
+    navTabCalls, 
+    navTabActivity, 
+    navTabUsage, 
+    navTabLab, 
+    navTabTemplates, 
+    navTabAnalytics
+  ];
+
+  allNavTabs.forEach(btn => {
     if (btn) btn.classList.remove('is-active');
   });
 
+  if (tabViewChat) tabViewChat.style.display = (tab === 'chat') ? 'block' : 'none';
   if (tabViewPubs) tabViewPubs.style.display = (tab === 'pubs') ? 'block' : 'none';
   if (tabViewCollections) tabViewCollections.style.display = (tab === 'collections') ? 'block' : 'none';
+  if (tabViewUsers) tabViewUsers.style.display = (tab === 'users') ? 'block' : 'none';
+  if (tabViewReported) tabViewReported.style.display = (tab === 'reported') ? 'block' : 'none';
+  if (tabViewCalls) tabViewCalls.style.display = (tab === 'calls') ? 'block' : 'none';
+  if (tabViewActivity) tabViewActivity.style.display = (tab === 'activity') ? 'block' : 'none';
+  if (tabViewUsage) tabViewUsage.style.display = (tab === 'usage') ? 'block' : 'none';
+  if (tabViewLab) tabViewLab.style.display = (tab === 'lab') ? 'block' : 'none';
   if (tabViewTemplates) tabViewTemplates.style.display = (tab === 'templates') ? 'block' : 'none';
   if (tabViewAnalytics) tabViewAnalytics.style.display = (tab === 'analytics') ? 'block' : 'none';
 
-  if (tab === 'pubs') {
+  if (tab === 'chat') {
+    if (navTabChat) navTabChat.classList.add('is-active');
+    if (currentViewTitle) currentViewTitle.textContent = 'Workspace Chat';
+  } else if (tab === 'pubs') {
     if (navTabPubs) navTabPubs.classList.add('is-active');
     if (currentViewTitle) currentViewTitle.textContent = 'Digital Flipbooks';
     renderPublications();
@@ -906,6 +946,24 @@ function switchTab(tab) {
     if (navTabCollections) navTabCollections.classList.add('is-active');
     if (currentViewTitle) currentViewTitle.textContent = 'Digital Bookshelf';
     renderBookshelfHub();
+  } else if (tab === 'users') {
+    if (navTabUsers) navTabUsers.classList.add('is-active');
+    if (currentViewTitle) currentViewTitle.textContent = 'Users & Roles';
+  } else if (tab === 'reported') {
+    if (navTabReported) navTabReported.classList.add('is-active');
+    if (currentViewTitle) currentViewTitle.textContent = 'Reported Content';
+  } else if (tab === 'calls') {
+    if (navTabCalls) navTabCalls.classList.add('is-active');
+    if (currentViewTitle) currentViewTitle.textContent = 'Call Logs';
+  } else if (tab === 'activity') {
+    if (navTabActivity) navTabActivity.classList.add('is-active');
+    if (currentViewTitle) currentViewTitle.textContent = 'Activity Logs';
+  } else if (tab === 'usage') {
+    if (navTabUsage) navTabUsage.classList.add('is-active');
+    if (currentViewTitle) currentViewTitle.textContent = 'Plan & Usage';
+  } else if (tab === 'lab') {
+    if (navTabLab) navTabLab.classList.add('is-active');
+    if (currentViewTitle) currentViewTitle.textContent = '3D Shader Lab';
   } else if (tab === 'templates') {
     if (navTabTemplates) navTabTemplates.classList.add('is-active');
     if (currentViewTitle) currentViewTitle.textContent = 'Templates Gallery';
@@ -914,6 +972,149 @@ function switchTab(tab) {
     if (navTabAnalytics) navTabAnalytics.classList.add('is-active');
     if (currentViewTitle) currentViewTitle.textContent = 'Reader Insights';
   }
+}
+
+// ============ WORKSPACE CHAT & FLOATING ASSISTANT WIDGET ============
+function initWorkspaceChat() {
+  const chatForm = document.getElementById('workspace-chat-form');
+  const chatInput = document.getElementById('workspace-chat-input');
+  const chatStream = document.getElementById('workspace-chat-stream');
+  const quickPillsStack = document.getElementById('widget-quick-pills');
+
+  // Floating Drawer elements
+  const btnFloatingLauncher = document.getElementById('btn-floating-ai-launcher');
+  const floatingDrawer = document.getElementById('floating-ai-drawer');
+  const btnCloseFloating = document.getElementById('btn-close-floating-drawer');
+  const floatingForm = document.getElementById('floating-chat-form');
+  const floatingInput = document.getElementById('floating-chat-input');
+  const floatingStream = document.getElementById('floating-chat-stream');
+  const floatingPillsStack = document.getElementById('floating-quick-pills');
+
+  // Helper to format current time e.g. "11:08 AM"
+  function getFormattedTime() {
+    const now = new Date();
+    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // Toggle Floating Drawer
+  if (btnFloatingLauncher && floatingDrawer) {
+    btnFloatingLauncher.addEventListener('click', (e) => {
+      e.stopPropagation();
+      floatingDrawer.classList.toggle('is-open');
+    });
+  }
+
+  if (btnCloseFloating && floatingDrawer) {
+    btnCloseFloating.addEventListener('click', () => {
+      floatingDrawer.classList.remove('is-open');
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    if (floatingDrawer && floatingDrawer.classList.contains('is-open')) {
+      if (!floatingDrawer.contains(e.target) && btnFloatingLauncher && !btnFloatingLauncher.contains(e.target)) {
+        floatingDrawer.classList.remove('is-open');
+      }
+    }
+  });
+
+  function appendMessageToStream(stream, text, isUser = true) {
+    if (!stream) return;
+    const msgDiv = document.createElement('div');
+    const timeStr = getFormattedTime();
+
+    if (isUser) {
+      msgDiv.className = 'ai-user-bubble';
+      msgDiv.textContent = text;
+    } else {
+      msgDiv.className = 'ai-bot-bubble';
+      msgDiv.innerHTML = `
+        <span class="greeting-body">${escapeHtml(text)}</span>
+        <span class="bubble-time">${timeStr}</span>
+      `;
+    }
+    
+    stream.appendChild(msgDiv);
+    stream.scrollTop = stream.scrollHeight;
+  }
+
+  function generateAssistantResponse(query, targetStream) {
+    const q = query.toLowerCase();
+    
+    // Simulate typing delay
+    setTimeout(() => {
+      let reply = "";
+      if (q.includes('service') || q.includes('offer')) {
+        reply = "We offer interactive 3D digital flipbook conversion from PDF, vector rendering, customizable branding, audio page turns, embed widgets, and reader insights analytics!";
+      } else if (q.includes('support') || q.includes('contact')) {
+        reply = "You can reach our dedicated FlipPage support team 24/7 at support@flippage.io or message us directly through this Virtual Assistant.";
+      } else if (q.includes('cost') || q.includes('price') || q.includes('plan')) {
+        reply = "We have a Free Tier with basic 3D publishing, and a Pro Tier ($19/mo) with zero watermarks, HD vector rendering, password protection, and custom sub-domains. You currently have 14 days left on your Pro trial!";
+      } else if (q.includes('upload') || q.includes('pdf') || q.includes('create')) {
+        reply = "To create a 3D flipbook, click '+ New Flipbook' in the top right or drop your PDF document into the creation modal. It compiles into interactive double-sided spreads instantly.";
+      } else if (q.includes('summary') || q.includes('reads')) {
+        reply = `📊 Reader Insights: Across your ${publications.length} active publications, you have 18,100 reads with an average reading duration of 3m 42s.`;
+      } else {
+        reply = `Thanks for asking about "${query}". I'm ready to help you optimize your flipbooks, customize your 3D physics settings, or launch reader presentations.`;
+      }
+
+      appendMessageToStream(targetStream || chatStream, reply, false);
+      if (targetStream !== floatingStream && floatingStream) {
+        appendMessageToStream(floatingStream, reply, false);
+      }
+    }, 450);
+  }
+
+  // Handle Tab View Chat Form
+  if (chatForm && chatInput) {
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = chatInput.value.trim();
+      if (!val) return;
+      
+      // Hide initial pills once custom conversation starts
+      if (quickPillsStack) quickPillsStack.style.display = 'none';
+      
+      appendMessageToStream(chatStream, val, true);
+      chatInput.value = '';
+      generateAssistantResponse(val, chatStream);
+    });
+  }
+
+  // Handle Tab Quick Action Pills
+  document.querySelectorAll('.chat-prompt-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const prompt = chip.dataset.prompt;
+      if (!prompt) return;
+      if (quickPillsStack) quickPillsStack.style.display = 'none';
+      appendMessageToStream(chatStream, prompt, true);
+      generateAssistantResponse(prompt, chatStream);
+    });
+  });
+
+  // Handle Floating Drawer Chat Form
+  if (floatingForm && floatingInput) {
+    floatingForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = floatingInput.value.trim();
+      if (!val) return;
+      if (floatingPillsStack) floatingPillsStack.style.display = 'none';
+      appendMessageToStream(floatingStream, val, true);
+      floatingInput.value = '';
+      generateAssistantResponse(val, floatingStream);
+    });
+  }
+
+  // Handle Floating Quick Action Pills
+  document.querySelectorAll('.floating-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const prompt = chip.dataset.prompt;
+      if (!prompt) return;
+      if (floatingPillsStack) floatingPillsStack.style.display = 'none';
+      appendMessageToStream(floatingStream, prompt, true);
+      generateAssistantResponse(prompt, floatingStream);
+    });
+  });
 }
 
 function renderBookshelfHub() {
@@ -960,8 +1161,36 @@ function initClock() {
 }
 
 function initAuth() {
+  const btnSwitchLogin = document.getElementById('btn-switch-login');
+  const topbarSigninBtn = document.getElementById('topbar-signin-btn');
+  const topbarSigninText = document.getElementById('topbar-signin-text');
+  const authGateOverlay = document.getElementById('auth-gate-overlay');
+  const authGateGoogleBtn = document.getElementById('auth-gate-google-btn');
+  const googleProvider = new GoogleAuthProvider();
+  googleProvider.setCustomParameters({ prompt: 'select_account' });
+
+  // Handle Google sign in directly on the auth gate if clicked
+  if (authGateGoogleBtn) {
+    authGateGoogleBtn.addEventListener('click', async () => {
+      try {
+        authGateGoogleBtn.disabled = true;
+        authGateGoogleBtn.innerHTML = '<span>Signing in with Google...</span>';
+        await signInWithPopup(auth, googleProvider);
+      } catch (err) {
+        console.error('Gate Google Sign-In Error:', err);
+        authGateGoogleBtn.disabled = false;
+        authGateGoogleBtn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span>Continue with Google</span>
+        `;
+      }
+    });
+  }
+
   onAuthStateChanged(auth, (user) => {
     if (user) {
+      // User is Authenticated: Unlock Workspace
+      if (authGateOverlay) authGateOverlay.style.display = 'none';
       activeFirebaseUser = user;
       const name = user.displayName || (user.email ? user.email.split('@')[0] : 'Workspace Member');
       const email = user.email || '';
@@ -972,13 +1201,18 @@ function initAuth() {
       }
 
       if (sidebarName) sidebarName.textContent = name;
-      if (sidebarEmail) sidebarEmail.textContent = email;
+      if (sidebarEmail) {
+        sidebarEmail.textContent = email;
+        sidebarEmail.style.color = '#8896A6';
+        sidebarEmail.style.fontWeight = '400';
+      }
       if (switchName) switchName.textContent = name;
       if (switchEmail) switchEmail.textContent = email;
 
       const initial = (name.charAt(0) || 'U').toUpperCase();
 
       if (sidebarAvatar) {
+        sidebarAvatar.style.background = '#2563EB';
         if (photo) {
           sidebarAvatar.innerHTML = `<img src="${photo}" alt="${escapeHtml(name)}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.parentElement.textContent='${initial}';">`;
           sidebarAvatar.style.padding = '0';
@@ -993,6 +1227,65 @@ function initAuth() {
         } else {
           switchAvatar.textContent = initial;
         }
+      }
+
+      if (topbarSigninBtn && topbarSigninText) {
+        topbarSigninText.textContent = name;
+        topbarSigninBtn.title = `Connected as ${email}`;
+      }
+
+      if (btnSwitchLogout) btnSwitchLogout.style.display = 'flex';
+      if (btnSwitchLogin) {
+        btnSwitchLogin.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
+          </svg>
+          <span>Switch / Add Account</span>
+        `;
+      }
+    } else {
+      // User is Unauthenticated: Lock Workspace and Prompt/Redirect to Account page
+      activeFirebaseUser = null;
+      if (authGateOverlay) authGateOverlay.style.display = 'flex';
+
+      // Auto-redirect to account page with auth=required parameter
+      setTimeout(() => {
+        if (!auth.currentUser) {
+          window.location.replace('account.html?auth=required');
+        }
+      }, 700);
+
+      if (sidebarName) sidebarName.textContent = 'Guest User';
+      if (sidebarEmail) {
+        sidebarEmail.textContent = 'Click to Sign In';
+        sidebarEmail.style.color = '#2563EB';
+        sidebarEmail.style.fontWeight = '600';
+      }
+      if (sidebarAvatar) {
+        sidebarAvatar.style.background = '#64748B';
+        sidebarAvatar.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+      }
+      if (switchName) switchName.textContent = 'Guest User';
+      if (switchEmail) switchEmail.textContent = 'Signed out • Local mode';
+      if (switchAvatar) {
+        switchAvatar.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+      }
+
+      if (topbarSigninBtn && topbarSigninText) {
+        topbarSigninText.textContent = 'Sign In / Connect';
+        topbarSigninBtn.title = 'Sign in with your Google or Email account';
+      }
+
+      if (btnSwitchLogout) btnSwitchLogout.style.display = 'none';
+      if (btnSwitchLogin) {
+        btnSwitchLogin.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          <span>Sign in / Create Account</span>
+        `;
       }
     }
   });
@@ -1061,8 +1354,24 @@ function initSearchAndFilter() {
     });
   });
 
+  if (navTabChat) {
+    navTabChat.addEventListener('click', () => {
+      const floatingDrawer = document.getElementById('floating-ai-drawer');
+      if (floatingDrawer) {
+        floatingDrawer.classList.toggle('is-open');
+        const input = document.getElementById('floating-chat-input');
+        if (input) input.focus();
+      }
+    });
+  }
   if (navTabPubs) navTabPubs.addEventListener('click', () => switchTab('pubs'));
   if (navTabCollections) navTabCollections.addEventListener('click', () => switchTab('collections'));
+  if (navTabUsers) navTabUsers.addEventListener('click', () => switchTab('users'));
+  if (navTabReported) navTabReported.addEventListener('click', () => switchTab('reported'));
+  if (navTabCalls) navTabCalls.addEventListener('click', () => switchTab('calls'));
+  if (navTabActivity) navTabActivity.addEventListener('click', () => switchTab('activity'));
+  if (navTabUsage) navTabUsage.addEventListener('click', () => switchTab('usage'));
+  if (navTabLab) navTabLab.addEventListener('click', () => switchTab('lab'));
   if (navTabTemplates) navTabTemplates.addEventListener('click', () => switchTab('templates'));
   if (navTabAnalytics) navTabAnalytics.addEventListener('click', () => switchTab('analytics'));
 
@@ -1095,6 +1404,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initClock();
   initAuth();
   initSearchAndFilter();
+  initWorkspaceChat();
   initCreateModal();
   initProModal();
   renderPublications();

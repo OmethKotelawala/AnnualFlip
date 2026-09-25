@@ -22,23 +22,23 @@ import {
 import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
 // Master Admin Email
-const MASTER_ADMIN_EMAIL = "omethranhasacz@gmail.com";
+const MASTER_ADMIN_EMAIL = "paneljoker145@gmail.com";
 
-// Firebase Configuration from User Project
+// Firebase Configuration from Active Project
 const firebaseConfig = {
-  apiKey: "AIzaSyC7EHsN6CiX5JlbRiLFo_f_-OfWIj4VIIo",
-  authDomain: "flippage-e7f06.firebaseapp.com",
-  projectId: "flippage-e7f06",
-  storageBucket: "flippage-e7f06.firebasestorage.app",
-  messagingSenderId: "1090051466641",
-  appId: "1:1090051466641:web:237cbd139ca71cd186a630",
-  measurementId: "G-BNY548FEEM"
+  projectId: "gen-lang-client-0435835472",
+  appId: "1:772093074138:web:42bda395d4aed6154023e3",
+  apiKey: "AIzaSyCf6Fp-qy8fkkDGOGKiouF1n64tgSNfAzY",
+  authDomain: "gen-lang-client-0435835472.firebaseapp.com",
+  firestoreDatabaseId: "ai-studio-annualflip-d5e05e1e-4c28-4cf6-b18c-1e967bd5cdc9",
+  storageBucket: "gen-lang-client-0435835472.firebasestorage.app",
+  messagingSenderId: "772093074138"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
 
@@ -85,6 +85,16 @@ const brandFormStatus = document.getElementById('brand-form-status');
 
 let currentMode = 'signin'; // 'signin' | 'signup'
 let activeFirebaseUser = null;
+
+// Check URL params for auth=required notification
+try {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('auth') === 'required') {
+    setTimeout(() => {
+      showStatus('🔒 Please sign in or create an account to access the FlipPage Workspace.', false);
+    }, 100);
+  }
+} catch (_) {}
 
 /**
  * Switch Auth Mode (Sign in / Create account)
@@ -276,7 +286,7 @@ if (brandNameInput && saveBrandBtn) {
 if (saveBrandBtn) {
   saveBrandBtn.addEventListener('click', async () => {
     if (!activeFirebaseUser) {
-      window.location.href = 'Workspace.html';
+      window.location.href = 'workspace.html';
       return;
     }
 
@@ -291,7 +301,7 @@ if (saveBrandBtn) {
     }
 
     setTimeout(() => {
-      window.location.href = 'Workspace.html';
+      window.location.href = 'workspace.html';
     }, 600);
   });
 }
