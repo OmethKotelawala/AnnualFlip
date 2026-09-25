@@ -1,0 +1,75 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User account, subscription plan, branding, and trial details",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "format": "email", "maxLength": 150 },
+        "photoURL": { "type": "string", "maxLength": 1000 },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "plan": { "type": "string", "enum": ["Free", "Pro", "Enterprise"] },
+        "isPaid": { "type": "boolean" },
+        "brandName": { "type": "string", "maxLength": 100 },
+        "brandUrl": { "type": "string", "maxLength": 200 },
+        "trialDays": { "type": "number" },
+        "trialStartDate": { "type": "string", "format": "date-time" },
+        "trialEndDate": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["active", "extended", "expired", "suspended"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastLoginAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Publication": {
+      "title": "Flipbook Publication",
+      "description": "Digital 3D interactive PDF flipbook publication with Free/Paid crown tiers and sharing settings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "ownerId": { "type": "string", "maxLength": 128 },
+        "ownerEmail": { "type": "string", "maxLength": 150 },
+        "title": { "type": "string", "maxLength": 200 },
+        "slug": { "type": "string", "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "category": { "type": "string", "maxLength": 100 },
+        "pages": { "type": "number" },
+        "reads": { "type": "number" },
+        "shares": { "type": "number" },
+        "avgTime": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "enum": ["live", "draft", "locked", "archived"] },
+        "planTier": { "type": "string", "enum": ["free", "paid"] },
+        "isPaid": { "type": "boolean" },
+        "thumbBg": { "type": "string", "maxLength": 50 },
+        "thumbColor": { "type": "string", "maxLength": 50 },
+        "thumbEmoji": { "type": "string", "maxLength": 20 },
+        "previewText": { "type": "string", "maxLength": 300 },
+        "pdfUrl": { "type": "string", "maxLength": 2000 },
+        "pdfData": { "type": "string" },
+        "customLogoUrl": { "type": "string", "maxLength": 1000 },
+        "customBrandColor": { "type": "string", "maxLength": 50 },
+        "isPasswordProtected": { "type": "boolean" },
+        "password": { "type": "string", "maxLength": 100 },
+        "leadCaptureEnabled": { "type": "boolean" },
+        "allowDownload": { "type": "boolean" },
+        "soundEnabled": { "type": "boolean" },
+        "vectorHdScale": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "ownerId", "title", "pages"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles, roles, subscriptions, and brand settings"
+    },
+    "/publications/{pubId}": {
+      "schema": "Publication",
+      "description": "Interactive digital 3D flipbook publications created and shared by users"
+    }
+  }
+}

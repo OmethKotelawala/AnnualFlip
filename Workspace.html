@@ -5,13 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FlipPage Workspace — Interactive Digital Flipbook Studio</title>
-  <meta name="description" content="Manage interactive 3D digital flipbooks, client-side PDF conversions, and reader analytics in your FlipPage enterprise workspace.">
+  <meta name="description" content="Manage interactive 3D digital flipbooks, client-side PDF conversions, Free and Paid crown tiers, and reader analytics in your FlipPage workspace.">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+  <!-- PDF.js for client-side PDF page counting & parsing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <!-- Styles -->
   <link rel="stylesheet" href="css/workspace.css">
 </head>
 
@@ -19,7 +23,7 @@
 
   <div class="app-viewport">
 
-    <!-- ===== LEFT SIDEBAR (Screenshot Match) ===== -->
+    <!-- ===== LEFT SIDEBAR ===== -->
     <aside class="app-sidebar" aria-label="Sidebar navigation">
       
       <div>
@@ -27,13 +31,13 @@
         <div class="sidebar-header">
           <a class="sidebar-brand-group brand" href="index.html" aria-label="FlipPage home">
             <div class="brand-icon-wrap" aria-hidden="true">
-              <img src="scr/Logo.png" alt="" class="brand-logo">
+              <img src="scr/Logo.png" alt="FlipPage logo" class="brand-logo">
             </div>
             <div class="sidebar-brand-info">
               <span class="brand-name sidebar-brand-name">Flip<span class="brand-name-accent">Page</span></span>
             </div>
           </a>
-          <span class="sidebar-version-badge">v4.13</span>
+          <span class="sidebar-version-badge">v4.14</span>
         </div>
 
         <!-- Nav Items Scroll -->
@@ -42,47 +46,37 @@
           <div class="sidebar-category-label">WORKSPACE</div>
           <ul class="sidebar-menu-list">
             <li>
-              <button class="sidebar-item-link is-active" type="button">
+              <button class="sidebar-item-link is-active" id="nav-tab-pubs" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                 <span>Publications</span>
               </button>
             </li>
             <li>
-              <button class="sidebar-item-link" type="button">
+              <button class="sidebar-item-link" id="nav-tab-collections" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                <span>Collections</span>
+                <span>Digital Bookshelf</span>
               </button>
             </li>
             <li>
-              <button class="sidebar-item-link" type="button">
+              <button class="sidebar-item-link" id="nav-tab-templates" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
                 <span>Templates</span>
               </button>
             </li>
           </ul>
 
-          <div class="sidebar-category-label">ANALYTICS</div>
+          <div class="sidebar-category-label">ANALYTICS &amp; TIERS</div>
           <ul class="sidebar-menu-list">
             <li>
-              <button class="sidebar-item-link" type="button">
+              <button class="sidebar-item-link" id="nav-tab-analytics" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                 <span>Reader Insights</span>
               </button>
             </li>
             <li>
-              <button class="sidebar-item-link" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <span>Engagement Time</span>
-              </button>
-            </li>
-          </ul>
-
-          <div class="sidebar-category-label">PLAN &amp; STORAGE</div>
-          <ul class="sidebar-menu-list">
-            <li>
-              <button class="sidebar-item-link" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                <span id="sidebar-plan-label">14-Day Pro Trial</span>
+              <button class="sidebar-item-link" id="nav-btn-upgrade-plan" type="button" style="color:#B45309; background:#FEF3C7; border:1px solid #FCD34D;">
+                <span class="crown-icon">👑</span>
+                <span id="sidebar-plan-label" style="font-weight:700;">Pro Plan (Yellow Crown)</span>
               </button>
             </li>
           </ul>
@@ -90,16 +84,16 @@
           <div class="sidebar-category-label">CONFIGURE</div>
           <ul class="sidebar-menu-list">
             <li>
-              <button class="sidebar-item-link" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                <span>Settings</span>
-              </button>
+              <a href="pricing.html" class="sidebar-item-link" style="text-decoration:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span>Pricing Plans</span>
+              </a>
             </li>
             <li>
-              <button class="sidebar-item-link" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v7.31L4.5 20.5A2 2 0 0 0 6.24 23h11.52a2 2 0 0 0 1.74-2.5L14 9.31V2"/></svg>
-                <span>3D Engine Lab</span>
-              </button>
+              <a href="admin.html" class="sidebar-item-link" style="text-decoration:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>Admin Portal</span>
+              </a>
             </li>
           </ul>
 
@@ -111,17 +105,17 @@
         <div class="sidebar-online-indicator">
           <div class="online-avatars-stack">
             <span class="mini-avatar">O</span>
-            <span class="mini-avatar">T</span>
+            <span class="mini-avatar">P</span>
           </div>
-          <span>2 online</span>
+          <span>Firestore Connected</span>
         </div>
 
-        <a href="index.html#solutions" class="sidebar-status-link">
+        <a href="index.html" class="sidebar-status-link">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          <span>100% Client-Side Active</span>
+          <span>100% Client-Side Privacy</span>
         </a>
 
-        <!-- User Trigger Button -->
+        <!-- User Profile Trigger Button -->
         <button type="button" class="sidebar-user-card" id="sidebar-user-card" aria-haspopup="true" aria-expanded="false" title="Switch accounts">
           <div class="sidebar-user-meta">
             <div class="sidebar-user-avatar" id="sidebar-avatar-initial">AW</div>
@@ -133,11 +127,10 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.2"><polyline points="7 15 12 20 17 15"/><polyline points="7 9 12 4 17 9"/></svg>
         </button>
 
-        <!-- Switch Accounts Popup Menu (Matches Reference Design) -->
+        <!-- Switch Accounts Popup Menu -->
         <div class="switch-accounts-popup" id="switch-accounts-popup" hidden>
           <div class="switch-accounts-header">Switch accounts</div>
 
-          <!-- Active Account Card (Blue outlined) -->
           <div class="switch-account-active-item" id="switch-account-active-card">
             <div class="switch-account-avatar-box" id="switch-active-avatar">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -153,19 +146,13 @@
 
           <div class="switch-accounts-divider"></div>
 
-          <!-- Actions List -->
           <div class="switch-accounts-actions-list">
-            <button type="button" class="switch-action-row" id="btn-add-account">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>Add another account</span>
-            </button>
-
             <a href="account.html" class="switch-action-row" id="btn-manage-accounts">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
               </svg>
-              <span>Manage accounts</span>
+              <span>Manage Account &amp; Branding</span>
             </a>
 
             <button type="button" class="switch-action-row text-danger" id="btn-switch-logout">
@@ -178,16 +165,12 @@
 
     </aside>
 
-    <!-- ===== MAIN WORKSPACE CONTENT (Top Bar + 3 Columns) ===== -->
+    <!-- ===== MAIN WORKSPACE CONTENT ===== -->
     <div class="app-main-content">
 
-      <!-- Top Bar (Screenshot Match) -->
+      <!-- Top Bar -->
       <header class="app-topbar">
         <div class="topbar-left">
-          <button class="topbar-icon-btn" type="button" aria-label="Toggle layout">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-          </button>
-
           <div class="topbar-breadcrumbs">
             <span class="breadcrumb-chip">
               <span class="chip-avatar">FP</span>
@@ -195,76 +178,422 @@
             </span>
             <span>/</span>
             <span class="breadcrumb-chip">
-              <span class="chip-avatar" id="breadcrumb-brand-avatar">N</span>
-              <span id="breadcrumb-brand-name">Northbay Finance</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              <span class="chip-avatar" id="breadcrumb-brand-avatar">W</span>
+              <span id="breadcrumb-brand-name">Workspace</span>
             </span>
             <span>/</span>
-            <span class="breadcrumb-chip">
-              <span class="chip-avatar">P</span>
-              <span>Publications</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </span>
-            <strong style="color: #0F172A; margin-left: 4px;">Digital Flipbooks</strong>
+            <strong style="color: #0F172A; margin-left: 4px;" id="current-view-title">Digital Flipbooks</strong>
           </div>
         </div>
 
         <div class="topbar-right">
-          <div class="topbar-datetime" id="topbar-clock">Fri, Sep 25 <strong>8:30 AM</strong></div>
+          <div class="topbar-datetime" id="topbar-clock">Fri, Sep 25 <strong>10:30 AM</strong></div>
           
-          <button class="topbar-icon-btn" id="open-upload-btn" type="button" title="Upload new PDF document">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          </button>
-
-          <button class="topbar-work-btn" type="button">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-            <span>Live Mode</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-
-          <button class="topbar-icon-btn" type="button" title="Theme toggle">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <button class="btn-new-pub" id="btn-open-create-modal" type="button" title="Upload new PDF document">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>New Flipbook</span>
           </button>
         </div>
       </header>
 
-      <!-- Workspace Main View -->
+      <!-- Workspace Master 2-Pane Layout -->
       <div class="workspace-columns-layout">
-        <div class="workspace-empty-container" style="flex: 1; display: flex; align-items: center; justify-content: center; width: 100%;">
-          <div class="workspace-card-shell" style="max-width: 600px; width: 100%; padding: 48px 36px; text-align: center; margin: auto;">
-            <div style="width: 56px; height: 56px; border-radius: 14px; background: #EFF6FF; color: #2563EB; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.5rem;">📖</div>
-            <h2 style="font-size: 1.4rem; font-weight: 800; color: #0F172A; margin: 0 0 8px;">Your FlipPage Workspace</h2>
-            <p style="color: #64748B; font-size: 0.95rem; line-height: 1.5; margin: 0 0 24px;">Upload any PDF document to instantly convert it into a physics-driven 3D page-turning flipbook.</p>
-            <button class="btn-open-3d-reader" id="btn-empty-upload" type="button" style="padding: 12px 24px; font-size: 0.95rem; margin: 0 auto;">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <span>Upload PDF Document</span>
+        
+        <!-- Left Pane: Tabs / Feed / Stats / Grid -->
+        <main class="workspace-left-pane" id="main-content-area">
+          
+          <!-- Quick Stats Cards Banner -->
+          <section class="workspace-stats-grid" aria-label="Quick metrics">
+            <div class="stat-card">
+              <div class="stat-icon-box blue">📖</div>
+              <div class="stat-meta">
+                <span class="stat-val" id="stat-total-pubs">4</span>
+                <span class="stat-lbl">Total Flipbooks</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-box green">👁️</div>
+              <div class="stat-meta">
+                <span class="stat-val" id="stat-total-reads">18.1k</span>
+                <span class="stat-lbl">Total Reads</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-box amber">👑</div>
+              <div class="stat-meta">
+                <span class="stat-val" id="stat-paid-pubs">2</span>
+                <span class="stat-lbl">Pro (Yellow Crown)</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-box purple">🔗</div>
+              <div class="stat-meta">
+                <span class="stat-val" id="stat-shares-count">840</span>
+                <span class="stat-lbl">Direct Shares</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB 1: Publications Feed -->
+          <div id="tab-view-pubs">
+            
+            <div class="workspace-feed-header" style="margin-bottom: 16px;">
+              <div class="search-box-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" class="feed-search-input" id="search-pubs-input" placeholder="Search flipbooks by title or tag...">
+              </div>
+
+              <div class="filter-pills-row" id="filter-pills-container">
+                <button class="filter-pill is-active" data-filter="all" type="button">All (4)</button>
+                <button class="filter-pill" data-filter="paid" type="button">👑 Pro Tier</button>
+                <button class="filter-pill" data-filter="free" type="button">Free Tier</button>
+                <button class="filter-pill" data-filter="live" type="button">Live</button>
+                <button class="filter-pill" data-filter="draft" type="button">Draft</button>
+              </div>
+            </div>
+
+            <!-- Publications Cards Grid -->
+            <div class="publications-grid" id="publications-grid-container">
+              <!-- Dynamically populated via JS from Firestore -->
+            </div>
+
+          </div>
+
+          <!-- TAB 2: Digital Bookshelf / Collections -->
+          <div id="tab-view-collections" style="display:none;">
+            <div style="background:#FFFFFF; border:1px solid var(--border-subtle); border-radius:16px; padding:24px; margin-bottom:20px;">
+              <h3 style="margin:0 0 8px; font-size:1.2rem; font-weight:800; color:#0F172A;">📚 Digital Bookshelf &amp; Public Hub</h3>
+              <p style="margin:0 0 16px; font-size:0.88rem; color:#64748B;">Share a single link featuring your entire flipbook library with customized branding and reader access control.</p>
+              
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="pub-btn primary" id="btn-copy-hub-link" type="button">🔗 Copy Bookshelf Link</button>
+                <button class="pub-btn" id="btn-embed-hub" type="button">&lt;/&gt; Embed Bookshelf iFrame</button>
+              </div>
+            </div>
+
+            <div class="publications-grid" id="collections-grid-container">
+              <!-- Rendered bookshelf items -->
+            </div>
+          </div>
+
+          <!-- TAB 3: Templates Showcase -->
+          <div id="tab-view-templates" style="display:none;">
+            <div style="margin-bottom:16px;">
+              <h3 style="margin:0 0 6px; font-size:1.2rem; font-weight:800;">🎨 Ready-to-Use 3D Flipbook Templates</h3>
+              <p style="margin:0; font-size:0.85rem; color:#64748B;">Clone high-converting digital publication layouts with one click.</p>
+            </div>
+
+            <div class="publications-grid" id="templates-grid-container">
+              <!-- Rendered template items -->
+            </div>
+          </div>
+
+          <!-- TAB 4: Reader Analytics -->
+          <div id="tab-view-analytics" style="display:none;">
+            <div style="display:grid; grid-template-columns:2fr 1fr; gap:16px; margin-bottom:16px;">
+              
+              <div style="background:#FFFFFF; border:1px solid var(--border-subtle); border-radius:16px; padding:24px;">
+                <h4 style="margin:0 0 14px; font-size:1.05rem; font-weight:800;">📈 Reader Engagement Trend (Last 30 Days)</h4>
+                <div style="height:180px; display:flex; align-items:flex-end; gap:10px; padding:10px 0; border-bottom:1px solid #F1F5F9;">
+                  <div style="flex:1; background:#EFF6FF; border-radius:6px 6px 0 0; height:45%; position:relative;" title="Week 1: 3,200 reads"><span style="position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); font-size:11px; color:#94A3B8;">W1</span></div>
+                  <div style="flex:1; background:#BFDBFE; border-radius:6px 6px 0 0; height:68%; position:relative;" title="Week 2: 5,400 reads"><span style="position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); font-size:11px; color:#94A3B8;">W2</span></div>
+                  <div style="flex:1; background:#60A5FA; border-radius:6px 6px 0 0; height:85%; position:relative;" title="Week 3: 7,100 reads"><span style="position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); font-size:11px; color:#94A3B8;">W3</span></div>
+                  <div style="flex:1; background:#2563EB; border-radius:6px 6px 0 0; height:100%; position:relative;" title="Week 4: 9,400 reads"><span style="position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); font-size:11px; color:#94A3B8;">W4</span></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-top:30px; font-size:0.8rem; color:#64748B;">
+                  <span>Average Time on Page: <strong>48 seconds</strong></span>
+                  <span>Completion Rate: <strong>76.4%</strong></span>
+                </div>
+              </div>
+
+              <div style="background:#FFFFFF; border:1px solid var(--border-subtle); border-radius:16px; padding:24px;">
+                <h4 style="margin:0 0 14px; font-size:1.05rem; font-weight:800;">📱 Devices Breakdown</h4>
+                <div style="display:flex; flex-direction:column; gap:12px; font-size:0.85rem;">
+                  <div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                      <span>Desktop &amp; Laptop</span>
+                      <strong>58%</strong>
+                    </div>
+                    <div style="height:6px; background:#F1F5F9; border-radius:3px; overflow:hidden;"><div style="width:58%; height:100%; background:#2563EB;"></div></div>
+                  </div>
+                  <div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                      <span>Mobile Smartphones</span>
+                      <strong>34%</strong>
+                    </div>
+                    <div style="height:6px; background:#F1F5F9; border-radius:3px; overflow:hidden;"><div style="width:34%; height:100%; background:#10B981;"></div></div>
+                  </div>
+                  <div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                      <span>Tablets &amp; iPad</span>
+                      <strong>8%</strong>
+                    </div>
+                    <div style="height:6px; background:#F1F5F9; border-radius:3px; overflow:hidden;"><div style="width:8%; height:100%; background:#F59E0B;"></div></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </main>
+
+        <!-- Right Pane: Interactive Flipbook Inspection & Live Actions -->
+        <aside class="workspace-right-pane" id="detail-pane" aria-label="Publication details">
+          
+          <div class="detail-header-top">
+            <span class="sidebar-category-label" style="padding:0;">PUBLICATION PREVIEW</span>
+            <span class="crown-badge" id="detail-tier-badge">👑 PRO</span>
+          </div>
+
+          <!-- Cover preview card -->
+          <div class="detail-cover-showcase">
+            <div class="detail-cover-book" id="detail-book-thumb" style="background:#BBF7D0; color:#166534;">
+              <span id="detail-book-emoji">📖</span>
+            </div>
+            <h3 class="detail-title" id="detail-book-title">Annual Sustainability Report 2026</h3>
+            <p class="detail-desc" id="detail-book-desc">28 pages • 4.2k reads • Dual spread active with realistic 3D curl physics.</p>
+            
+            <div class="detail-cta-row">
+              <a href="reader.html?id=p1" class="btn-launch-reader" id="btn-detail-open-reader" target="_blank">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span>Read 3D Book</span>
+              </a>
+              <button class="btn-detail-share" id="btn-detail-share" type="button" title="Share &amp; Embed">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                <span>Share</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Tier Switcher -->
+          <div style="background:#FFFBEB; border:1px solid #FCD34D; border-radius:12px; padding:12px 14px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;">
+            <div>
+              <strong style="display:block; font-size:0.82rem; color:#92400E;">Access &amp; Feature Tier</strong>
+              <span style="font-size:0.75rem; color:#B45309;" id="detail-tier-description">👑 Pro HD Vector rendering enabled</span>
+            </div>
+            <button class="tier-toggle-btn is-paid" id="btn-detail-toggle-tier" type="button">
+              <span class="crown-icon">👑</span>
+              <span id="detail-tier-btn-label">Pro Active</span>
             </button>
           </div>
-        </div>
+
+          <!-- Specs Box -->
+          <div class="detail-specs-box">
+            <div class="spec-row">
+              <span class="spec-lbl">Total Pages</span>
+              <span class="spec-val" id="detail-spec-pages">28 Pages</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-lbl">Status</span>
+              <span class="spec-val" id="detail-spec-status" style="color:#059669;">● Live</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-lbl">Direct Reads</span>
+              <span class="spec-val" id="detail-spec-reads">4,210</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-lbl">Avg Read Time</span>
+              <span class="spec-val" id="detail-spec-time">3m 42s</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-lbl">Share URL</span>
+              <span class="spec-val" id="detail-spec-url" style="color:#2563EB; font-family:monospace; font-size:0.75rem;">flippage.io/p1</span>
+            </div>
+          </div>
+
+          <!-- Spreads list preview -->
+          <div>
+            <span class="sidebar-category-label" style="padding:0 0 8px;">INSIDE PAGES &amp; SPREADS</span>
+            <div id="detail-spreads-list" style="display:flex; flex-direction:column; gap:6px;">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+        </aside>
+
       </div>
 
     </div>
 
   </div>
 
-  <!-- ===== UPLOAD PDF MODAL ===== -->
-  <div class="modal-overlay" id="upload-modal" role="dialog" aria-modal="true" aria-labelledby="upload-modal-title">
+  <!-- ===== CREATE / UPLOAD NEW FLIPBOOK MODAL ===== -->
+  <div class="modal-overlay" id="upload-modal" role="dialog" aria-modal="true" aria-labelledby="upload-modal-title" hidden>
     <div class="modal-box">
       <div class="modal-header">
-        <h3 class="modal-title" id="upload-modal-title">Upload &amp; Convert PDF to 3D Flipbook</h3>
+        <h3 class="modal-title" id="upload-modal-title">Create New 3D Flipbook</h3>
         <button class="modal-close-btn" id="close-modal-btn" type="button" aria-label="Close modal">✕</button>
       </div>
 
-      <div class="dropzone-area" id="modal-dropzone">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.8" style="margin-bottom: 12px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <p style="margin: 0 0 6px; font-weight: 700; color: #0F172A; font-size: 1rem;">Click or drag &amp; drop PDF files here</p>
-        <p style="margin: 0; color: #64748B; font-size: 0.85rem;">100% client-side privacy. Up to 500MB.</p>
-        <input type="file" id="pdf-file-input" accept="application/pdf" style="display: none;">
+      <form id="create-publication-form">
+        
+        <!-- PDF File Dropzone -->
+        <div class="form-group">
+          <label class="form-label">Upload PDF Document</label>
+          <div class="dropzone-area" id="modal-dropzone">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.8" style="margin-bottom: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <p style="margin: 0 0 4px; font-weight: 700; color: #0F172A; font-size: 0.92rem;" id="dropzone-label">Click to browse or drop PDF file here</p>
+            <p style="margin: 0; color: #64748B; font-size: 0.78rem;" id="dropzone-sub">100% client-side rendering. Automatically counts pages.</p>
+            <input type="file" id="pdf-file-input" accept="application/pdf" style="display: none;">
+          </div>
+        </div>
+
+        <!-- Title & Category -->
+        <div class="form-group">
+          <label class="form-label" for="pub-input-title">Publication Title *</label>
+          <input type="text" class="form-input" id="pub-input-title" required placeholder="e.g. Annual Company Report 2026">
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label" for="pub-input-category">Category</label>
+            <select class="form-input" id="pub-input-category">
+              <option value="Annual Report">Annual Report</option>
+              <option value="Lookbook & Catalog">Lookbook &amp; Catalog</option>
+              <option value="Brand Guidelines">Brand Guidelines</option>
+              <option value="Pitch Deck">Pitch Deck</option>
+              <option value="Magazine & Editorial">Magazine &amp; Editorial</option>
+              <option value="Brochure">Brochure</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pub-input-pages">Estimated Pages</label>
+            <input type="number" class="form-input" id="pub-input-pages" min="2" max="500" value="20">
+          </div>
+        </div>
+
+        <!-- Access & Feature Tier (Free vs Paid Yellow Crown) -->
+        <div class="form-group">
+          <label class="form-label">Select Feature &amp; Reader Tier</label>
+          <div class="tier-select-grid">
+            <div class="tier-option-card is-selected" id="opt-tier-free">
+              <h4><span>📄</span><span>Free Tier</span></h4>
+              <p>Standard 3D flipbook, FlipPage watermark, standard vector zoom.</p>
+            </div>
+
+            <div class="tier-option-card paid-option" id="opt-tier-paid">
+              <h4><span class="crown-icon">👑</span><span>Pro (Yellow Crown)</span></h4>
+              <p>4K Vector HD scale, Custom Branding, Zero Watermarks, Password Lock.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Optional Password Protection -->
+        <div class="form-group" id="group-password-protect" style="display:none;">
+          <label class="form-label" for="pub-input-password">Optional Password Lock (Pro Feature 👑)</label>
+          <input type="password" class="form-input" id="pub-input-password" placeholder="Leave empty for public access">
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button class="pub-btn" id="btn-cancel-create" type="button">Cancel</button>
+          <button class="btn-new-pub" id="btn-submit-create" type="submit">
+            <span>Publish Flipbook</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== SHARE & EMBED MODAL ===== -->
+  <div class="modal-overlay" id="share-modal" role="dialog" aria-modal="true" hidden>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" style="display:flex; align-items:center; gap:8px;">
+          <span>🔗</span>
+          <span>Share Flipbook Publication</span>
+        </h3>
+        <button class="modal-close-btn" id="close-share-modal-btn" type="button">✕</button>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <label class="form-label">Direct Reader Link</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" class="form-input" id="share-modal-url-input" readonly>
+          <button class="pub-btn primary" id="btn-copy-modal-url" type="button" style="white-space:nowrap;">Copy Link</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <label class="form-label">Website Embed Code (iFrame)</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" class="form-input" id="share-modal-embed-input" readonly>
+          <button class="pub-btn primary" id="btn-copy-modal-embed" type="button" style="white-space:nowrap;">Copy Embed</button>
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label">Share to Socials</label>
+        <div style="display:flex; gap:8px; margin-top:6px;">
+          <a href="#" target="_blank" class="pub-btn" id="share-modal-wa" style="flex:1; justify-content:center;">WhatsApp</a>
+          <a href="#" target="_blank" class="pub-btn" id="share-modal-tw" style="flex:1; justify-content:center;">X / Twitter</a>
+          <a href="#" target="_blank" class="pub-btn" id="share-modal-li" style="flex:1; justify-content:center;">LinkedIn</a>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- ===== PRO PLAN (👑 YELLOW CROWN) UPGRADE MODAL ===== -->
+  <div class="modal-overlay" id="pro-modal" role="dialog" aria-modal="true" hidden>
+    <div class="modal-box" style="max-width:640px;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="display:flex; align-items:center; gap:8px; color:#B45309;">
+          <span class="crown-icon">👑</span>
+          <span>FlipPage Pro &amp; Yellow Crown Features</span>
+        </h3>
+        <button class="modal-close-btn" id="close-pro-modal-btn" type="button">✕</button>
+      </div>
+
+      <p style="font-size:0.9rem; color:#64748B; margin:0 0 18px;">Upgrade individual publications or your entire workspace to Pro with Yellow Crown 👑 branding.</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+        <div style="border:1px solid #E2E8F0; border-radius:14px; padding:16px; background:#F8FAFC;">
+          <h4 style="margin:0 0 8px; font-size:0.95rem; color:#334155;">Free Tier</h4>
+          <ul style="padding-left:18px; margin:0; font-size:0.8rem; color:#64748B; line-height:1.8;">
+            <li>Standard 3D Page Turn</li>
+            <li>FlipPage Watermark</li>
+            <li>Standard 2x Zoom</li>
+            <li>Public Link Sharing</li>
+          </ul>
+        </div>
+
+        <div style="border:2px solid #F59E0B; border-radius:14px; padding:16px; background:#FFFBEB;">
+          <h4 style="margin:0 0 8px; font-size:0.95rem; color:#92400E; display:flex; align-items:center; gap:6px;">
+            <span class="crown-icon">👑</span>
+            <span>Paid / Pro Tier</span>
+          </h4>
+          <ul style="padding-left:18px; margin:0; font-size:0.8rem; color:#92400E; line-height:1.8;">
+            <li><strong>👑 Yellow Crown Badge</strong></li>
+            <li><strong>Ultra HD 4K Vector Scale</strong></li>
+            <li><strong>Remove All Watermarks</strong></li>
+            <li><strong>Password Lock &amp; Lead Capture</strong></li>
+            <li><strong>Full Reader Analytics</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="pub-btn" id="btn-close-pro-modal" type="button">Close</button>
+        <button class="btn-new-pub" id="btn-activate-pro-workspace" type="button" style="background:#F59E0B; color:#000;">
+          <span class="crown-icon">👑</span>
+          <span>Activate Pro Plan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="ws-toast" id="ws-toast" style="display:none;">
+    <span>✓</span>
+    <span id="ws-toast-msg">Operation completed successfully</span>
+  </div>
+
+  <!-- Workspace JS Controller -->
   <script type="module" src="js/workspace.js"></script>
 
 </body>

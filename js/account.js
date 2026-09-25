@@ -483,3 +483,7 @@ onAuthStateChanged(auth, (user) => {
     if (brandStep) brandStep.hidden = true;
   }
 });
+
+function escapeHtml(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
