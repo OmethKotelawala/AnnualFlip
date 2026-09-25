@@ -73,11 +73,17 @@ function initAuthListener() {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       const name = user.displayName || user.email?.split('@')[0] || 'Creator';
+      const email = (user.email || '').toLowerCase();
+      const isAdmin = email === 'omethranhasacz@gmail.com';
+
       if (userGreeting) userGreeting.textContent = `Welcome back, ${name}! 👋`;
-      if (userSubtitle) userSubtitle.textContent = `Manage your publications, live embeds, and client-side 3D flipbooks.`;
+      if (userSubtitle) userSubtitle.textContent = isAdmin 
+        ? `Administrator session active • Manage user 14-day trials in Admin Portal.` 
+        : `14-Day Free Trial Active • Enjoy unlimited client-side 3D flipbook creation.`;
 
       if (navUserSection) {
         navUserSection.innerHTML = `
+          ${isAdmin ? '<a class="nav-user-chip" style="background: rgba(139, 92, 246, 0.15); border-color: #C4B5FD; color: #7C3AED;" href="admin.html">👑 Admin Portal</a>' : ''}
           <a class="nav-user-chip" href="account.html" title="Account settings">
             <span class="nav-user-avatar">${(name.charAt(0) || 'U').toUpperCase()}</span>
             <span>${name}</span>

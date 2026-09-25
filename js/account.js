@@ -13,7 +13,16 @@ import {
   signOut, 
   onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+  getFirestore, 
+  doc, 
+  getDoc, 
+  setDoc 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+// Master Admin Email
+const MASTER_ADMIN_EMAIL = "omethranhasacz@gmail.com";
 
 // Firebase Configuration from User Project
 const firebaseConfig = {
@@ -29,8 +38,46 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
+
+/**
+ * Ensure user document is provisioned with 14-day trial in Firestore
+ */
+async function syncUserTrialRecord(user, customName = '') {
+  try {
+    const userRef = doc(db, 'users', user.uid);
+    const existingSnap = await getDoc(userRef);
+    const now = new Date();
+    const isAdmin = (user.email || '').toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase();
+
+    if (!existingSnap.exists()) {
+      const trialDays = 14;
+      const trialStartDate = now.toISOString();
+      const trialEndDate = new Date(now.getTime() + trialDays * 24 * 60 * 60 * 1000).toISOString();
+
+      await setDoc(userRef, {
+        uid: user.uid,
+        displayName: customName || user.displayName || (user.email ? user.email.split('@')[0] : 'User'),
+        email: user.email || '',
+        role: isAdmin ? 'admin' : 'user',
+        createdAt: trialStartDate,
+        trialDays: trialDays,
+        trialStartDate: trialStartDate,
+        trialEndDate: trialEndDate,
+        status: 'active',
+        lastLoginAt: trialStartDate
+      });
+    } else {
+      await setDoc(userRef, {
+        lastLoginAt: now.toISOString()
+      }, { merge: true });
+    }
+  } catch (err) {
+    console.warn('Firestore trial sync notice:', err);
+  }
+}
 
 // Initialize optional analytics safely
 isSupported().then(supported => {
@@ -191,13 +238,18 @@ form.addEventListener('submit', async (event) => {
         } catch (_) {}
       }
 
+      // Provision 14-day trial in Firestore
+      await syncUserTrialRecord(user, fullName);
+
       showStatus('Account created successfully! Redirecting to Workspace...', false);
       setTimeout(() => {
         window.location.href = 'Workspace.html';
       }, 700);
     } else {
       // Sign In with Firebase Auth
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      await syncUserTrialRecord(userCredential.user);
+
       showStatus('Signed in successfully! Redirecting to Workspace...', false);
       setTimeout(() => {
         window.location.href = 'Workspace.html';
@@ -223,6 +275,10 @@ if (googleAuthBtn) {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
+      
+      // Provision/sync 14-day trial in Firestore
+      await syncUserTrialRecord(user);
+
       showStatus(`Welcome, ${user.displayName || user.email}! Redirecting to Workspace...`, false);
       setTimeout(() => {
         window.location.href = 'Workspace.html';
