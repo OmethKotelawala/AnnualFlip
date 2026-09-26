@@ -1,0 +1,163 @@
+/* ==========================================================================
+   WORKSPACE SIDEBAR & TAB STYLING - FlipPage
+   Matches uploaded sidebar theme with custom SVGs & interactive active states
+   ========================================================================== */
+
+.sidebar-category-label {
+  font-size: 0.80rem;
+  font-weight: 600;
+  color: #64748B;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  padding: 0;
+  margin: 16px 0 6px 10px;
+  user-select: none;
+}
+
+.sidebar-category-label:first-of-type {
+  margin-top: 4px;
+}
+
+.sidebar-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-menu-list li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-item-link {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  color: #334155;
+  font-size: 0.90rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  transition: all 0.16s ease;
+  box-sizing: border-box;
+}
+
+.sidebar-item-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-item-icon-wrap {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar-svg-icon {
+  width: 19px;
+  height: 19px;
+  object-fit: contain;
+  display: block;
+  opacity: 0.88;
+  transition: opacity 0.15s ease, transform 0.15s ease, filter 0.15s ease;
+}
+
+.sidebar-item-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-item-link:hover:not(.is-active) {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+
+.sidebar-item-link:hover:not(.is-active) .sidebar-svg-icon {
+  opacity: 1;
+  filter: brightness(0.2);
+  transform: scale(1.06);
+}
+
+.sidebar-item-link.is-active {
+  background: #1D68FE !important;
+  color: #FFFFFF !important;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(29, 104, 254, 0.28);
+}
+
+.sidebar-item-link.is-active .sidebar-svg-icon {
+  opacity: 1;
+  filter: brightness(0) invert(1) !important;
+  transform: scale(1.06);
+}
+
+.sidebar-item-link.is-active .nav-badge {
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: #FFFFFF !important;
+}
+
+/* Nav Pills / Badges */
+.nav-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.nav-badge.new {
+  background: #CCFBF1;
+  color: #0F766E;
+}
+
+.nav-badge.beta {
+  background: #FFEDD5;
+  color: #C2410C;
+}
+
+.nav-badge.crown {
+  background: #FEF3C7;
+  color: #B45309;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+}
+
+.nav-badge.crown svg,
+.nav-badge.crown .crown-badge-icon {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.sidebar-item-link.is-active .nav-badge.crown {
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: #FFFFFF !important;
+}
+
+.sidebar-item-link.is-active .nav-badge.crown .crown-badge-icon {
+  filter: brightness(0) invert(1);
+}

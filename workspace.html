@@ -17,6 +17,7 @@
 
   <!-- Styles -->
   <link rel="stylesheet" href="css/workspace.css">
+  <link rel="stylesheet" href="css/workspace.style.css">
 </head>
 
 <body>
@@ -43,107 +44,118 @@
         <!-- Nav Items Scroll -->
         <div class="sidebar-nav-scroll">
           
-          <div class="sidebar-category-label">WORKSPACE</div>
+          <div class="sidebar-category-label">Workspace</div>
           <ul class="sidebar-menu-list">
             <li>
-              <button class="sidebar-item-link is-active" id="nav-tab-pubs" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                </svg>
-                <span>Flipbooks</span>
-              </button>
-            </li>
-            <li>
-              <button class="sidebar-item-link" id="nav-tab-collections" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                </svg>
-                <span>Bookshelf</span>
+              <button class="sidebar-item-link is-active" id="nav-tab-preview" type="button" title="Flipbook Preview">
+                <div class="sidebar-item-main">
+                  <span class="sidebar-item-icon-wrap">
+                    <img src="src/svg/book.svg" class="sidebar-svg-icon" alt="Preview">
+                  </span>
+                  <span class="sidebar-item-text">Preview</span>
+                </div>
               </button>
             </li>
           </ul>
 
-          <div class="sidebar-category-label">PEOPLE</div>
+          <div class="sidebar-category-label">Customize</div>
           <ul class="sidebar-menu-list">
             <li>
-              <button class="sidebar-item-link" id="nav-tab-users" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-                <span>Users</span>
+              <button class="sidebar-item-link" id="nav-tab-design" type="button" title="Design Customization">
+                <div class="sidebar-item-main">
+                  <span class="sidebar-item-icon-wrap">
+                    <img src="src/svg/paint-brush.svg" class="sidebar-svg-icon" alt="Design">
+                  </span>
+                  <span class="sidebar-item-text">Design</span>
+                </div>
+              </button>
+            </li>
+            <li>
+              <button class="sidebar-item-link" id="nav-tab-themes" type="button" title="Theme Palettes">
+                <div class="sidebar-item-main">
+                  <span class="sidebar-item-icon-wrap">
+                    <img src="src/svg/theme.svg" class="sidebar-svg-icon" alt="Themes">
+                  </span>
+                  <span class="sidebar-item-text">Themes</span>
+                </div>
+                <span class="nav-badge crown" title="Pro Feature"><img src="src/svg/crown.svg" class="crown-badge-icon" alt="Crown"> PRO</span>
+              </button>
+            </li>
+            <li>
+              <button class="sidebar-item-link" id="nav-tab-navigate" type="button" title="Navigation Controls">
+                <div class="sidebar-item-main">
+                  <span class="sidebar-item-icon-wrap">
+                    <img src="src/svg/gps-navigation.svg" class="sidebar-svg-icon" alt="Navigate">
+                  </span>
+                  <span class="sidebar-item-text">Navigate</span>
+                </div>
+                <span class="nav-badge crown" title="Pro Feature"><img src="src/svg/crown.svg" class="crown-badge-icon" alt="Crown"> PRO</span>
               </button>
             </li>
           </ul>
 
-          <div class="sidebar-category-label">RECORDS</div>
+          <div class="sidebar-category-label">Branding</div>
           <ul class="sidebar-menu-list">
             <li>
-              <button class="sidebar-item-link" id="nav-tab-reported" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-                  <line x1="12" y1="9" x2="12" y2="13"/>
-                  <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-                <span>Reported</span>
+              <button class="sidebar-item-link" id="nav-tab-logo" type="button" title="Brand Logo & Favicon">
+                <div class="sidebar-item-main">
+                  <span class="sidebar-item-icon-wrap">
+                    <img src="src/svg/paint-brush.svg" class="sidebar-svg-icon" alt="Logo">
+                  </span>
+                  <span class="sidebar-item-text">Logo</span>
+                </div>
+                <span class="nav-badge crown" title="Pro Feature"><img src="src/svg/crown.svg" class="crown-badge-icon" alt="Crown"> PRO</span>
               </button>
             </li>
             <li>
-              <button class="sidebar-item-link" id="nav-tab-calls" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                </svg>
-                <span>Call Logs</span>
-              </button>
-            </li>
-            <li>
-              <button class="sidebar-item-link" id="nav-tab-activity" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                  <path d="M3 3v5h5"/>
-                  <path d="M12 7v5l4 2"/>
-                </svg>
-                <span>Activity Logs</span>
+              <button class="sidebar-item-link" id="nav-tab-profile" type="button" title="User Profile">
+                <div class="sidebar-item-main">
+                  <span class="sidebar-item-icon-wrap">
+                    <img src="src/svg/user.svg" class="sidebar-svg-icon" alt="Profile">
+                  </span>
+                  <span class="sidebar-item-text">Profile</span>
+                </div>
+                <span class="nav-badge crown" title="Pro Feature"><img src="src/svg/crown.svg" class="crown-badge-icon" alt="Crown"> PRO</span>
               </button>
             </li>
           </ul>
 
-          <div class="sidebar-category-label">PLAN</div>
+          <div class="sidebar-category-label">Share</div>
           <ul class="sidebar-menu-list">
             <li>
-              <button class="sidebar-item-link" id="nav-tab-usage" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 20V10"/>
-                  <path d="M12 20V4"/>
-                  <path d="M6 20v-6"/>
-                </svg>
-                <span>Usage</span>
+              <button class="sidebar-item-link" id="nav-tab-share-social" type="button" title="Share on Social Media">
+                <div class="sidebar-item-main">
+                  <span class="sidebar-item-icon-wrap">
+                    <img src="src/svg/bullhorn.svg" class="sidebar-svg-icon" alt="Share On Social">
+                  </span>
+                  <span class="sidebar-item-text">Share</span>
+                </div>
+                <span class="nav-badge new">New</span>
               </button>
             </li>
           </ul>
 
-          <div class="sidebar-category-label">CONFIGURE</div>
+          <div class="sidebar-category-label">Configuration</div>
           <ul class="sidebar-menu-list">
             <li>
-              <a href="account.html" class="sidebar-item-link" id="nav-tab-settings" style="text-decoration:none;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="3"/>
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                </svg>
-                <span>Settings</span>
-              </a>
+              <button class="sidebar-item-link" id="nav-tab-settings" type="button" title="Settings">
+                <div class="sidebar-item-main">
+                  <span class="sidebar-item-icon-wrap">
+                    <img src="src/svg/settings.svg" class="sidebar-svg-icon" alt="Settings">
+                  </span>
+                  <span class="sidebar-item-text">Settings</span>
+                </div>
+              </button>
             </li>
             <li>
-              <button class="sidebar-item-link" id="nav-tab-lab" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/>
-                  <path d="M8.5 2h7"/>
-                  <path d="M7 16h10"/>
-                </svg>
-                <span>Lab</span>
+              <button class="sidebar-item-link" id="nav-tab-teams" type="button" title="Teams & Members">
+                <div class="sidebar-item-main">
+                  <span class="sidebar-item-icon-wrap">
+                    <img src="src/svg/business-and-trade.svg" class="sidebar-svg-icon" alt="Teams">
+                  </span>
+                  <span class="sidebar-item-text">Teams</span>
+                </div>
+                <span class="nav-badge crown" title="Pro Feature"><img src="src/svg/crown.svg" class="crown-badge-icon" alt="Crown"> PRO</span>
               </button>
             </li>
           </ul>
@@ -908,6 +920,7 @@
 
   <!-- Workspace JS Controller -->
   <script type="module" src="js/workspace.js"></script>
+  <script type="module" src="js/workspace.style.js"></script>
 
 </body>
 
