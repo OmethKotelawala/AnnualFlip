@@ -10,6 +10,10 @@ const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 
 // Explicit clean route handlers
+app.get(['/platform', '/platform.html', '/Platform.html'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'Platform.html'));
+});
+
 app.get(['/workspace', '/workspace.html', '/Workspace.html'], (req, res) => {
   res.sendFile(path.join(__dirname, 'workspace.html'));
 });

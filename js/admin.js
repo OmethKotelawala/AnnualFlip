@@ -1,7 +1,7 @@
 /**
  * FlipPage Enterprise SaaS Admin Dashboard Controller
- * Real-time Firebase Firestore RBAC, User Management, Plan Tiers & Time Duration
- * Matching Reference UI Layout & SaaS Design System
+ * Real-time Firebase Firestore RBAC, Real User Management, Plan Tiers & Time Duration
+ * Loads ONLY real users from Firestore without fake/seed data
  */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { 
@@ -28,7 +28,7 @@ import {
 const ADMIN_EMAILS = [
   "yutrytopipygh@gmail.com",
   "paneljoker145@gmail.com",
-  "omethranhasacz@gmail.com",
+  "colddoggy1@gmail.com",
   "admin@gmail.com",
   "admin@northbay.lk",
   "admin@flippage.com"
@@ -74,233 +74,13 @@ function handleFirestoreError(error, operationType, path) {
   showToast(error?.message || 'Database error occurred');
 }
 
-// Initial User & Plan Template Dataset
-const initialSeedData = [
-  {
-    uid: 'u-1',
-    displayName: 'Jane Cooper',
-    email: 'jane.cooper@example.com',
-    photoURL: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',
-    taskName: 'Wireframe Homepage',
-    project: 'Landing Page Design',
-    priority: 'Low',
-    status: 'To Do',
-    plan: 'Free',
-    isPaid: false,
-    trialDays: 14,
-    trialStartDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    trialEndDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000).toISOString(),
-    brandName: 'Cooper Studio',
-    brandUrl: 'FlipPage.com/jane-cooper',
-    role: 'user'
-  },
-  {
-    uid: 'u-2',
-    displayName: 'Robert Fox',
-    email: 'robert.fox@example.com',
-    photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
-    taskName: 'Update Brand Colors',
-    project: 'Landing Page Design',
-    priority: 'Medium',
-    status: 'To Do',
-    plan: 'Starter',
-    isPaid: false,
-    trialDays: 14,
-    trialStartDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    trialEndDate: new Date(Date.now() + 13 * 24 * 60 * 60 * 1000).toISOString(),
-    brandName: 'Fox Media',
-    brandUrl: 'FlipPage.com/robert-fox',
-    role: 'user'
-  },
-  {
-    uid: 'u-3',
-    displayName: 'Eleanor Pena',
-    email: 'eleanor.pena@example.com',
-    photoURL: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
-    taskName: 'Checkout Flow Redesign',
-    project: 'Landing Page Design',
-    priority: 'High',
-    status: 'In Progress',
-    plan: 'Pro',
-    isPaid: true,
-    trialDays: 30,
-    trialStartDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    trialEndDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000).toISOString(),
-    brandName: 'Pena Fashion',
-    brandUrl: 'FlipPage.com/eleanor-pena',
-    role: 'user'
-  },
-  {
-    uid: 'u-4',
-    displayName: 'Guy Hawkins',
-    email: 'guy.hawkins@example.com',
-    photoURL: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
-    taskName: 'API Integration Testing',
-    project: 'Website Revamp',
-    priority: 'Medium',
-    status: 'In Progress',
-    plan: 'Pro',
-    isPaid: true,
-    trialDays: 30,
-    trialStartDate: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-    trialEndDate: new Date(Date.now() + 22 * 24 * 60 * 60 * 1000).toISOString(),
-    brandName: 'Hawkins Tech',
-    brandUrl: 'FlipPage.com/guy-hawkins',
-    role: 'user'
-  },
-  {
-    uid: 'u-5',
-    displayName: 'Annette Black',
-    email: 'annette.black@example.com',
-    photoURL: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80',
-    taskName: 'Design System Audit',
-    project: 'Landing Page Design',
-    priority: 'Medium',
-    status: 'Review',
-    plan: 'Starter',
-    isPaid: false,
-    trialDays: 14,
-    trialStartDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    trialEndDate: new Date(Date.now() + 11 * 24 * 60 * 60 * 1000).toISOString(),
-    brandName: 'Black Design Group',
-    brandUrl: 'FlipPage.com/annette-black',
-    role: 'user'
-  },
-  {
-    uid: 'u-6',
-    displayName: 'Jacob Jones',
-    email: 'jacob.jones@example.com',
-    photoURL: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80',
-    taskName: 'Email Template QA',
-    project: 'Daily Tasks',
-    priority: 'Low',
-    status: 'Review',
-    plan: 'Free',
-    isPaid: false,
-    trialDays: 7,
-    trialStartDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    trialEndDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-    brandName: 'Jones Agency',
-    brandUrl: 'FlipPage.com/jacob-jones',
-    role: 'user'
-  },
-  {
-    uid: 'u-7',
-    displayName: 'Esther Howard',
-    email: 'esther.howard@example.com',
-    photoURL: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&auto=format&fit=crop&q=80',
-    taskName: 'User Research Interviews',
-    project: 'Landing Page Design',
-    priority: 'Low',
-    status: 'Completed',
-    plan: 'Enterprise',
-    isPaid: true,
-    trialDays: 60,
-    trialStartDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    trialEndDate: new Date(Date.now() + 50 * 24 * 60 * 60 * 1000).toISOString(),
-    brandName: 'Howard Global',
-    brandUrl: 'FlipPage.com/esther-howard',
-    role: 'user'
-  },
-  {
-    uid: 'u-8',
-    displayName: 'Alex Morgan',
-    email: 'alex.morgan@workspace.io',
-    photoURL: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80',
-    taskName: 'Annual Sustainability Report',
-    project: 'Corporate Publishing',
-    priority: 'High',
-    status: 'In Progress',
-    plan: 'Pro',
-    isPaid: true,
-    trialDays: 90,
-    trialStartDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-    trialEndDate: new Date(Date.now() + 75 * 24 * 60 * 60 * 1000).toISOString(),
-    brandName: 'Morgan Media Co.',
-    brandUrl: 'FlipPage.com/morgan-media',
-    role: 'user'
-  },
-  {
-    uid: 'u-9',
-    displayName: 'Senuri Jayawardena',
-    email: 'senuri@northbay.lk',
-    photoURL: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80',
-    taskName: 'Spring Lookbook 2026',
-    project: 'Catalogues',
-    priority: 'High',
-    status: 'Completed',
-    plan: 'Enterprise',
-    isPaid: true,
-    trialDays: 365,
-    trialStartDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    trialEndDate: new Date(Date.now() + 335 * 24 * 60 * 60 * 1000).toISOString(),
-    brandName: 'Northbay Finance',
-    brandUrl: 'FlipPage.com/northbay-finance',
-    role: 'user'
-  },
-  {
-    uid: 'u-10',
-    displayName: 'Dineth Abeysekara',
-    email: 'dineth@apexcreative.co',
-    photoURL: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&auto=format&fit=crop&q=80',
-    taskName: 'Vector Zoom 4K Optimization',
-    project: 'Core Engine',
-    priority: 'Medium',
-    status: 'Overdue',
-    plan: 'Free',
-    isPaid: false,
-    trialDays: 14,
-    trialStartDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-    trialEndDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-    brandName: 'Apex Studio',
-    brandUrl: 'FlipPage.com/apex-studio',
-    role: 'user'
-  },
-  {
-    uid: 'u-11',
-    displayName: 'Kavindi Perera',
-    email: 'kavindi@designstudio.lk',
-    photoURL: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=80',
-    taskName: 'Brand Custom Domain Routing',
-    project: 'SaaS Platform',
-    priority: 'Low',
-    status: 'To Do',
-    plan: 'Starter',
-    isPaid: false,
-    trialDays: 30,
-    trialStartDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    trialEndDate: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
-    brandName: 'Perera Design Systems',
-    brandUrl: 'FlipPage.com/perera-design',
-    role: 'user'
-  },
-  {
-    uid: 'u-12',
-    displayName: 'Ometh Ranhas',
-    email: 'omethranhasacz@gmail.com',
-    photoURL: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop&q=80',
-    taskName: 'System Security & ABAC Audit',
-    project: 'Security & Auth',
-    priority: 'High',
-    status: 'Completed',
-    plan: 'Pro',
-    isPaid: true,
-    trialDays: 365,
-    trialStartDate: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
-    trialEndDate: new Date(Date.now() + 325 * 24 * 60 * 60 * 1000).toISOString(),
-    brandName: 'FlipPage Core',
-    brandUrl: 'FlipPage.com/core',
-    role: 'admin'
-  }
-];
-
 let usersData = [];
 let activeFilter = 'all';
 let currentSearchTerm = '';
 let currentPage = 1;
 const pageSize = 10;
 let currentEditingUserId = null;
-let currentEditingUserPlan = 'Free';
+let currentEditingUserPlan = 'FREE';
 let currentEditingDuration = 14;
 
 // DOM Elements
@@ -341,10 +121,25 @@ const btnCancelEditModal = document.getElementById('btn-cancel-edit-modal');
 const editModalAvatar = document.getElementById('edit-modal-avatar');
 const editModalUserName = document.getElementById('edit-modal-user-name');
 const editModalUserEmail = document.getElementById('edit-modal-user-email');
+const editModalPriorityPill = document.getElementById('edit-modal-priority-pill');
+const editUserDisplayName = document.getElementById('edit-user-display-name');
+const editUserCompanyName = document.getElementById('edit-user-company-name');
+const editUserBrandSlug = document.getElementById('edit-user-brand-slug');
 const editPlanOptions = document.getElementById('edit-plan-options');
 const editCustomDays = document.getElementById('edit-custom-days');
+const editCalcExpiryPreview = document.getElementById('edit-calc-expiry-preview');
 const editPlanStatus = document.getElementById('edit-plan-status');
+const editUserRole = document.getElementById('edit-user-role');
 const btnSavePlanChanges = document.getElementById('btn-save-plan-changes');
+
+function slugify(text) {
+  return String(text || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
 
 const adminToast = document.getElementById('admin-toast');
 const toastMessage = document.getElementById('toast-message');
@@ -396,7 +191,7 @@ function setupAuth() {
           topbarAdminPhoto.src = user.photoURL;
         }
 
-        // Initialize Firestore Data Sync & Seeding
+        // Initialize Real-time Firestore Sync (Real Users Only)
         initFirestoreData();
       } else {
         // Access Denied: User is logged in, but not an admin
@@ -474,68 +269,108 @@ function setupAuth() {
   }
 }
 
-// ============ REAL-TIME FIRESTORE DATA SYNC ============
+// Clean any legacy fake seed documents (e.g. u-1 .. u-12) from Firestore if found
+async function purgeLegacyFakeSeeds(snapshot) {
+  const fakeIds = ['u-1','u-2','u-3','u-4','u-5','u-6','u-7','u-8','u-9','u-10','u-11','u-12'];
+  const fakeDocDeletes = [];
+  snapshot.forEach((docSnap) => {
+    if (fakeIds.includes(docSnap.id) || (docSnap.data().email && docSnap.data().email.endsWith('@example.com'))) {
+      fakeDocDeletes.push(deleteDoc(doc(db, 'users', docSnap.id)).catch(() => {}));
+    }
+  });
+  if (fakeDocDeletes.length > 0) {
+    console.log(`Cleaning ${fakeDocDeletes.length} legacy demo placeholder records from Firestore...`);
+    await Promise.all(fakeDocDeletes);
+  }
+}
+
+// ============ REAL-TIME FIRESTORE DATA SYNC (REAL USERS ONLY) ============
 async function initFirestoreData() {
   const usersPath = 'users';
   try {
     const usersCol = collection(db, usersPath);
 
-    // Initial check: if users collection has fewer than 5 items, seed full dataset to Firestore
-    const existingSnap = await getDocs(usersCol);
-    if (existingSnap.size < 5) {
-      await seedUsersToFirestore();
-    }
+    // Attach real-time listener to Firestore
+    onSnapshot(usersCol, async (snapshot) => {
+      // Purge any legacy mock seed records in background so Firestore only holds real users
+      purgeLegacyFakeSeeds(snapshot);
 
-    // Attach real-time listener
-    onSnapshot(usersCol, (snapshot) => {
       const liveList = [];
+      const fakeIds = ['u-1','u-2','u-3','u-4','u-5','u-6','u-7','u-8','u-9','u-10','u-11','u-12'];
+
       snapshot.forEach((docSnap) => {
         const data = docSnap.data();
-        const trialEnd = data.trialEndDate ? data.trialEndDate.split('T')[0] : '2026-03-20';
-        const isPaidUser = data.isPaid === true || data.plan === 'Pro' || data.plan === 'Enterprise';
+        const docId = docSnap.id;
+
+        // Strictly ignore fake/seed records
+        if (fakeIds.includes(docId) || (data.email && data.email.endsWith('@example.com'))) {
+          return;
+        }
+
+        const now = new Date();
+        const createdAt = data.createdAt ? new Date(data.createdAt) : now;
+        const trialDays = Number(data.trialDays) || 14;
         
+        let trialEndStr = data.trialEndDate;
+        if (!trialEndStr) {
+          const calculatedEnd = new Date(createdAt.getTime() + trialDays * 24 * 60 * 60 * 1000);
+          trialEndStr = calculatedEnd.toISOString();
+        }
+        const dueDate = trialEndStr.split('T')[0];
+
+        const planRaw = (data.plan || (data.isPaid ? 'PRO' : 'FREE')).toUpperCase();
+        const isPaidUser = data.isPaid === true || planRaw === 'PRO' || planRaw === 'ENTERPRISE' || planRaw === 'STARTER';
+        const planTier = planRaw === 'PRO' ? 'PRO' : (planRaw === 'ENTERPRISE' ? 'Enterprise' : (planRaw === 'STARTER' ? 'Starter' : 'FREE'));
+
+        const daysRemaining = Math.ceil((new Date(trialEndStr).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        
+        let calculatedStatus = data.status || 'active';
+        if (daysRemaining < 0 && calculatedStatus !== 'extended') {
+          calculatedStatus = 'Overdue';
+        } else if (calculatedStatus === 'active') {
+          calculatedStatus = isPaidUser ? 'In Progress' : 'To Do';
+        }
+
+        const name = data.displayName || data.name || (data.email ? data.email.split('@')[0] : 'Member');
+        const email = data.email || '—';
+        const brandName = data.brandName || '';
+        const brandSlug = brandName ? brandName.toLowerCase().replace(/\s+/g, '-') : name.toLowerCase().replace(/\s+/g, '-');
+        const brandUrl = data.brandUrl || `FlipPage.com/${brandSlug}`;
+
+        const avatar = data.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=2563eb,3b82f6,1d4ed8`;
+
         liveList.push({
-          id: docSnap.id,
-          taskName: data.taskName || (data.brandName ? `${data.brandName} Workspace` : `${data.displayName || 'User'}'s Workspace`),
-          project: data.project || 'Landing Page Design',
-          assigneeName: data.displayName || data.assigneeName || 'Member',
-          assigneeEmail: data.email || 'user@example.com',
-          assigneeAvatar: data.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(data.displayName || 'U')}`,
-          priority: data.priority || (isPaidUser ? 'High' : 'Medium'),
-          status: data.status === 'active' ? (isPaidUser ? 'In Progress' : 'To Do') : (data.status === 'expired' ? 'Overdue' : (data.status === 'review' ? 'Review' : 'Completed')),
-          dueDate: trialEnd,
-          durationDays: data.trialDays || 14,
-          planTier: data.plan || (isPaidUser ? 'Pro' : 'Free'),
+          id: docId,
+          uid: data.uid || docId,
+          taskName: data.taskName || (brandName ? `${brandName} Flipbook Hub` : `${name}'s Workspace`),
+          project: data.project || (brandName || 'Flipbook Publishing'),
+          assigneeName: name,
+          assigneeEmail: email,
+          assigneeAvatar: avatar,
+          priority: isPaidUser ? 'High' : 'Low',
+          status: calculatedStatus,
+          dueDate: dueDate,
+          durationDays: trialDays,
+          planTier: planTier,
           isPaid: isPaidUser,
-          brandUrl: data.brandUrl || `FlipPage.com/${encodeURIComponent((data.displayName || 'user').toLowerCase().replace(/\s+/g, '-'))}`,
-          role: data.role || 'user'
+          brandName: brandName,
+          brandUrl: brandUrl,
+          role: data.role || 'user',
+          createdAt: data.createdAt || now.toISOString(),
+          lastLoginAt: data.lastLoginAt || data.createdAt
         });
       });
 
+      // Sort newest users first
+      liveList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
       usersData = liveList;
+      updateFilterChipCounts();
       renderTable();
     }, (error) => {
       handleFirestoreError(error, 'list', usersPath);
-      // Fallback to memory if offline
-      if (usersData.length === 0) {
-        usersData = initialSeedData.map(u => ({
-          id: u.uid,
-          taskName: u.taskName,
-          project: u.project,
-          assigneeName: u.displayName,
-          assigneeEmail: u.email,
-          assigneeAvatar: u.photoURL,
-          priority: u.priority,
-          status: u.status,
-          dueDate: u.trialEndDate.split('T')[0],
-          durationDays: u.trialDays,
-          planTier: u.plan,
-          isPaid: u.isPaid,
-          brandUrl: u.brandUrl,
-          role: u.role
-        }));
-        renderTable();
-      }
+      usersData = [];
+      renderTable();
     });
 
   } catch (err) {
@@ -543,35 +378,36 @@ async function initFirestoreData() {
   }
 }
 
-// Seed initial dataset into Firestore
-async function seedUsersToFirestore() {
-  try {
-    for (const item of initialSeedData) {
-      const userRef = doc(db, 'users', item.uid);
-      await setDoc(userRef, {
-        uid: item.uid,
-        displayName: item.displayName,
-        email: item.email,
-        photoURL: item.photoURL,
-        taskName: item.taskName,
-        project: item.project,
-        priority: item.priority,
-        status: item.status === 'Overdue' ? 'expired' : 'active',
-        plan: item.plan,
-        isPaid: item.isPaid,
-        trialDays: item.trialDays,
-        trialStartDate: item.trialStartDate,
-        trialEndDate: item.trialEndDate,
-        brandName: item.brandName,
-        brandUrl: item.brandUrl,
-        role: item.role,
-        createdAt: new Date().toISOString()
-      }, { merge: true });
-    }
-    console.log('Seeded users collection to Firestore');
-  } catch (err) {
-    console.warn('Initial Firestore user seeding warning:', err);
-  }
+// Update filter chip count badges dynamically
+function updateFilterChipCounts() {
+  if (!filterChipsBar) return;
+  const total = usersData.length;
+  const proCount = usersData.filter(u => u.isPaid || u.planTier === 'PRO').length;
+  const activeCount = usersData.filter(u => u.status !== 'Overdue' && u.status !== 'expired').length;
+  const expiringCount = usersData.filter(u => {
+    const daysLeft = Math.ceil((new Date(u.dueDate) - new Date()) / (1000 * 60 * 60 * 24));
+    return daysLeft >= 0 && daysLeft <= 7;
+  }).length;
+  const expiredCount = usersData.filter(u => u.status === 'Overdue' || u.status === 'expired').length;
+  const adminCount = usersData.filter(u => isAuthorizedAdmin(u.assigneeEmail, u.role)).length;
+
+  const allChip = filterChipsBar.querySelector('[data-filter="all"]');
+  if (allChip) allChip.textContent = `All (${total})`;
+
+  const proChip = filterChipsBar.querySelector('[data-filter="pro"]');
+  if (proChip) proChip.textContent = `👑 Pro (${proCount})`;
+
+  const activeChip = filterChipsBar.querySelector('[data-filter="active"]');
+  if (activeChip) activeChip.textContent = `Active (${activeCount})`;
+
+  const expiringChip = filterChipsBar.querySelector('[data-filter="expiring"]');
+  if (expiringChip) expiringChip.textContent = `Expiring Soon (${expiringCount})`;
+
+  const expiredChip = filterChipsBar.querySelector('[data-filter="expired"]');
+  if (expiredChip) expiredChip.textContent = `Expired (${expiredCount})`;
+
+  const adminChip = filterChipsBar.querySelector('[data-filter="admin"]');
+  if (adminChip) adminChip.textContent = `Admins (${adminCount})`;
 }
 
 // ============ RENDER DATA TABLE ============
@@ -580,14 +416,14 @@ function renderTable() {
   usersTableBody.innerHTML = '';
 
   let filtered = usersData.filter(user => {
-    // Filter chip
-    if (activeFilter === 'pro' && !user.isPaid && user.planTier !== 'Pro' && user.planTier !== 'Enterprise') return false;
-    if (activeFilter === 'active' && user.status === 'Overdue') return false;
+    // Filter chip logic
+    if (activeFilter === 'pro' && !user.isPaid && user.planTier !== 'PRO' && user.planTier !== 'Enterprise') return false;
+    if (activeFilter === 'active' && (user.status === 'Overdue' || user.status === 'expired')) return false;
     if (activeFilter === 'expiring') {
       const daysLeft = Math.ceil((new Date(user.dueDate) - new Date()) / (1000 * 60 * 60 * 24));
       if (daysLeft < 0 || daysLeft > 7) return false;
     }
-    if (activeFilter === 'expired' && user.status !== 'Overdue') return false;
+    if (activeFilter === 'expired' && user.status !== 'Overdue' && user.status !== 'expired') return false;
     if (activeFilter === 'admin' && !isAuthorizedAdmin(user.assigneeEmail, user.role)) return false;
 
     // Search query
@@ -605,34 +441,63 @@ function renderTable() {
   });
 
   const totalFiltered = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(totalFiltered / pageSize));
+  if (currentPage > totalPages) currentPage = totalPages;
+
   const startIndex = (currentPage - 1) * pageSize;
   const paginated = filtered.slice(startIndex, startIndex + pageSize);
 
   if (paginationInfoText) {
     const endDisplay = Math.min(startIndex + pageSize, totalFiltered);
-    paginationInfoText.textContent = `Showing ${totalFiltered === 0 ? 0 : startIndex + 1}-${endDisplay} of ${totalFiltered} users in Firestore`;
+    paginationInfoText.textContent = `Showing ${totalFiltered === 0 ? 0 : startIndex + 1}-${endDisplay} of ${totalFiltered} real users in Firestore`;
+  }
+
+  // Update page buttons
+  if (btnPage1) {
+    btnPage1.classList.toggle('is-active', currentPage === 1);
+    btnPage1.textContent = '1';
+  }
+  if (btnPage2) {
+    btnPage2.style.display = totalPages > 1 ? 'inline-block' : 'none';
+    btnPage2.classList.toggle('is-active', currentPage === 2);
   }
 
   if (paginated.length === 0) {
     usersTableBody.innerHTML = `
       <tr>
-        <td colspan="8" style="text-align:center; padding: 48px 20px; color:#64748B;">
-          <div style="font-size:1.8rem; margin-bottom:8px;">👥</div>
-          <strong style="color:#0F172A; font-size:1rem;">No users or plans match your search</strong>
-          <p style="margin:6px 0 0; font-size:0.85rem;">All records are queried live from Firestore collection <code>/users</code>.</p>
+        <td colspan="8" style="text-align:center; padding: 56px 20px; color:#64748B;">
+          <div style="font-size:2.2rem; margin-bottom:12px;">👤</div>
+          <strong style="color:#0F172A; font-size:1.05rem; display:block; margin-bottom:6px;">No real users found in Firestore</strong>
+          <p style="margin:0 0 16px; font-size:0.88rem; color:#64748B; max-width:420px; margin-left:auto; margin-right:auto;">
+            When users register or sign in on <code>account.html</code>, their live Firebase profiles, custom brand URLs, and trial periods will appear here instantly.
+          </p>
+          <div style="display:inline-flex; gap:10px;">
+            <button type="button" class="btn-primary-add" id="btn-empty-add-user" style="padding:7px 14px; font-size:0.85rem;">
+              + Add User Manually
+            </button>
+            <a href="account.html" target="_blank" style="display:inline-flex; align-items:center; padding:7px 14px; border:1px solid #CBD5E1; border-radius:8px; color:#2563EB; font-weight:600; text-decoration:none; font-size:0.85rem;">
+              Open Account Portal ↗
+            </a>
+          </div>
         </td>
       </tr>
     `;
+
+    const emptyAddBtn = document.getElementById('btn-empty-add-user');
+    if (emptyAddBtn && modalAddUser) {
+      emptyAddBtn.addEventListener('click', () => {
+        modalAddUser.hidden = false;
+      });
+    }
     return;
   }
 
   paginated.forEach(user => {
     const tr = document.createElement('tr');
 
-    const isPro = Boolean(user.isPaid || user.planTier === 'PRO' || user.planTier === 'Pro');
-    const planDisplay = isPro ? 'PRO' : 'FREE';
-
-    // Priority / Plan badge with SVG icons matching prompt
+    const isPro = Boolean(user.isPaid || user.planTier === 'PRO' || user.planTier === 'Enterprise');
+    
+    // Priority / Plan badge with SVG icons
     const planBadgeHtml = isPro
       ? `<span class="priority-tag crown" style="display:inline-flex; align-items:center; gap:4px; background:#FFFBEB; border:1px solid #FCD34D; color:#B45309; padding:3px 8px; border-radius:6px; font-weight:800;"><img src="src/svg/crown.svg" class="crown-svg-icon" style="width:14px; height:14px;" alt="Crown"> PRO</span>`
       : `<span class="priority-tag low" style="display:inline-flex; align-items:center; gap:4px; background:#F1F5F9; border:1px solid #CBD5E1; color:#475569; padding:3px 8px; border-radius:6px; font-weight:700;"><img src="src/svg/free.svg" class="free-svg-icon" style="width:14px; height:14px;" alt="Free"> FREE</span>`;
@@ -680,7 +545,7 @@ function renderTable() {
       </td>
       <td class="due-date-cell">
         <span style="font-weight:600; color:#1E293B;">${formattedDate}</span>
-        <span class="duration-subtag">${daysText} • ${user.durationDays}d duration</span>
+        <span class="duration-subtag">${daysText} • ${user.durationDays}d trial</span>
       </td>
       <td style="text-align:right; white-space:nowrap;">
         <div style="display:inline-flex; align-items:center; gap:6px;">
@@ -689,12 +554,13 @@ function renderTable() {
             : `<button type="button" class="btn-quick-plan" data-action="set-pro" data-user-id="${user.id}" title="Grant PRO Crown Plan" style="padding:3px 8px; border-radius:6px; border:1px solid #FCD34D; background:#FEF3C7; font-size:0.75rem; font-weight:800; cursor:pointer; color:#B45309;">👑 Set PRO</button>`
           }
           <button type="button" class="btn-quick-plan" data-action="extend-30" data-user-id="${user.id}" title="Extend +30 Days in Firestore" style="padding:3px 8px; border-radius:6px; border:1px solid #BFDBFE; background:#EFF6FF; font-size:0.75rem; font-weight:700; cursor:pointer; color:#2563EB;">+30d</button>
-          <button type="button" class="row-actions-btn" data-action="edit" data-user-id="${user.id}" title="Full Plan & Duration Settings">⋮</button>
+          <button type="button" class="row-actions-btn" data-action="edit" data-user-id="${user.id}" title="Edit Plan & Duration">⚙️</button>
+          <button type="button" class="row-actions-btn" data-action="delete" data-user-id="${user.id}" title="Delete User from Firestore" style="color:#EF4444;">🗑️</button>
         </div>
       </td>
     `;
 
-    // Row action click listeners
+    // Row action listeners
     const editBtn = tr.querySelector('[data-action="edit"]');
     if (editBtn) {
       editBtn.addEventListener('click', (e) => {
@@ -727,22 +593,34 @@ function renderTable() {
       });
     }
 
+    const deleteBtn = tr.querySelector('[data-action="delete"]');
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (confirm(`Are you sure you want to delete user "${user.assigneeName}" (${user.assigneeEmail}) from Firestore?`)) {
+          await deleteUserFromFirestore(user.id);
+        }
+      });
+    }
+
     usersTableBody.appendChild(tr);
   });
 }
 
 // Quick Firestore Plan Update
 async function quickUpdateUserPlan(userId, targetPlan) {
-  const isPaid = (targetPlan === 'PRO');
+  const isPaid = (targetPlan === 'PRO' || targetPlan === 'Enterprise');
+  const priority = isPaid ? 'High' : 'Low';
   try {
     const userRef = doc(db, 'users', userId);
     await updateDoc(userRef, {
       plan: targetPlan,
       isPaid: isPaid,
+      priority: priority,
       status: 'active',
       updatedAt: new Date().toISOString()
     });
-    showToast(`Updated user plan to ${targetPlan} in Firestore!`);
+    showToast(`Updated user priority & plan to ${targetPlan} in Firestore!`);
   } catch (err) {
     handleFirestoreError(err, 'update', `users/${userId}`);
   }
@@ -770,6 +648,16 @@ async function quickExtendUserDuration(userId, additionalDays) {
   }
 }
 
+// Delete real user from Firestore
+async function deleteUserFromFirestore(userId) {
+  try {
+    await deleteDoc(doc(db, 'users', userId));
+    showToast('User record removed from Firestore.');
+  } catch (err) {
+    handleFirestoreError(err, 'delete', `users/${userId}`);
+  }
+}
+
 function formatDateDisplay(dateStr) {
   try {
     const d = new Date(dateStr);
@@ -779,34 +667,77 @@ function formatDateDisplay(dateStr) {
   }
 }
 
+// Calculate & display friendly expiry date preview
+function updateExpiryPreview(days) {
+  if (!editCalcExpiryPreview) return;
+  const numDays = parseInt(days, 10) || 0;
+  const expDate = new Date(Date.now() + numDays * 24 * 60 * 60 * 1000);
+  const formatted = expDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  editCalcExpiryPreview.textContent = `${formatted} (in ${numDays}d)`;
+}
+
 // ============ MODALS: ADD USER & EDIT PLAN/DURATION ============
 function openEditModal(userId) {
   const user = usersData.find(u => u.id === userId);
   if (!user) return;
 
   currentEditingUserId = userId;
-  currentEditingUserPlan = user.planTier || (user.isPaid ? 'Pro' : 'Free');
+  currentEditingUserPlan = user.planTier || (user.isPaid ? 'PRO' : 'FREE');
   currentEditingDuration = user.durationDays || 14;
 
   if (editModalUserName) editModalUserName.textContent = user.assigneeName;
   if (editModalUserEmail) editModalUserEmail.textContent = user.assigneeEmail;
+  if (editUserDisplayName) editUserDisplayName.value = user.assigneeName || '';
+  if (editUserCompanyName) editUserCompanyName.value = user.brandName || user.project || '';
+  if (editUserBrandSlug) {
+    const rawSlug = user.brandUrl ? user.brandUrl.replace(/^FlipPage\.com\//i, '') : slugify(user.brandName || user.assigneeName);
+    editUserBrandSlug.value = rawSlug;
+  }
+
   if (editModalAvatar) {
-    editModalAvatar.innerHTML = `<img src="${user.assigneeAvatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    editModalAvatar.innerHTML = `<img src="${user.assigneeAvatar}" alt="${escapeHtml(user.assigneeName)}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;" onerror="this.parentElement.textContent='${(user.assigneeName.charAt(0) || 'U').toUpperCase()}';">`;
   }
   if (editCustomDays) editCustomDays.value = currentEditingDuration;
+  
   if (editPlanStatus) {
-    if (user.status === 'In Progress' || user.status === 'To Do') editPlanStatus.value = 'active';
-    else if (user.status === 'Review') editPlanStatus.value = 'review';
-    else if (user.status === 'Overdue') editPlanStatus.value = 'expired';
+    const s = String(user.status || 'active').toLowerCase();
+    if (s.includes('overdue') || s.includes('expired')) editPlanStatus.value = 'expired';
+    else if (s.includes('review')) editPlanStatus.value = 'review';
+    else if (s.includes('extend')) editPlanStatus.value = 'extended';
+    else if (s.includes('suspend')) editPlanStatus.value = 'suspended';
     else editPlanStatus.value = 'active';
+  }
+
+  if (editUserRole) {
+    editUserRole.value = (user.role === 'admin' || isAuthorizedAdmin(user.assigneeEmail, user.role)) ? 'admin' : 'user';
   }
 
   // Update plan option buttons
   if (editPlanOptions) {
     editPlanOptions.querySelectorAll('.plan-btn-option').forEach(btn => {
-      btn.classList.toggle('is-active', btn.dataset.plan === currentEditingUserPlan);
+      const matches = btn.dataset.plan.toUpperCase() === currentEditingUserPlan.toUpperCase();
+      btn.classList.toggle('is-active', matches);
     });
   }
+
+  // Update preset pills
+  const presetPills = document.querySelectorAll('.preset-pill');
+  presetPills.forEach(pill => {
+    pill.classList.toggle('is-active', parseInt(pill.dataset.days, 10) === currentEditingDuration);
+  });
+
+  // Update priority badge pill
+  if (editModalPriorityPill) {
+    const isPro = (currentEditingUserPlan === 'PRO' || currentEditingUserPlan === 'Enterprise' || user.isPaid);
+    editModalPriorityPill.style.background = isPro ? '#FEF3C7' : '#F1F5F9';
+    editModalPriorityPill.style.color = isPro ? '#B45309' : '#475569';
+    editModalPriorityPill.style.border = isPro ? '1px solid #FCD34D' : '1px solid #CBD5E1';
+    editModalPriorityPill.innerHTML = isPro 
+      ? `<img src="src/svg/crown.svg" style="width:14px; height:14px;" alt="Crown"> ${currentEditingUserPlan}` 
+      : `<img src="src/svg/free.svg" style="width:14px; height:14px;" alt="Free"> ${currentEditingUserPlan}`;
+  }
+
+  updateExpiryPreview(currentEditingDuration);
 
   if (modalEditPlan) modalEditPlan.hidden = false;
 }
@@ -842,11 +773,12 @@ function setupModals() {
       const brand = document.getElementById('new-user-brand').value.trim() || name.toLowerCase().replace(/\s+/g, '-');
       const duration = parseInt(document.getElementById('new-user-duration').value, 10) || 14;
       const activePlanBtn = newPlanOptions ? newPlanOptions.querySelector('.plan-btn-option.is-active') : null;
-      const plan = activePlanBtn ? activePlanBtn.dataset.plan : 'Free';
-      const isPaid = plan === 'Pro' || plan === 'Enterprise';
+      const plan = activePlanBtn ? activePlanBtn.dataset.plan : 'FREE';
+      const isPaid = plan === 'PRO' || plan === 'Enterprise' || plan === 'Starter';
+      const priority = isPaid ? 'High' : 'Low';
 
       const dueDateObj = new Date(Date.now() + duration * 24 * 60 * 60 * 1000);
-      const newId = 'u-' + Date.now();
+      const newId = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
 
       // Save directly to Firestore collection users
       try {
@@ -859,13 +791,15 @@ function setupModals() {
           project: project,
           plan: plan,
           isPaid: isPaid,
+          priority: priority,
           trialDays: duration,
           trialStartDate: new Date().toISOString(),
           trialEndDate: dueDateObj.toISOString(),
           status: 'active',
-          role: 'user',
+          role: isAuthorizedAdmin(email, null) ? 'admin' : 'user',
+          companyName: brand,
           brandName: brand,
-          brandUrl: `FlipPage.com/${brand}`,
+          brandUrl: `FlipPage.com/${slugify(brand)}`,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         });
@@ -889,7 +823,29 @@ function setupModals() {
         editPlanOptions.querySelectorAll('.plan-btn-option').forEach(b => b.classList.remove('is-active'));
         btn.classList.add('is-active');
         currentEditingUserPlan = btn.dataset.plan;
+
+        if (editModalPriorityPill) {
+          const isPro = (currentEditingUserPlan === 'PRO' || currentEditingUserPlan === 'Enterprise' || currentEditingUserPlan === 'Starter');
+          editModalPriorityPill.style.background = isPro ? '#FEF3C7' : '#F1F5F9';
+          editModalPriorityPill.style.color = isPro ? '#B45309' : '#475569';
+          editModalPriorityPill.style.border = isPro ? '1px solid #FCD34D' : '1px solid #CBD5E1';
+          editModalPriorityPill.innerHTML = isPro 
+            ? `<img src="src/svg/crown.svg" style="width:14px; height:14px;" alt="Crown"> ${currentEditingUserPlan}` 
+            : `<img src="src/svg/free.svg" style="width:14px; height:14px;" alt="Free"> ${currentEditingUserPlan}`;
+        }
       });
+    });
+  }
+
+  // Auto slugify company to brand input in Edit modal
+  if (editUserCompanyName && editUserBrandSlug) {
+    editUserCompanyName.addEventListener('input', () => {
+      if (!editUserBrandSlug.value || editUserBrandSlug.dataset.manual !== 'true') {
+        editUserBrandSlug.value = slugify(editUserCompanyName.value.trim());
+      }
+    });
+    editUserBrandSlug.addEventListener('input', () => {
+      editUserBrandSlug.dataset.manual = 'true';
     });
   }
 
@@ -902,45 +858,72 @@ function setupModals() {
       const days = parseInt(pill.dataset.days, 10);
       currentEditingDuration = days;
       if (editCustomDays) editCustomDays.value = days;
+      updateExpiryPreview(days);
     });
   });
 
   if (editCustomDays) {
     editCustomDays.addEventListener('input', () => {
-      currentEditingDuration = parseInt(editCustomDays.value, 10) || 14;
+      const days = parseInt(editCustomDays.value, 10) || 14;
+      currentEditingDuration = days;
+      updateExpiryPreview(days);
+      presetPills.forEach(p => {
+        p.classList.toggle('is-active', parseInt(p.dataset.days, 10) === days);
+      });
     });
   }
 
-  // Save changes from Edit Modal to Firestore
+  // Save changes from Edit Modal to Firestore (Real-time Live Sync)
   if (btnSavePlanChanges) {
     btnSavePlanChanges.addEventListener('click', async () => {
       if (!currentEditingUserId) return;
       const user = usersData.find(u => u.id === currentEditingUserId);
       if (!user) return;
 
+      const newName = editUserDisplayName ? editUserDisplayName.value.trim() || user.assigneeName : user.assigneeName;
+      const newCompany = editUserCompanyName ? editUserCompanyName.value.trim() : (user.brandName || user.project);
+      const rawSlug = editUserBrandSlug ? editUserBrandSlug.value.trim() : '';
+      const cleanSlug = rawSlug ? slugify(rawSlug) : slugify(newCompany || newName);
+      const brandUrl = `FlipPage.com/${cleanSlug}`;
+
       const duration = parseInt(editCustomDays.value, 10) || 14;
       const plan = currentEditingUserPlan;
-      const isPaid = plan === 'Pro' || plan === 'Enterprise';
+      const isPaid = (plan === 'PRO' || plan === 'Enterprise' || plan === 'Starter');
+      const priority = isPaid ? 'High' : 'Low';
       const statusVal = editPlanStatus ? editPlanStatus.value : 'active';
+      const roleVal = editUserRole ? editUserRole.value : user.role;
 
       const newDueDateObj = new Date(Date.now() + duration * 24 * 60 * 60 * 1000);
+
+      btnSavePlanChanges.disabled = true;
+      btnSavePlanChanges.textContent = 'Saving to Firestore...';
 
       // Update Firestore in real-time
       try {
         await updateDoc(doc(db, 'users', user.id), {
+          displayName: newName,
+          companyName: newCompany,
+          brandName: newCompany,
+          brandUrl: brandUrl,
+          taskName: `${newCompany || newName}'s Workspace`,
+          project: newCompany || 'Digital Flipbooks',
           plan: plan,
           isPaid: isPaid,
+          priority: priority,
           trialDays: duration,
           trialEndDate: newDueDateObj.toISOString(),
           status: statusVal,
+          role: roleVal,
           updatedAt: new Date().toISOString()
         });
-        showToast(`Updated ${user.assigneeName}'s plan to ${plan} (${duration} Days) in Firestore!`);
+        showToast(`Saved ${newName}'s details, ${plan} plan & ${duration}d duration in Firestore!`);
+        if (modalEditPlan) modalEditPlan.hidden = true;
       } catch (err) {
         handleFirestoreError(err, 'update', `users/${user.id}`);
+      } finally {
+        btnSavePlanChanges.disabled = false;
+        btnSavePlanChanges.textContent = '💾 Save All Changes to Firestore';
       }
-
-      if (modalEditPlan) modalEditPlan.hidden = true;
     });
   }
 }
@@ -977,8 +960,6 @@ function setupFiltersAndSearch() {
   if (btnPage1) {
     btnPage1.addEventListener('click', () => {
       currentPage = 1;
-      btnPage1.classList.add('is-active');
-      if (btnPage2) btnPage2.classList.remove('is-active');
       renderTable();
     });
   }
@@ -986,8 +967,6 @@ function setupFiltersAndSearch() {
   if (btnPage2) {
     btnPage2.addEventListener('click', () => {
       currentPage = 2;
-      btnPage2.classList.add('is-active');
-      if (btnPage1) btnPage1.classList.remove('is-active');
       renderTable();
     });
   }
@@ -996,8 +975,6 @@ function setupFiltersAndSearch() {
     btnPagePrev.addEventListener('click', () => {
       if (currentPage > 1) {
         currentPage--;
-        if (btnPage1) btnPage1.classList.toggle('is-active', currentPage === 1);
-        if (btnPage2) btnPage2.classList.toggle('is-active', currentPage === 2);
         renderTable();
       }
     });
@@ -1008,15 +985,13 @@ function setupFiltersAndSearch() {
       const maxPages = Math.ceil(usersData.length / pageSize);
       if (currentPage < maxPages) {
         currentPage++;
-        if (btnPage1) btnPage1.classList.toggle('is-active', currentPage === 1);
-        if (btnPage2) btnPage2.classList.toggle('is-active', currentPage === 2);
         renderTable();
       }
     });
   }
 }
 
-// ============ ASK AI DRAWER (Matching "Ask Renza AI" button) ============
+// ============ ASK AI DRAWER ============
 function setupAiDrawer() {
   if (btnTopbarAskAi && adminAiDrawer) {
     btnTopbarAskAi.addEventListener('click', () => {
@@ -1037,32 +1012,30 @@ function setupAiDrawer() {
       const question = aiChatInput.value.trim();
       if (!question) return;
 
-      // Append user msg
       const userBubble = document.createElement('div');
       userBubble.className = 'ai-msg user';
       userBubble.textContent = question;
       aiChatStream.appendChild(userBubble);
       aiChatInput.value = '';
 
-      // Compute smart admin response
       setTimeout(() => {
         const botBubble = document.createElement('div');
         botBubble.className = 'ai-msg bot';
         
         const q = question.toLowerCase();
         if (q.includes('pro') || q.includes('crown') || q.includes('paid')) {
-          const proUsers = usersData.filter(u => u.isPaid || u.planTier === 'Pro').map(u => `${u.assigneeName} (${u.assigneeEmail})`).join(', ');
-          botBubble.innerHTML = `<strong>👑 Pro Plan Analysis:</strong><br>Currently, ${usersData.filter(u => u.isPaid).length} users are on Pro tiers in Firestore:<br><em>${proUsers}</em>.`;
+          const proUsers = usersData.filter(u => u.isPaid || u.planTier === 'PRO').map(u => `${u.assigneeName} (${u.assigneeEmail})`).join(', ');
+          botBubble.innerHTML = `<strong>👑 Pro Plan Analysis:</strong><br>Currently, <strong>${usersData.filter(u => u.isPaid || u.planTier === 'PRO').length}</strong> real user(s) on Pro tier in Firestore:<br><em>${proUsers || 'None yet'}</em>.`;
         } else if (q.includes('overdue') || q.includes('expir')) {
           const overdue = usersData.filter(u => u.status === 'Overdue');
-          botBubble.innerHTML = `<strong>⚠️ Overdue &amp; Expiring Notice:</strong><br>Found ${overdue.length} subscriptions that have exceeded their trial period in Firestore (e.g. <em>${overdue.map(u => u.assigneeName).join(', ')}</em>).`;
+          botBubble.innerHTML = `<strong>⚠️ Overdue &amp; Expiring Notice:</strong><br>Found <strong>${overdue.length}</strong> subscription(s) that exceeded trial in Firestore${overdue.length ? ` (${overdue.map(u => u.assigneeName).join(', ')})` : '.'}`;
         } else {
-          botBubble.innerHTML = `<strong>📊 Firestore Live Sync:</strong><br>Managing ${usersData.length} total users directly in Firebase Firestore collection <code>/users</code>. All changes are saved and synced instantly.`;
+          botBubble.innerHTML = `<strong>📊 Firestore Real-Time Query:</strong><br>Managing <strong>${usersData.length}</strong> real registered user(s) in collection <code>/users</code>. All changes sync directly to Firestore.`;
         }
 
         aiChatStream.appendChild(botBubble);
         aiChatStream.scrollTop = aiChatStream.scrollHeight;
-      }, 500);
+      }, 400);
     });
   }
 }

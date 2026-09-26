@@ -302,13 +302,36 @@ function initUserPlanListener(uid) {
     onSnapshot(userDocRef, (docSnap) => {
       if (docSnap.exists()) {
         const userData = docSnap.data() || {};
-        const planStr = String(userData.plan || '').toUpperCase();
-        
-        currentUserPlan = (planStr === 'PRO' || userData.isPaid === true) ? 'PRO' : 'FREE';
-        isUserPro = (currentUserPlan === 'PRO');
-        currentUserTrialDays = userData.trialDays || 14;
+        const planStr = String(userData.plan || '').trim().toUpperCase();
+        const priorityStr = String(userData.priority || '').trim().toUpperCase();
+        const isPaidBool = (userData.isPaid === true);
+
+        // When Priority is set to FREE or Low in Firestore, immediately downgrade/switch to FREE
+        if (planStr === 'FREE' || userData.isPaid === false || priorityStr === 'LOW') {
+          currentUserPlan = 'FREE';
+          isUserPro = false;
+        } else if (planStr === 'PRO' || planStr === 'ENTERPRISE' || planStr === 'STARTER' || priorityStr === 'HIGH' || isPaidBool) {
+          currentUserPlan = 'PRO';
+          isUserPro = true;
+        } else {
+          currentUserPlan = 'FREE';
+          isUserPro = false;
+        }
+
+        currentUserTrialDays = Number(userData.trialDays) || 14;
         currentUserTrialEndDate = userData.trialEndDate || '';
         currentUserStatus = userData.status || 'active';
+
+        if (userData.companyName) {
+          const breadcrumbBrandName = document.getElementById('breadcrumb-brand-name');
+          const breadcrumbBrandAvatar = document.getElementById('breadcrumb-brand-avatar');
+          if (breadcrumbBrandName) {
+            breadcrumbBrandName.textContent = userData.companyName;
+          }
+          if (breadcrumbBrandAvatar) {
+            breadcrumbBrandAvatar.textContent = (userData.companyName.charAt(0) || 'W').toUpperCase();
+          }
+        }
 
         localStorage.setItem('flippage_pro_tier', isUserPro ? 'true' : 'false');
         localStorage.setItem('flippage_user_plan', currentUserPlan);
@@ -1389,9 +1412,26 @@ function initProModal() {
   if (btnCloseProModal) btnCloseProModal.addEventListener('click', () => { if (proModal) proModal.hidden = true; });
 
   if (btnActivateProWorkspace) {
-    btnActivateProWorkspace.addEventListener('click', () => {
+    btnActivateProWorkspace.addEventListener('click', async () => {
       isUserPro = true;
+      currentUserPlan = 'PRO';
       localStorage.setItem('flippage_pro_tier', 'true');
+      localStorage.setItem('flippage_user_plan', 'PRO');
+
+      if (activeFirebaseUser) {
+        try {
+          const userRef = doc(db, 'users', activeFirebaseUser.uid);
+          await updateDoc(userRef, {
+            plan: 'PRO',
+            isPaid: true,
+            priority: 'High',
+            updatedAt: new Date().toISOString()
+          });
+        } catch (e) {
+          console.warn('Could not sync pro activation to Firestore:', e);
+        }
+      }
+
       publications.forEach(p => {
         p.isPaid = true;
         p.planTier = 'paid';

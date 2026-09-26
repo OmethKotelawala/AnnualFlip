@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FlipPage — Sign In &amp; Create Account</title>
-  <meta name="description" content="Sign in or create your FlipPage workspace.">
+  <meta name="description" content="Sign in or create your FlipPage workspace with custom company branding and real-time Firestore sync.">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,22 +46,48 @@
             </a>
           </div>
 
-          <!-- Signed-In View State -->
+          <!-- Signed-In View State & Account / Company Settings -->
           <div class="signedin-state-card" id="signedin-state" hidden>
             <div class="user-avatar-circle" id="user-avatar-initial">U</div>
-            <h3 class="user-display-name" id="user-display-name">You are signed in</h3>
+            <h3 class="user-display-name" id="user-display-name">Signed In</h3>
             <p class="user-display-email" id="user-display-email"></p>
+
+            <!-- Profile & Company Details Editor with Live Auto-Save to Firestore -->
+            <form id="profile-edit-form" class="account-form" style="margin-top: 14px; text-align: left;" novalidate>
+              <label class="field">
+                <span>Full Name</span>
+                <input type="text" id="profile-display-name" placeholder="Your name" autocomplete="name">
+              </label>
+
+              <label class="field">
+                <span>Company / Organization Name <strong style="color:#DC2626;">* Required</strong></span>
+                <input type="text" id="profile-company-name" placeholder="e.g. Acme Media Corp" autocomplete="organization" required>
+              </label>
+
+              <div class="brand-input-section" style="margin-bottom: 8px;">
+                <label class="brand-field-label" for="profile-brand-slug">
+                  <strong>Custom Flipbook Domain</strong>
+                </label>
+                <div class="brand-url-field-box">
+                  <span class="brand-prefix-tag">FlipPage.com /</span>
+                  <input type="text" id="profile-brand-slug" class="brand-url-input" placeholder="acme-media">
+                </div>
+              </div>
+
+              <p class="form-status" id="profile-form-status" role="status" aria-live="polite" style="margin: 6px 0 10px; text-align: center; font-size: 0.82rem; min-height: 18px;"></p>
+            </form>
             
-            <div class="signedin-actions">
-              <a href="workspace.html" class="primary-button signedin-btn">Go to Workspace</a>
-              <button class="social-button signout-btn" id="signout-button" type="button">Sign out</button>
+            <div class="signedin-actions" style="margin-top: 6px; display: flex; flex-direction: column; gap: 8px;">
+              <a href="workspace.html" class="primary-button signedin-btn" style="text-align: center; justify-content: center; text-decoration: none;">Launch Workspace →</a>
+              <button class="social-button signout-btn" id="signout-button" type="button" style="justify-content: center;">Sign out</button>
             </div>
           </div>
 
-          <!-- Brand / URL Customization Step (Matches Screenshot) -->
+          <!-- Company Name & URL Setup Step (MANDATORY / REQUIRED) -->
           <div id="brand-onboarding-step" hidden>
-            <div class="account-heading" style="text-align: center; margin-bottom: 24px;">
-              <h2 style="font-size: 1.8rem; font-weight: 800; color: #111827; letter-spacing: -0.03em; margin: 0 0 4px;">Customize Your URL</h2>
+            <div class="account-heading" style="text-align: center; margin-bottom: 20px;">
+              <h2 style="font-size: 1.7rem; font-weight: 800; color: #111827; letter-spacing: -0.03em; margin: 0 0 4px;">Setup Your Company</h2>
+              <p style="font-size: 0.88rem; color: #64748B; margin: 0;">Enter your company name to initialize your FlipPage workspace.</p>
             </div>
 
             <!-- User Account Card -->
@@ -76,24 +102,38 @@
             </div>
 
             <div class="brand-switch-row">
-              <span>Want to change account?</span>
+              <span>Signed in as wrong user?</span>
               <button type="button" class="text-button" id="brand-logout-link" style="color: #2563EB; font-weight: 600; text-decoration: none;">Log out</button>
             </div>
 
-            <!-- Brand Name & Custom URL input -->
-            <div class="brand-input-section">
-              <label class="brand-field-label" for="brand-name-input">
-                <strong>Brand URL</strong> <span style="color: #9CA3AF; font-weight: 400;">(optional)</span>
-              </label>
-
-              <div class="brand-url-field-box">
-                <span class="brand-prefix-tag">FlipPage.com /</span>
-                <input type="text" id="brand-name-input" class="brand-url-input" placeholder="your brand name" autocomplete="organization">
+            <form id="brand-setup-form" novalidate>
+              <!-- Company Name (REQUIRED) -->
+              <div class="brand-input-section" style="margin-bottom: 14px;">
+                <label class="brand-field-label" for="company-name-input">
+                  <strong>Company / Organization Name</strong> <span style="color: #DC2626; font-weight: 700;">* Required</span>
+                </label>
+                <div class="brand-url-field-box" style="padding: 2px 12px;">
+                  <input type="text" id="company-name-input" class="brand-url-input" placeholder="e.g. Northbay Media, Acme Studio" autocomplete="organization" required>
+                </div>
               </div>
-            </div>
 
-            <button class="primary-button" id="save-brand-btn" type="button" style="background: #111827; border-radius: 10px; margin-top: 24px; padding: 14px; font-weight: 700;">Skip and Sign Up</button>
-            <p class="form-status" id="brand-form-status" role="status" aria-live="polite"></p>
+              <!-- Brand Name & Custom URL input -->
+              <div class="brand-input-section">
+                <label class="brand-field-label" for="brand-name-input">
+                  <strong>Custom Flipbook Domain</strong> <span style="color: #64748B; font-weight: 400;">(Auto-generated)</span>
+                </label>
+
+                <div class="brand-url-field-box">
+                  <span class="brand-prefix-tag">FlipPage.com /</span>
+                  <input type="text" id="brand-name-input" class="brand-url-input" placeholder="your-brand-slug" autocomplete="off" required>
+                </div>
+              </div>
+
+              <button class="primary-button" id="save-brand-btn" type="submit" style="background: #0C4B51; border-radius: 10px; margin-top: 20px; padding: 14px; font-weight: 700; width: 100%;">
+                Save Company &amp; Launch Workspace →
+              </button>
+              <p class="form-status" id="brand-form-status" role="status" aria-live="polite" style="margin-top: 10px; text-align: center;"></p>
+            </form>
           </div>
 
           <!-- Auth Form Wrapper -->
@@ -119,6 +159,13 @@
                 <label class="field">
                   <span>Last name</span>
                   <input type="text" id="last-name-input" name="lastName" autocomplete="family-name" placeholder="Morgan">
+                </label>
+              </div>
+
+              <div id="signup-company-field" hidden>
+                <label class="field">
+                  <span>Company / Organization Name <strong style="color:#DC2626;">* Required</strong></span>
+                  <input type="text" id="signup-company-input" name="companyName" autocomplete="organization" placeholder="e.g. Acme Corporation">
                 </label>
               </div>
 
