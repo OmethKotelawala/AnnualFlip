@@ -282,64 +282,8 @@
         <!-- Left Pane: Tabs / Feed / Stats / Grid -->
         <main class="workspace-left-pane" id="main-content-area">
           
-          <!-- Quick Stats Cards Banner -->
-          <section class="workspace-stats-grid" aria-label="Quick metrics">
-            <div class="stat-card">
-              <div class="stat-icon-box blue">📖</div>
-              <div class="stat-meta">
-                <span class="stat-val" id="stat-total-pubs">4</span>
-                <span class="stat-lbl">Total Flipbooks</span>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <div class="stat-icon-box green">👁️</div>
-              <div class="stat-meta">
-                <span class="stat-val" id="stat-total-reads">18.1k</span>
-                <span class="stat-lbl">Total Reads</span>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <div class="stat-icon-box amber">👑</div>
-              <div class="stat-meta">
-                <span class="stat-val" id="stat-paid-pubs">2</span>
-                <span class="stat-lbl">Pro (Yellow Crown)</span>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <div class="stat-icon-box purple">🔗</div>
-              <div class="stat-meta">
-                <span class="stat-val" id="stat-shares-count">840</span>
-                <span class="stat-lbl">Direct Shares</span>
-              </div>
-            </div>
-          </section>
-
           <!-- TAB: Digital Flipbooks Feed -->
           <div id="tab-view-pubs" style="display:block;">
-            
-            <div class="workspace-feed-header" style="margin-bottom: 16px;">
-              <div class="search-box-wrap">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" class="feed-search-input" id="search-pubs-input" placeholder="Search flipbooks by title or tag...">
-              </div>
-
-              <div class="filter-pills-row" id="filter-pills-container">
-                <button class="filter-pill is-active" data-filter="all" type="button">All (4)</button>
-                <button class="filter-pill" data-filter="paid" type="button">👑 Pro Tier</button>
-                <button class="filter-pill" data-filter="free" type="button">Free Tier</button>
-                <button class="filter-pill" data-filter="live" type="button">Live</button>
-                <button class="filter-pill" data-filter="draft" type="button">Draft</button>
-              </div>
-            </div>
-
-            <!-- Publications Cards Grid -->
-            <div class="publications-grid" id="publications-grid-container">
-              <!-- Dynamically populated via JS from Firestore -->
-            </div>
-
           </div>
 
           <!-- TAB: Digital Bookshelf / Collections -->
