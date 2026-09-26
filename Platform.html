@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Platform — FlipPage | PDF to Flipbook in Minutes</title>
+  <meta name="description"
+    content="Explore the FlipPage platform — convert PDFs to interactive flipbooks, customize your brand, read on mobile, and unlock AI-powered tools.">
+  <meta property="og:title" content="Platform — FlipPage | PDF to Flipbook in Minutes">
+  <meta property="og:description"
+    content="Explore the FlipPage platform — convert PDFs to interactive flipbooks, customize your brand, read on mobile, and unlock AI-powered tools.">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/Platform.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- Ambient atmospheric background -->
+  <div class="cyber-bg-wrap" aria-hidden="true">
+    <div class="cyber-bg-glow"></div>
+  </div>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <div class="wrap">
+      <div class="nav-inner">
+
+        <!-- Brand -->
+        <a class="brand" href="index.html" aria-label="FlipPage home">
+          <div class="brand-icon-wrap" aria-hidden="true">
+            <img src="scr/Logo.png" alt="" class="brand-logo">
+          </div>
+          <span class="brand-name">Flip<span class="brand-name-accent">Page</span></span>
+        </a>
+
+        <!-- Nav links -->
+        <ul class="nav-links" id="nav-links" role="list">
+
+          <!-- Products simple link -->
+          <li class="nav-item">
+            <a href="index.html#fast-work" class="nav-link">
+              <span>Products</span>
+            </a>
+          </li>
+
+          <!-- Platform with Mega Dropdown -->
+          <li class="nav-item nav-item-dropdown">
+            <button class="nav-link nav-link-btn" aria-expanded="false" id="platform-dropdown-btn" type="button">
+              <span>Platform</span>
+              <svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            <!-- Mega Dropdown Menu -->
+            <div class="mega-dropdown" id="platform-menu" role="region" aria-label="Platform menu">
+
+              <!-- Dropdown header -->
+              <div class="mega-header">
+                <span class="mega-header-tag">Platform</span>
+                <p class="mega-header-sub">Everything you need to publish beautiful, interactive documents.</p>
+              </div>
+
+              <div class="mega-dropdown-inner">
+
+                <!-- Col 1: How it works -->
+                <div class="mega-col">
+                  <span class="mega-category">HOW IT WORKS</span>
+
+                  <a href="#platform-tabs" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">Interactive 3D Engine</strong>
+                      <span class="mega-desc">Realistic physics, page curls, shadows &amp; dual-page spreads.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      aria-hidden="true">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </a>
+
+                  <a href="#platform-mobile" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2" />
+                        <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5" />
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">Touch &amp; Mobile Ready</strong>
+                      <span class="mega-desc">Fluid gesture swipe, pinch-zoom and responsive layout.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      aria-hidden="true">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                </div>
+
+                <!-- Col 2: Trust & Privacy -->
+                <div class="mega-col">
+                  <span class="mega-category">PRIVACY &amp; SPEED</span>
+
+                  <a href="#platform-features" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">100% Client-Side Privacy</strong>
+                      <span class="mega-desc">Your PDFs never leave your browser — zero cloud storage.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      aria-hidden="true">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </a>
+
+                  <a href="#platform-ai" class="mega-item">
+                    <div class="mega-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                      </svg>
+                    </div>
+                    <div class="mega-item-text">
+                      <strong class="mega-title">Instant Rendering</strong>
+                      <span class="mega-desc">Hardware-accelerated PDF rendering with crisp vector typography.</span>
+                    </div>
+                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      aria-hidden="true">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                </div>
+
+                <!-- Col 3: CTA card -->
+                <div class="mega-col mega-col-cta">
+                  <div class="mega-cta-card">
+                    <div class="mega-cta-icon" aria-hidden="true">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                      </svg>
+                    </div>
+                    <strong class="mega-cta-title">Try it free</strong>
+                    <p class="mega-cta-desc">No account needed. Drop in any PDF and watch it flip.</p>
+                    <a href="workspace.html" class="mega-cta-btn">Open workspace →</a>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </li>
+
+          <!-- Solutions link -->
+          <li class="nav-item">
+            <a href="index.html#solutions" class="nav-link"><span>Solutions</span></a>
+          </li>
+
+          <!-- Pricing link -->
+          <li class="nav-item">
+            <a href="pricing.html" class="nav-link"><span>Pricing</span></a>
+          </li>
+
+        </ul>
+
+        <!-- Right-side CTA group -->
+        <div class="nav-cta">
+          <a class="nav-signin" href="account.html" id="signin-btn">Sign in</a>
+          <a class="nav-getstarted" href="workspace.html" id="getstarted-btn">Get started</a>
+        </div>
+
+        <!-- Mobile hamburger -->
+        <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
+          <span class="ham-bar"></span>
+          <span class="ham-bar"></span>
+          <span class="ham-bar"></span>
+        </button>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       PLATFORM PAGE CONTENT
+       ============================================================ -->
+  <main class="platform-page">
+
+    <!-- ===== SECTION 1: PLATFORM HERO ===== -->
+    <section class="platform-hero" id="platform-hero">
+      <div class="wrap">
+        <div class="platform-hero-inner">
+
+          <!-- Left: Text -->
+          <div class="platform-hero-left">
+            <div class="platform-hero-eyebrow">
+              <span class="platform-hero-eyebrow-dot"></span>
+              Platform Overview
+            </div>
+            <h1 class="platform-hero-h1">
+              Turn Any PDF into a<br>
+              <span class="gradient-text">Beautiful Flipbook</span><br>
+              in Minutes
+            </h1>
+            <p class="platform-hero-sub">
+              Creating a flipbook with page-turn animation is effortless. Upload your content and
+              the automated conversion begins instantly — then share a link with one click.
+              Convert any static document into a dynamic, interactive experience.
+            </p>
+            <div class="platform-hero-chips">
+              <span class="platform-chip">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Auto-conversion
+              </span>
+              <span class="platform-chip">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Import Links
+              </span>
+              <span class="platform-chip">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Table of Contents
+              </span>
+              <span class="platform-chip">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Batch Convert
+              </span>
+            </div>
+            <div class="platform-hero-cta">
+              <a href="workspace.html" class="pf-btn-primary" id="platform-hero-upload-btn">
+                Upload a PDF
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </a>
+              <a href="#platform-tabs" class="pf-btn-secondary" id="platform-hero-learn-btn">
+                View More
+              </a>
+            </div>
+          </div>
+
+          <!-- Right: Visual -->
+          <div class="platform-hero-right">
+            <div class="platform-hero-visual">
+              <img src="scr/assets/link.png" alt="FlipPage — PDF to flipbook conversion demo" class="platform-hero-img">
+              <div class="platform-visual-badge">
+                <div class="platform-visual-badge-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+                <div class="platform-visual-badge-text">
+                  <strong>Ready in seconds</strong>
+                  <span>No install required</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 3: FEATURE TABS ===== -->
+    <section class="platform-tabs-section" id="platform-tabs">
+      <div class="wrap">
+
+        <div class="pf-section-center pf-reveal">
+          <span class="pf-section-eyebrow">Everything in One Platform</span>
+          <h2 class="pf-section-h2">Create Professional Digital<br>Content as Easy as 1+1=2</h2>
+          <p class="pf-section-sub">Supercharge your productivity and stay one step ahead with tools built for modern
+            document publishing.</p>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="pf-tab-nav" role="tablist" aria-label="Platform features">
+          <button class="pf-tab-btn active" data-tab="create" role="tab" aria-selected="true" id="tab-create">Easily
+            Create</button>
+          <button class="pf-tab-btn" data-tab="customize" role="tab" aria-selected="false" id="tab-customize">Fully
+            Customize</button>
+          <button class="pf-tab-btn" data-tab="read" role="tab" aria-selected="false" id="tab-read">Read
+            Interactively</button>
+          <button class="pf-tab-btn" data-tab="ai" role="tab" aria-selected="false" id="tab-ai">Enhance with AI <span
+              class="pf-tab-fire">🔥</span></button>
+        </div>
+
+        <!-- Tab Panels -->
+        <div class="pf-tab-panels">
+
+          <!-- Panel: Easily Create -->
+          <div class="pf-tab-panel active" data-panel="create" role="tabpanel" aria-labelledby="tab-create">
+            <div class="pf-panel-visual indigo-bg">
+              <img src="scr/assets/prevew.png" alt="Create flipbooks from various file formats">
+            </div>
+            <div class="pf-panel-content">
+              <h3 class="pf-panel-h3">Create from Various File<br>Formats or Templates</h3>
+              <p class="pf-panel-desc">Upload PDF, PPT, Word or Images and FlipPage instantly converts them into a
+                stunning, page-turning flipbook. Start from 900+ templates or merge multiple files into one publication.
+              </p>
+              <ul class="pf-panel-checks">
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  Upload PDF/PPT/Word/Images
+                </li>
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  Upload from Local Files/File URL/iCloud/Dropbox
+                </li>
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  900+ Flipbook Templates
+                </li>
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  Merge Files into One Flipbook
+                </li>
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  Batch Convert
+                </li>
+              </ul>
+              <div class="pf-panel-actions">
+                <a href="workspace.html" class="pf-btn-primary" id="tab-create-upload-btn">Upload a PDF</a>
+                <a href="#" class="pf-btn-secondary" id="tab-create-templates-btn">Create from Templates</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: Fully Customize -->
+          <div class="pf-tab-panel" data-panel="customize" role="tabpanel" aria-labelledby="tab-customize">
+            <div class="pf-panel-visual peach-bg">
+              <img src="scr/assets/cust.png" alt="Customize flipbook design and branding">
+            </div>
+            <div class="pf-panel-content">
+              <h3 class="pf-panel-h3">Brand It Fully<br>Your Way</h3>
+              <p class="pf-panel-desc">Apply your logo, custom domain, brand colors, and background themes. Choose from
+                6 skin palettes and 100+ layout themes to make every flipbook feel uniquely yours.</p>
+              <ul class="pf-panel-checks">
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  Custom Logo &amp; Brand Domain
+                </li>
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  6 Color Skin Palettes
+                </li>
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  Background Themes &amp; Textures
+                </li>
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  Add Multimedia &amp; Animations
+                </li>
+              </ul>
+              <div class="pf-panel-actions">
+                <a href="workspace.html" class="pf-btn-primary" id="tab-customize-start-btn">Start Customizing</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: Read Interactively -->
+          <div class="pf-tab-panel" data-panel="read" role="tabpanel" aria-labelledby="tab-read">
+            <div class="pf-panel-visual blue-bg">
+              <img src="scr/assets/prevew.png" alt="Interactive reading experience">
+            </div>
+            <div class="pf-panel-content">
+              <h3 class="pf-panel-h3">Interactive Reading<br>Experience</h3>
+              <p class="pf-panel-desc">Readers enjoy a premium 3D page-flip experience with realistic physics, smooth
+                animations, pinch-zoom, and gesture navigation — on any device, any browser.</p>
+              <ul class="pf-panel-checks">
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  Realistic 3D Page Flip Physics
+                </li>
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  Pinch-Zoom &amp; Swipe Gestures
+                </li>
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  Auto-Scroll &amp; Full-Screen Mode
+                </li>
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  Search within Flipbook
+                </li>
+              </ul>
+              <div class="pf-panel-actions">
+                <a href="workspace.html" class="pf-btn-primary" id="tab-read-demo-btn">Try Demo</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: AI -->
+          <div class="pf-tab-panel" data-panel="ai" role="tabpanel" aria-labelledby="tab-ai">
+            <div class="pf-panel-visual indigo-bg">
+              <img src="scr/assets/pro.png" alt="AI-powered flipbook tools">
+            </div>
+            <div class="pf-panel-content">
+              <h3 class="pf-panel-h3">Unlock Your Creativity<br>with AI Assistant</h3>
+              <p class="pf-panel-desc">Enhance your storytelling abilities and streamline your workflow with FlipPage
+                AI. Chat with your docs, generate images, and write content with natural language.</p>
+              <ul class="pf-panel-checks">
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  AI Book Chatbot
+                </li>
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  AI Writing Assistant
+                </li>
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  AI Image Generator
+                </li>
+                <li>
+                  <span class="pf-check-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg></span>
+                  Smart Content Suggestions
+                </li>
+              </ul>
+              <div class="pf-panel-actions">
+                <a href="workspace.html" class="pf-btn-primary" id="tab-ai-try-btn">Try AI Tools</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 4: FEATURE ROW — PDF to Flipbook ===== -->
+    <section class="platform-feature-row" id="platform-pdf">
+      <div class="wrap">
+        <div class="pf-feature-inner">
+
+          <div class="pf-feature-content">
+            <span class="pf-section-eyebrow">Convert Instantly</span>
+            <h2 class="pf-feature-h2">Turn PDF to Flipbook<br>in Minutes</h2>
+            <p class="pf-feature-desc">
+              Creating a flipbook with page-turn animation is effortless. Upload your content and
+              wait for the automated conversion, then you'll receive a shareable link. With just
+              one click, you can convert a large number of static files into dynamic flipbooks.
+              <a href="workspace.html" class="pf-feature-link">View More</a>
+            </p>
+            <div class="pf-feature-chips">
+              <span class="pf-feature-chip">Auto-conversion</span>
+              <span class="pf-feature-chip">Import Links</span>
+              <span class="pf-feature-chip">Import Table of Contents</span>
+            </div>
+          </div>
+
+          <div class="pf-feature-visual sapphire-bg">
+            <img src="scr/assets/link.png" alt="PDF to flipbook conversion showing laptop with open flipbook">
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 5: FEATURE ROW — Mobile App ===== -->
+    <section class="platform-feature-row alt-bg" id="platform-mobile">
+      <div class="wrap">
+        <div class="pf-feature-inner reverse">
+
+          <div class="pf-feature-content">
+            <span class="pf-section-eyebrow">Work Anywhere</span>
+            <h2 class="pf-feature-h2">Work Anywhere on<br>Mobile App</h2>
+            <p class="pf-feature-desc">
+              FlipPage is available to download as an APP on Android and iOS. Create, manage, and
+              share your flipbook on your mobile device. Easily manage your publications and they
+              will be synced in real-time across the web and mobile.
+              <a href="#" class="pf-feature-link">View More</a>
+            </p>
+            <div class="pf-feature-chips">
+              <span class="pf-feature-chip">Mobile Creating</span>
+              <span class="pf-feature-chip">Mobile Reading</span>
+              <span class="pf-feature-chip">Convert</span>
+              <span class="pf-feature-chip">Explore</span>
+              <span class="pf-feature-chip">Manage</span>
+              <span class="pf-feature-chip">Customize</span>
+              <span class="pf-feature-chip">Share</span>
+            </div>
+            <div class="pf-feature-chips" style="margin-top: 8px;">
+              <a href="#" class="pf-btn-primary" id="platform-mobile-app-btn"
+                style="border-radius: 100px; font-size: 0.9rem; padding: 11px 24px;">Get the Mobile App</a>
+            </div>
+          </div>
+
+          <div class="pf-feature-visual red-bg">
+            <img src="scr/assets/mobile.png" alt="FlipPage mobile app on Android and iOS">
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 6: FEATURE ROW — Customization ===== -->
+    <section class="platform-feature-row" id="platform-customize">
+      <div class="wrap">
+        <div class="pf-feature-inner">
+
+          <div class="pf-feature-content">
+            <span class="pf-section-eyebrow">Brand Your Way</span>
+            <h2 class="pf-feature-h2">Fully Customize Your<br>Flipbook Brand</h2>
+            <p class="pf-feature-desc">
+              Apply your own logo, pick a custom domain, choose from 6 skin color palettes, and
+              set any background theme. Add multimedia, interactive elements, and animations to
+              create a truly immersive reading experience.
+            </p>
+            <div class="pf-feature-chips">
+              <span class="pf-feature-chip">Custom Logo</span>
+              <span class="pf-feature-chip">Brand Domain</span>
+              <span class="pf-feature-chip">6 Color Themes</span>
+              <span class="pf-feature-chip">100+ Templates</span>
+              <span class="pf-feature-chip">Interactivity</span>
+            </div>
+          </div>
+
+          <div class="pf-feature-visual peach-bg">
+            <img src="scr/assets/cust.png" alt="Flipbook customization tools with color palettes and templates">
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 7: FEATURE ROW — Social Sharing ===== -->
+    <section class="platform-feature-row alt-bg" id="platform-share">
+      <div class="wrap">
+        <div class="pf-feature-inner reverse">
+
+          <div class="pf-feature-content">
+            <span class="pf-section-eyebrow">Share Anywhere</span>
+            <h2 class="pf-feature-h2">Publish &amp; Share<br>Across All Channels</h2>
+            <p class="pf-feature-desc">
+              Share your flipbooks via a single link or embed directly on websites. Export as EXE,
+              APP, ZIP, HTML or Plug-in. Share to social networks like Facebook and Twitter with
+              one click — reach your audience wherever they are.
+            </p>
+            <div class="pf-feature-chips">
+              <span class="pf-feature-chip">Share Link</span>
+              <span class="pf-feature-chip">Embed Code</span>
+              <span class="pf-feature-chip">Export EXE / APP / ZIP</span>
+              <span class="pf-feature-chip">Social Networks</span>
+              <span class="pf-feature-chip">Analytics</span>
+            </div>
+          </div>
+
+          <div class="pf-feature-visual indigo-bg">
+            <img src="scr/assets/pro.png" alt="Publishing and sharing flipbooks across social channels">
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 8: AI FEATURES ===== -->
+    <section class="platform-ai" id="platform-ai">
+      <div class="wrap">
+        <div class="pf-ai-inner">
+
+          <!-- Visual -->
+          <div class="pf-ai-visual pf-reveal">
+            <img src="scr/assets/prevew.png" alt="AI assistant enhancing flipbook creation">
+          </div>
+
+          <!-- Content -->
+          <div class="pf-ai-content pf-reveal pf-reveal-delay-1">
+            <span class="pf-section-eyebrow">AI-Powered</span>
+            <h2 class="pf-ai-h2">Unlock Your Creativity<br>with Our AI Assistant</h2>
+            <p class="pf-ai-sub">Enhance your storytelling abilities, streamline your workflow and supercharge your
+              content creation with integrated AI tools.</p>
+
+            <div class="pf-ai-cards">
+              <a href="workspace.html" class="pf-ai-card" id="ai-chatbot-card">
+                <div class="pf-ai-card-icon">🤖</div>
+                <div class="pf-ai-card-text">
+                  <strong>AI Book Chatbot</strong>
+                  <span>Use the AI Chatbot to chat with your docs</span>
+                </div>
+                <svg class="pf-ai-card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </a>
+
+              <a href="workspace.html" class="pf-ai-card" id="ai-writing-card">
+                <div class="pf-ai-card-icon">✍️</div>
+                <div class="pf-ai-card-text">
+                  <strong>AI Writing Assistant</strong>
+                  <span>Effortless content creation with natural language interaction</span>
+                </div>
+                <svg class="pf-ai-card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </a>
+
+              <a href="workspace.html" class="pf-ai-card" id="ai-image-card">
+                <div class="pf-ai-card-icon">🎨</div>
+                <div class="pf-ai-card-text">
+                  <strong>AI Image Generator</strong>
+                  <span>Turn text into images in seconds</span>
+                </div>
+                <svg class="pf-ai-card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 9: HOW IT WORKS ===== -->
+    <section class="platform-how" id="platform-how">
+      <div class="wrap">
+        <div class="pf-section-center pf-reveal">
+          <span class="pf-section-eyebrow">Getting Started</span>
+          <h2 class="pf-section-h2">Create Your First Flipbook<br>in 3 Simple Steps</h2>
+          <p class="pf-section-sub">No technical skills required. Just upload, customize, and share.</p>
+        </div>
+
+        <div class="pf-steps-grid">
+          <div class="pf-step-card pf-reveal pf-reveal-delay-1">
+            <div class="pf-step-num">1</div>
+            <div class="pf-step-icon">📄</div>
+            <h3 class="pf-step-h3">Upload Your Document</h3>
+            <p class="pf-step-desc">Drop in a PDF, Word, PPT or image file. FlipPage supports batch uploads and cloud
+              imports from Dropbox, iCloud, and direct URLs.</p>
+          </div>
+
+          <div class="pf-step-card pf-reveal pf-reveal-delay-2">
+            <div class="pf-step-num">2</div>
+            <div class="pf-step-icon">🎨</div>
+            <h3 class="pf-step-h3">Customize Your Flipbook</h3>
+            <p class="pf-step-desc">Apply your branding — logo, custom domain, color palettes, backgrounds, interactive
+              elements, and multimedia to make it uniquely yours.</p>
+          </div>
+
+          <div class="pf-step-card pf-reveal pf-reveal-delay-3">
+            <div class="pf-step-num">3</div>
+            <div class="pf-step-icon">🚀</div>
+            <h3 class="pf-step-h3">Publish &amp; Share</h3>
+            <p class="pf-step-desc">Copy your shareable link or embed code in seconds. Publish to the web, share on
+              social media, or export as EXE, APP, ZIP, or HTML.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 10: FEATURES GRID ===== -->
+    <section class="platform-features-grid" id="platform-features">
+      <div class="wrap">
+        <div class="pf-section-center pf-reveal">
+          <span class="pf-section-eyebrow">Platform Features</span>
+          <h2 class="pf-section-h2">Everything You Need<br>to Publish &amp; Grow</h2>
+          <p class="pf-section-sub">A complete suite of tools for creating, managing, and distributing professional
+            digital documents.</p>
+        </div>
+
+        <div class="pf-grid-cards">
+
+          <div class="pf-grid-card pf-reveal pf-reveal-delay-1">
+            <div class="pf-grid-card-icon blue">📘</div>
+            <h3>Interactive 3D Flipbook</h3>
+            <p>Realistic page-curl physics with shadows, dual-page spreads, and smooth 60fps animations.</p>
+            <a href="workspace.html" class="pf-grid-card-link" id="feature-flipbook-link">Learn more →</a>
+          </div>
+
+          <div class="pf-grid-card pf-reveal pf-reveal-delay-2">
+            <div class="pf-grid-card-icon purple">🎨</div>
+            <h3>Brand Customization</h3>
+            <p>Full white-label support — custom domain, logo, color themes, and background designs.</p>
+            <a href="#platform-customize" class="pf-grid-card-link" id="feature-brand-link">Learn more →</a>
+          </div>
+
+          <div class="pf-grid-card pf-reveal pf-reveal-delay-3">
+            <div class="pf-grid-card-icon green">📱</div>
+            <h3>Mobile App</h3>
+            <p>Native iOS and Android apps with real-time sync across all your devices and publications.</p>
+            <a href="#platform-mobile" class="pf-grid-card-link" id="feature-mobile-link">Learn more →</a>
+          </div>
+
+          <div class="pf-grid-card pf-reveal pf-reveal-delay-1">
+            <div class="pf-grid-card-icon red">🔒</div>
+            <h3>Client-Side Privacy</h3>
+            <p>Your PDFs never leave your browser. Zero cloud upload means zero privacy risk.</p>
+            <a href="pricing.html" class="pf-grid-card-link" id="feature-privacy-link">Learn more →</a>
+          </div>
+
+          <div class="pf-grid-card pf-reveal pf-reveal-delay-2">
+            <div class="pf-grid-card-icon gold">⚡</div>
+            <h3>Instant Rendering</h3>
+            <p>Hardware-accelerated PDF rendering with crisp vector typography on any screen resolution.</p>
+            <a href="workspace.html" class="pf-grid-card-link" id="feature-rendering-link">Learn more →</a>
+          </div>
+
+          <div class="pf-grid-card pf-reveal pf-reveal-delay-3">
+            <div class="pf-grid-card-icon cyan">🤖</div>
+            <h3>AI-Powered Tools</h3>
+            <p>AI Chatbot, Writing Assistant, and Image Generator to supercharge your content creation.</p>
+            <a href="#platform-ai" class="pf-grid-card-link" id="feature-ai-link">Learn more →</a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 11: CTA BANNER ===== -->
+    <section class="platform-cta-banner" id="platform-cta">
+      <div class="wrap">
+        <div class="pf-cta-card pf-reveal">
+          <div class="pf-cta-eyebrow">Start for Free Today</div>
+          <h2 class="pf-cta-h2">Ready to Transform<br>Your Documents?</h2>
+          <p class="pf-cta-sub">Join over 2 million creators turning static PDFs into stunning, interactive flipbooks —
+            no account, no install needed.</p>
+          <div class="pf-cta-actions">
+            <a href="workspace.html" class="pf-cta-btn-white" id="cta-upload-btn">
+              Upload a PDF — It's Free
+            </a>
+            <a href="pricing.html" class="pf-cta-btn-ghost" id="cta-pricing-btn">
+              View Pricing
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ===== FOOTER ===== -->
+  <footer id="footer">
+    <div class="footer-outer-wrap">
+      <div class="footer-card">
+
+        <!-- Top Columns -->
+        <div class="footer-grid">
+          <!-- Col 1: Brand & blurb -->
+          <div class="footer-col footer-col-brand">
+            <div class="footer-brand-header">
+              <span class="brand-title-dark">FLIP</span><span class="brand-title-blue">PAGE</span>
+            </div>
+            <p class="footer-brand-blurb">
+              FlipPage is the premier marketplace and document platform specializing in high-performance flipbook
+              rendering, client-side privacy, and interactive document experiences.
+            </p>
+          </div>
+
+          <!-- Col 2: Quick link -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Quick link</h4>
+            <ul class="footer-col-list">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="index.html#fast-work">Overview</a></li>
+              <li><a href="index.html#solutions">Solutions</a></li>
+              <li><a href="pricing.html">Pricing</a></li>
+              <li><a href="Workspace.html">Workspace</a></li>
+              <li><a href="account.html">Account</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3: Products -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Products</h4>
+            <ul class="footer-col-list">
+              <li><a href="index.html#fast-work">PDF Documents</a></li>
+              <li><a href="index.html#fast-work">Digital Catalogs</a></li>
+              <li><a href="index.html#fast-work">Magazines &amp; Press</a></li>
+              <li><a href="index.html#fast-work">Annual Reports</a></li>
+              <li><a href="index.html#fast-work">Brochures &amp; Menus</a></li>
+              <li><a href="index.html#fast-work">Portfolio Showcase</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 4: Company -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Company</h4>
+            <ul class="footer-col-list">
+              <li><a href="#">Architecture</a></li>
+              <li><a href="#">System Reqs</a></li>
+              <li><a href="#">Client Privacy</a></li>
+              <li><a href="#">Refund Policy</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 5: Social -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Social</h4>
+            <ul class="footer-col-list">
+              <li><a href="https://discord.com" target="_blank" rel="noopener noreferrer">Discord Server</a></li>
+              <li><a href="https://t.me" target="_blank" rel="noopener noreferrer">Telegram Channel</a></li>
+              <li><a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+              <li><a href="https://youtube.com" target="_blank" rel="noopener noreferrer">YouTube Showcase</a></li>
+              <li><a href="#">24/7 Support</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Divider & Meta Row -->
+        <div class="footer-meta-row">
+          <span class="footer-copy-text">© 2026 FlipPage. All rights reserved.</span>
+          <span class="footer-powered-text">Engineered by FlipPage — Powered by Client-Side PDF Engine</span>
+        </div>
+
+        <!-- Giant Bottom Watermark Typography -->
+        <div class="footer-watermark" aria-hidden="true">
+          <div class="watermark-word watermark-annual">FLIP</div>
+          <div class="watermark-word watermark-flip">PAGE</div>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/Platform.js"></script>
+
+</body>
+
+</html>
