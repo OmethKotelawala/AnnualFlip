@@ -551,6 +551,19 @@ div:nth-of-type(1) > aside:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type
   border: 1px solid #CBD5E1;
 }
 
+.topbar-plan-pill.pro {
+  background: #FFFBEB;
+  color: #B45309;
+  border: 1.5px solid #FCD34D;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+}
+
+.topbar-plan-pill.free {
+  background: #F8FAFC;
+  color: #475569;
+  border: 1.5px solid #E2E8F0;
+}
+
 .crown-svg-icon {
   width: 14px;
   height: 14px;

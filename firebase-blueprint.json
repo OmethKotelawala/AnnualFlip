@@ -10,7 +10,7 @@
         "email": { "type": "string", "format": "email", "maxLength": 150 },
         "photoURL": { "type": "string", "maxLength": 1000 },
         "role": { "type": "string", "enum": ["user", "admin"] },
-        "plan": { "type": "string", "enum": ["Free", "Pro", "Enterprise"] },
+        "plan": { "type": "string", "enum": ["FREE", "PRO", "Free", "Pro", "Starter", "Enterprise"] },
         "isPaid": { "type": "boolean" },
         "brandName": { "type": "string", "maxLength": 100 },
         "brandUrl": { "type": "string", "maxLength": 200 },

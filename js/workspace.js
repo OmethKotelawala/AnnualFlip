@@ -289,9 +289,53 @@ const switchEmail = document.getElementById('switch-active-email');
 const switchAvatar = document.getElementById('switch-active-avatar');
 const btnSwitchLogout = document.getElementById('btn-switch-logout');
 
-let isUserPro = true;
+let isUserPro = false;
+let currentUserPlan = 'FREE';
+let currentUserTrialDays = 14;
+let currentUserTrialEndDate = '';
+let currentUserStatus = 'active';
+
+function initUserPlanListener(uid) {
+  if (!uid) return;
+  try {
+    const userDocRef = doc(db, 'users', uid);
+    onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const userData = docSnap.data() || {};
+        const planStr = String(userData.plan || '').toUpperCase();
+        
+        currentUserPlan = (planStr === 'PRO' || userData.isPaid === true) ? 'PRO' : 'FREE';
+        isUserPro = (currentUserPlan === 'PRO');
+        currentUserTrialDays = userData.trialDays || 14;
+        currentUserTrialEndDate = userData.trialEndDate || '';
+        currentUserStatus = userData.status || 'active';
+
+        localStorage.setItem('flippage_pro_tier', isUserPro ? 'true' : 'false');
+        localStorage.setItem('flippage_user_plan', currentUserPlan);
+
+        updateUserTierBadge();
+        renderPublications();
+        renderStats();
+        renderDetailPane();
+      }
+    }, (err) => {
+      console.warn('User Plan Snapshot Notice:', err);
+    });
+  } catch (err) {
+    console.warn('initUserPlanListener error:', err);
+  }
+}
 
 function updateUserTierBadge() {
+  // Calculate remaining trial days
+  let daysLeftText = `${currentUserTrialDays}d`;
+  if (currentUserTrialEndDate) {
+    const diff = Math.ceil((new Date(currentUserTrialEndDate) - new Date()) / (1000 * 60 * 60 * 24));
+    if (diff > 0) daysLeftText = `${diff}d left`;
+    else if (diff === 0) daysLeftText = 'Ends today';
+    else daysLeftText = 'Expired';
+  }
+
   const badgeHtml = isUserPro 
     ? `<img src="src/svg/crown.svg" class="crown-svg-icon" alt="Pro Crown"><span>PRO</span>`
     : `<img src="src/svg/free.svg" class="free-svg-icon" alt="Free Tier"><span>FREE</span>`;
@@ -301,11 +345,42 @@ function updateUserTierBadge() {
   if (sidebarUserTierBadge) {
     sidebarUserTierBadge.className = badgeClass;
     sidebarUserTierBadge.innerHTML = badgeHtml;
-    sidebarUserTierBadge.title = isUserPro ? '👑 Pro Account (Active Trial)' : 'Free Tier Account';
+    sidebarUserTierBadge.title = isUserPro 
+      ? `👑 Pro Plan Active (${daysLeftText})` 
+      : `🏷️ Free Plan (${daysLeftText} Trial)`;
   }
   if (switchUserTierBadge) {
     switchUserTierBadge.className = badgeClass;
     switchUserTierBadge.innerHTML = badgeHtml;
+  }
+
+  // Update topbar upgrade or plan tag if present
+  const topbarPlanPill = document.getElementById('topbar-user-plan-pill');
+  if (topbarPlanPill) {
+    if (isUserPro) {
+      topbarPlanPill.className = 'topbar-plan-pill pro';
+      topbarPlanPill.innerHTML = `<img src="src/svg/crown.svg" class="crown-svg-icon" alt="Crown"> <span>PRO Plan</span>`;
+      topbarPlanPill.title = `Pro Plan Active • ${daysLeftText}`;
+    } else {
+      topbarPlanPill.className = 'topbar-plan-pill free';
+      topbarPlanPill.innerHTML = `<img src="src/svg/free.svg" class="free-svg-icon" alt="Free"> <span>FREE Tier (${daysLeftText})</span>`;
+      topbarPlanPill.title = 'Free Plan • Click to Upgrade';
+    }
+  }
+
+  // Update upgrade button state in workspace
+  if (navBtnUpgradePlan) {
+    if (isUserPro) {
+      navBtnUpgradePlan.innerHTML = `<img src="src/svg/crown.svg" class="crown-svg-icon" style="width:14px; height:14px;" alt="Crown"> <span>👑 PRO Plan Active</span>`;
+      navBtnUpgradePlan.style.background = '#FEF3C7';
+      navBtnUpgradePlan.style.color = '#B45309';
+      navBtnUpgradePlan.style.borderColor = '#FCD34D';
+    } else {
+      navBtnUpgradePlan.innerHTML = `<img src="src/svg/crown.svg" class="crown-svg-icon" style="width:14px; height:14px;" alt="Crown"> <span>Upgrade to PRO 👑</span>`;
+      navBtnUpgradePlan.style.background = '';
+      navBtnUpgradePlan.style.color = '';
+      navBtnUpgradePlan.style.borderColor = '';
+    }
   }
 }
 
@@ -373,13 +448,14 @@ function initFirestoreSync() {
 }
 
 async function seedInitialPublications() {
+  if (!auth.currentUser) return;
   try {
     for (const pub of publications) {
       const ref = doc(db, 'publications', pub.id);
       await setDoc(ref, {
         ...pub,
-        ownerId: auth.currentUser?.uid || 'demo-admin',
-        ownerEmail: auth.currentUser?.email || 'paneljoker145@gmail.com',
+        ownerId: auth.currentUser.uid,
+        ownerEmail: auth.currentUser.email || '',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       }, { merge: true });
@@ -1189,75 +1265,12 @@ function initAuth() {
   const topbarSigninBtn = document.getElementById('topbar-signin-btn');
   const topbarSigninText = document.getElementById('topbar-signin-text');
   const authGateOverlay = document.getElementById('auth-gate-overlay');
-  const authGateGoogleBtn = document.getElementById('auth-gate-google-btn');
-  const authGateGuestBtn = document.getElementById('auth-gate-guest-btn');
-  const googleProvider = new GoogleAuthProvider();
-  googleProvider.setCustomParameters({ prompt: 'select_account' });
+  const authGateMessage = document.getElementById('auth-gate-message');
 
-  function setGuestProfile(guest) {
-    const name = guest?.displayName || 'Preview Explorer';
-    const email = guest?.email || 'guest@flippage.preview';
-    activeFirebaseUser = {
-      uid: guest?.uid || 'guest-user',
-      displayName: name,
-      email: email,
-      photoURL: ''
-    };
-    if (authGateOverlay) authGateOverlay.style.display = 'none';
-    if (sidebarName) sidebarName.textContent = name;
-    if (sidebarEmail) {
-      sidebarEmail.textContent = 'Guest / Demo Mode';
-      sidebarEmail.style.color = '#2563EB';
-      sidebarEmail.style.fontWeight = '600';
-    }
-    if (switchName) switchName.textContent = name;
-    if (switchEmail) switchEmail.textContent = email;
-    if (sidebarAvatar) {
-      sidebarAvatar.style.background = '#2563EB';
-      sidebarAvatar.textContent = 'G';
-    }
-    if (switchAvatar) {
-      switchAvatar.textContent = 'G';
-    }
-    if (topbarSigninBtn && topbarSigninText) {
-      topbarSigninText.textContent = 'Guest Mode (Sign In)';
-      topbarSigninBtn.title = 'You are exploring in Guest Mode. Click to sign in.';
-    }
-    if (btnSwitchLogout) btnSwitchLogout.style.display = 'flex';
-    isUserPro = localStorage.getItem('flippage_pro_tier') === 'true';
-    updateUserTierBadge();
-  }
-
-  // Handle Google sign in directly on the auth gate if clicked
-  if (authGateGoogleBtn) {
-    authGateGoogleBtn.addEventListener('click', async () => {
-      try {
-        authGateGoogleBtn.disabled = true;
-        authGateGoogleBtn.innerHTML = '<span>Signing in with Google...</span>';
-        await signInWithPopup(auth, googleProvider);
-      } catch (err) {
-        console.warn('Gate Google Sign-In notice:', err);
-        authGateGoogleBtn.disabled = false;
-        authGateGoogleBtn.innerHTML = `
-          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-          <span>Continue with Google</span>
-        `;
-        if (err.code === 'auth/unauthorized-domain') {
-          showToast(`Domain not authorized in Firebase. Switched to Guest Mode for demo.`);
-          setGuestProfile({ displayName: 'Demo Explorer', email: 'guest@flippage.preview' });
-        } else {
-          showToast(err.message || 'Google sign in failed');
-        }
-      }
-    });
-  }
-
-  if (authGateGuestBtn) {
-    authGateGuestBtn.addEventListener('click', () => {
-      setGuestProfile({ displayName: 'Guest User', email: 'guest@flippage.preview' });
-      showToast('Welcome to FlipPage Workspace!');
-    });
-  }
+  // Purge any stale demo or guest keys
+  try {
+    localStorage.removeItem('flippage_guest_user');
+  } catch (_) {}
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -1315,57 +1328,27 @@ function initAuth() {
           <span>Switch / Add Account</span>
         `;
       }
-      isUserPro = true;
-      updateUserTierBadge();
+      
+      // Initialize real-time plan & duration listener for user
+      initUserPlanListener(user.uid);
+      initFirestoreSync();
+      renderPublications();
+      renderStats();
+      renderDetailPane();
     } else {
-      // Check if local guest session exists
-      const savedGuest = localStorage.getItem('flippage_guest_user');
-      if (savedGuest) {
-        try {
-          const parsed = JSON.parse(savedGuest);
-          setGuestProfile(parsed);
-          return;
-        } catch (_) {}
-      }
-
-      // User is Unauthenticated: Show auth overlay with clear options (no aggressive redirect loop)
+      // User is Unauthenticated: Block workspace and immediately redirect to account.html
       activeFirebaseUser = null;
-      isUserPro = localStorage.getItem('flippage_pro_tier') === 'true';
-      updateUserTierBadge();
-      if (authGateOverlay) authGateOverlay.style.display = 'flex';
-
-      if (sidebarName) sidebarName.textContent = 'Guest User';
-      if (sidebarEmail) {
-        sidebarEmail.textContent = 'Click to Sign In';
-        sidebarEmail.style.color = '#2563EB';
-        sidebarEmail.style.fontWeight = '600';
+      if (authGateOverlay) {
+        authGateOverlay.style.display = 'flex';
       }
-      if (sidebarAvatar) {
-        sidebarAvatar.style.background = '#64748B';
-        sidebarAvatar.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+      if (authGateMessage) {
+        authGateMessage.textContent = 'Account required to access workspace. Redirecting to sign in / create account...';
       }
-      if (switchName) switchName.textContent = 'Guest User';
-      if (switchEmail) switchEmail.textContent = 'Signed out • Local mode';
-      if (switchAvatar) {
-        switchAvatar.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
-      }
-
-      if (topbarSigninBtn && topbarSigninText) {
-        topbarSigninText.textContent = 'Sign In / Connect';
-        topbarSigninBtn.title = 'Sign in with your Google or Email account';
-      }
-
-      if (btnSwitchLogout) btnSwitchLogout.style.display = 'none';
-      if (btnSwitchLogin) {
-        btnSwitchLogin.innerHTML = `
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-            <polyline points="10 17 15 12 10 7"/>
-            <line x1="15" y1="12" x2="3" y2="12"/>
-          </svg>
-          <span>Sign in / Create Account</span>
-        `;
-      }
+      
+      // Auto-reconnect / redirect to account.html page
+      setTimeout(() => {
+        window.location.replace('account.html?auth=required');
+      }, 150);
     }
   });
 
@@ -1385,8 +1368,11 @@ function initAuth() {
 
   if (btnSwitchLogout) {
     btnSwitchLogout.addEventListener('click', async () => {
+      try {
+        localStorage.clear();
+      } catch (_) {}
       await signOut(auth);
-      window.location.href = 'account.html';
+      window.location.replace('account.html');
     });
   }
 }
@@ -1490,8 +1476,4 @@ document.addEventListener('DOMContentLoaded', () => {
   initCreateModal();
   initProModal();
   updateUserTierBadge();
-  renderPublications();
-  renderStats();
-  renderDetailPane();
-  initFirestoreSync();
 });

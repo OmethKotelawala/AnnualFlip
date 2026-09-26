@@ -188,12 +188,14 @@ async function syncUserTrialRecord(user, customName = '', customBrand = '') {
     const userRef = doc(db, 'users', user.uid);
     const existingSnap = await getDoc(userRef);
     const now = new Date();
-    const isAdmin = (user.email || '').toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase();
+    const isAdmin = (user.email || '').toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase() ||
+                    (user.email || '').toLowerCase() === 'yutrytopipygh@gmail.com';
 
     if (!existingSnap.exists()) {
       const trialDays = 14;
       const trialStartDate = now.toISOString();
       const trialEndDate = new Date(now.getTime() + trialDays * 24 * 60 * 60 * 1000).toISOString();
+      const initialPlan = isAdmin ? 'PRO' : 'FREE';
 
       await setDoc(userRef, {
         uid: user.uid,
@@ -201,6 +203,8 @@ async function syncUserTrialRecord(user, customName = '', customBrand = '') {
         email: user.email || '',
         photoURL: user.photoURL || '',
         role: isAdmin ? 'admin' : 'user',
+        plan: initialPlan,
+        isPaid: initialPlan === 'PRO',
         brandName: customBrand || '',
         brandUrl: customBrand ? `FlipPage.com/${customBrand.toLowerCase().replace(/\s+/g, '-')}` : '',
         createdAt: trialStartDate,
@@ -211,9 +215,15 @@ async function syncUserTrialRecord(user, customName = '', customBrand = '') {
         lastLoginAt: trialStartDate
       });
     } else {
+      const existingData = existingSnap.data() || {};
       const updatePayload = { 
         lastLoginAt: now.toISOString() 
       };
+      // Ensure plan field exists
+      if (!existingData.plan) {
+        updatePayload.plan = existingData.isPaid ? 'PRO' : (isAdmin ? 'PRO' : 'FREE');
+        updatePayload.isPaid = updatePayload.plan === 'PRO';
+      }
       if (user.photoURL) {
         updatePayload.photoURL = user.photoURL;
       }
@@ -388,35 +398,6 @@ form.addEventListener('submit', async (event) => {
  */
 const unauthorizedCard = document.getElementById('unauthorized-domain-card');
 const currentHostnameCode = document.getElementById('current-hostname-code');
-const btnUnauthorizedDemo = document.getElementById('btn-unauthorized-demo');
-const guestAuthBtn = document.getElementById('guest-auth-btn');
-
-function enterGuestMode() {
-  const guestUser = {
-    uid: 'guest-' + Date.now(),
-    displayName: 'Preview Explorer',
-    email: 'guest@flippage.preview',
-    photoURL: ''
-  };
-  localStorage.setItem('flippage_guest_user', JSON.stringify(guestUser));
-  localStorage.setItem('flippage_user_name', 'Preview Explorer');
-  showStatus('Entering workspace in Guest/Demo Mode...', false);
-  setTimeout(() => {
-    window.location.href = 'workspace.html';
-  }, 400);
-}
-
-if (guestAuthBtn) {
-  guestAuthBtn.addEventListener('click', () => {
-    enterGuestMode();
-  });
-}
-
-if (btnUnauthorizedDemo) {
-  btnUnauthorizedDemo.addEventListener('click', () => {
-    enterGuestMode();
-  });
-}
 
 if (googleAuthBtn) {
   googleAuthBtn.addEventListener('click', async () => {

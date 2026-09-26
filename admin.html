@@ -4,207 +4,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FlipPage — Admin Portal &amp; Free Trial Manager</title>
+  <title>FlipPage — Admin Portal &amp; Subscription Manager</title>
   <meta name="description" content="FlipPage Administrator Portal — Manage registered users, brand company names, free trial durations, and system permissions.">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/admin.css">
 </head>
 
-<body>
+<body class="admin-app-body">
 
-  <!-- Ambient background glow -->
-  <div class="cyber-bg-wrap" aria-hidden="true">
-    <div class="cyber-bg-glow"></div>
-  </div>
-
-  <!-- ===== NAVBAR (Exact match from index.html) ===== -->
-  <nav id="navbar" role="navigation" aria-label="Main navigation">
-    <div class="wrap">
-      <div class="nav-inner">
-
-        <!-- Brand -->
-        <a class="brand" href="index.html" aria-label="FlipPage home">
-          <div class="brand-icon-wrap" aria-hidden="true">
-            <img src="scr/Logo.png" alt="" class="brand-logo">
-          </div>
-          <span class="brand-name">Flip<span class="brand-name-accent">Page</span></span>
-        </a>
-
-        <!-- Nav links -->
-        <ul class="nav-links" id="nav-links" role="list">
-
-          <!-- Products simple link -->
-          <li class="nav-item">
-            <a href="index.html#fast-work" class="nav-link">
-              <span>Products</span>
-            </a>
-          </li>
-
-          <!-- Platform with Mega Dropdown -->
-          <li class="nav-item nav-item-dropdown">
-            <button class="nav-link nav-link-btn" aria-expanded="false" id="platform-dropdown-btn" type="button">
-              <span>Platform</span>
-              <svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-
-            <!-- Mega Dropdown Menu -->
-            <div class="mega-dropdown" id="platform-menu" role="region" aria-label="Platform menu">
-
-              <!-- Dropdown header -->
-              <div class="mega-header">
-                <span class="mega-header-tag">Platform</span>
-                <p class="mega-header-sub">Everything you need to publish beautiful, interactive documents.</p>
-              </div>
-
-              <div class="mega-dropdown-inner">
-
-                <!-- Col 1: How it works -->
-                <div class="mega-col">
-                  <span class="mega-category">HOW IT WORKS</span>
-
-                  <a href="index.html#fast-work" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">Interactive 3D Engine</strong>
-                      <span class="mega-desc">Realistic physics, page curls, shadows &amp; dual-page spreads.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-
-                  <a href="index.html#solutions" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="5" y="2" width="14" height="20" rx="2"/>
-                        <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">Touch &amp; Mobile Ready</strong>
-                      <span class="mega-desc">Fluid gesture swipe, pinch-zoom and responsive layout.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-                </div>
-
-                <!-- Col 2: Trust & Privacy -->
-                <div class="mega-col">
-                  <span class="mega-category">PRIVACY &amp; SPEED</span>
-
-                  <a href="index.html#solutions" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">100% Client-Side Privacy</strong>
-                      <span class="mega-desc">Your PDFs never leave your browser — zero cloud storage.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-
-                  <a href="index.html#solutions" class="mega-item">
-                    <div class="mega-icon" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                      </svg>
-                    </div>
-                    <div class="mega-item-text">
-                      <strong class="mega-title">Instant Rendering</strong>
-                      <span class="mega-desc">Hardware-accelerated PDF rendering with crisp vector typography.</span>
-                    </div>
-                    <svg class="mega-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </a>
-                </div>
-
-                <!-- Col 3: CTA card -->
-                <div class="mega-col mega-col-cta">
-                  <div class="mega-cta-card">
-                    <div class="mega-cta-icon" aria-hidden="true">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                    </div>
-                    <strong class="mega-cta-title">Try it free</strong>
-                    <p class="mega-cta-desc">No account needed. Drop in any PDF and watch it flip.</p>
-                    <a href="index.html#fast-work" class="mega-cta-btn">Open demo →</a>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </li>
-
-          <!-- Solutions link -->
-          <li class="nav-item">
-            <a href="index.html#solutions" class="nav-link"><span>Solutions</span></a>
-          </li>
-
-          <!-- Pricing link -->
-          <li class="nav-item">
-            <a href="pricing.html" class="nav-link"><span>Pricing</span></a>
-          </li>
-
-          <!-- Workspace link -->
-          <li class="nav-item">
-            <a href="workspace.html" class="nav-link"><span>Workspace</span></a>
-          </li>
-
-        </ul>
-
-        <!-- Right-side Admin Profile -->
-        <div class="nav-cta" id="admin-header-nav-right">
-          <button class="btn-admin-logout" id="btn-admin-logout" type="button" hidden>Log out</button>
-          <a class="nav-signin" href="account.html" id="admin-nav-signin">Sign in</a>
-          <a class="nav-getstarted" href="workspace.html" id="admin-nav-getstarted">Get started</a>
-        </div>
-
-        <!-- Mobile hamburger -->
-        <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
-          <span class="ham-bar"></span>
-          <span class="ham-bar"></span>
-          <span class="ham-bar"></span>
-        </button>
-
-      </div>
-    </div>
-  </nav>
-
-  <!-- ===== AUTH GUARD / ACCESS SCREEN (Matches Reference Image) ===== -->
-  <div class="admin-auth-guard" id="auth-guard-container">
+  <!-- ===== ADMIN AUTH GUARD (Enforces Admin-Only Access) ===== -->
+  <div class="admin-auth-guard" id="auth-guard-container" style="display: flex;">
     <div class="guard-card">
       
-      <!-- Top Shield Icon Pill -->
+      <!-- Top Shield Icon -->
       <div class="guard-icon" id="guard-icon-box">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
       </div>
 
       <div class="guard-eyebrow" id="guard-eyebrow-text">ADMINISTRATION PORTAL</div>
-      <h2 class="guard-title" id="guard-title">FlipPage Admin Authentication</h2>
+      <h2 class="guard-title" id="guard-title">Admin Access Required</h2>
       <p class="guard-desc" id="guard-desc">
-        Please log in or create your administrator credentials ( <strong>admin@gmail.com</strong> ) to manage user trials, plans, and store catalogues.
+        This console is strictly restricted to verified system administrators. Please sign in with your authorized admin account (e.g. <strong>yutrytopipygh@gmail.com</strong> or <strong>admin@gmail.com</strong>).
       </p>
+
+      <div id="guard-auth-feedback" class="guard-feedback" style="display:none;"></div>
+
+      <!-- Google Sign In Button for Admin -->
+      <button type="button" id="btn-admin-google-login" class="guard-google-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <span>Sign in with Google Admin</span>
+      </button>
+
+      <div class="guard-divider-or"><span>OR EMAIL CREDENTIALS</span></div>
 
       <!-- Admin Auth Form (Login & Create Account) -->
       <form id="admin-login-form" class="guard-form-wrap">
-        
-        <!-- Name Field (Visible during Create Admin Account mode) -->
-        <div class="guard-field-group" id="admin-name-field-group" hidden>
-          <label for="admin-name-input" class="guard-field-label">ADMIN FULL NAME</label>
-          <input type="text" id="admin-name-input" class="guard-input" placeholder="Ometh Ranhasa">
-        </div>
-
         <div class="guard-field-group">
           <label for="admin-email-input" class="guard-field-label">ADMIN EMAIL ADDRESS</label>
           <input type="email" id="admin-email-input" class="guard-input" placeholder="admin@gmail.com" value="admin@gmail.com" required autocomplete="email">
@@ -225,327 +72,414 @@
         </button>
       </form>
 
-      <!-- Toggle between Login and Create Admin Account -->
-      <div class="admin-auth-toggle-box">
-        <button type="button" class="btn-toggle-auth-mode" id="btn-toggle-auth-mode">
-          Need a new admin account? <strong>Create Admin Account</strong>
-        </button>
-      </div>
-
       <div class="guard-divider"></div>
 
-      <a href="index.html" class="guard-return-link">
-        <span>← Return to Store Front</span>
-      </a>
-
-    </div>
-  </div>
-
-  <!-- ===== MAIN ADMIN MANAGEMENT PORTAL ===== -->
-  <main class="admin-main-wrap" id="admin-main-portal" hidden>
-
-    <!-- Top Title & Quick Actions Row -->
-    <div class="admin-header-title-row">
-      <div>
-        <h1>User Trials &amp; Brand Management</h1>
-        <p>Monitor user registrations, brand company names, 14-day free trials, and edit trial durations.</p>
-      </div>
-
-      <div class="admin-top-actions">
-        <button class="btn-secondary-outline" id="refresh-users-btn" type="button">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-          <span>Refresh Data</span>
-        </button>
-        <a href="account.html" class="btn-primary-glow">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          <span>Register User / Add Brand</span>
+      <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+        <a href="index.html" class="guard-return-link">
+          <span>← Back to Website</span>
+        </a>
+        <a href="account.html" class="guard-return-link" style="color:#2563EB;">
+          <span>User Sign In →</span>
         </a>
       </div>
-    </div>
-
-    <!-- Summary Metrics -->
-    <section class="admin-metrics-grid" aria-label="Trial statistics">
-      <div class="metric-card">
-        <div class="metric-icon-box blue">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <div class="metric-info">
-          <span class="metric-label">Total Users</span>
-          <span class="metric-value" id="stat-total-users">5</span>
-        </div>
-      </div>
-
-      <div class="metric-card">
-        <div class="metric-icon-box emerald">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
-        </div>
-        <div class="metric-info">
-          <span class="metric-label">Active Free Trials</span>
-          <span class="metric-value" id="stat-active-trials">4</span>
-        </div>
-      </div>
-
-      <div class="metric-card">
-        <div class="metric-icon-box amber">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        </div>
-        <div class="metric-info">
-          <span class="metric-label">Expired Trials</span>
-          <span class="metric-value" id="stat-expired-trials">1</span>
-        </div>
-      </div>
-
-      <div class="metric-card">
-        <div class="metric-icon-box purple">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </div>
-        <div class="metric-info">
-          <span class="metric-label">Avg. Duration</span>
-          <span class="metric-value" id="stat-avg-duration">14 Days</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Users Table Container -->
-    <section class="admin-table-container">
-      
-      <!-- Toolbar -->
-      <div class="admin-table-toolbar">
-        <div class="search-input-wrap">
-          <svg class="search-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" class="admin-search-input" id="admin-search-input" placeholder="Search by name, brand name, or email...">
-        </div>
-
-        <div class="filter-button-group">
-          <button class="filter-btn-pill is-active" data-filter="all" type="button">All Users</button>
-          <button class="filter-btn-pill" data-filter="active" type="button">Active Trials</button>
-          <button class="filter-btn-pill" data-filter="expiring" type="button">Expiring Soon (≤3d)</button>
-          <button class="filter-btn-pill" data-filter="expired" type="button">Expired</button>
-          <button class="filter-btn-pill" data-filter="admins" type="button">Admins</button>
-        </div>
-      </div>
-
-      <!-- Table View -->
-      <div class="table-responsive">
-        <table class="admin-users-table">
-          <thead>
-            <tr>
-              <th>User &amp; Profile</th>
-              <th>Gmail Address</th>
-              <th>Brand / Organization</th>
-              <th>Current Plan</th>
-              <th>Free Trial Duration</th>
-              <th>Time Remaining</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="users-table-body">
-            <!-- Dynamically populated via js/admin.js -->
-          </tbody>
-        </table>
-      </div>
-
-    </section>
-
-  </main>
-
-  <!-- ===== CHANGE PLAN & TRIAL DURATION MODAL ===== -->
-  <div class="modal-overlay" id="trial-duration-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <div class="modal-content-card">
-      
-      <div class="modal-header-row">
-        <h3 id="modal-title">Adjust User Plan &amp; Free Trial</h3>
-        <button class="btn-close-modal" id="btn-close-modal-x" type="button" aria-label="Close modal">✕</button>
-      </div>
-
-      <p style="color: var(--admin-text-secondary); font-size: 0.9rem; margin: 0 0 16px;">
-        Modifying account settings for: <strong id="modal-target-user" style="color: #0F172A;">User</strong>
-      </p>
-
-      <!-- Plan Tier Selector -->
-      <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 0.76rem; font-weight: 800; color: #1E293B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Plan Tier</label>
-        <div class="plan-select-grid" id="modal-plan-selector">
-          <button type="button" class="plan-pill-opt is-selected" data-plan="Free">Free ($0)</button>
-          <button type="button" class="plan-pill-opt" data-plan="Starter">Starter ($15)</button>
-          <button type="button" class="plan-pill-opt" data-plan="Professional">Professional ($35)</button>
-          <button type="button" class="plan-pill-opt" data-plan="Enterprise">Enterprise ($99)</button>
-        </div>
-      </div>
-
-      <div style="background: #F8FAFC; border: 1px solid var(--admin-border); border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 0.85rem; color: var(--admin-text-secondary);">Current Setting:</span>
-        <strong id="modal-current-duration" style="color: #2563EB; font-size: 1rem;">14 Days Free Trial</strong>
-      </div>
-
-      <label style="font-size: 0.76rem; font-weight: 800; color: #1E293B; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">Quick Trial Presets</label>
-      
-      <!-- Preset Buttons -->
-      <div class="preset-days-grid">
-        <button class="preset-day-btn" data-days="7" type="button">7 Days</button>
-        <button class="preset-day-btn is-selected" data-days="14" type="button">14 Days (Default)</button>
-        <button class="preset-day-btn" data-days="30" type="button">30 Days</button>
-        <button class="preset-day-btn" data-days="60" type="button">60 Days</button>
-        <button class="preset-day-btn" data-days="90" type="button">90 Days</button>
-        <button class="preset-day-btn" data-days="180" type="button">180 Days</button>
-        <button class="preset-day-btn" data-days="365" type="button">1 Year</button>
-        <button class="preset-day-btn" data-days="730" type="button">Unlimited</button>
-      </div>
-
-      <!-- Custom Stepper Input -->
-      <div class="custom-days-input-wrap">
-        <label for="custom-days-input">Custom Free Trial Days</label>
-        <div class="days-stepper">
-          <button class="stepper-btn" id="stepper-minus" type="button">−</button>
-          <input type="number" id="custom-days-input" class="stepper-input" min="0" max="3650" value="14">
-          <button class="stepper-btn" id="stepper-plus" type="button">+</button>
-        </div>
-      </div>
-
-      <!-- Modal Actions -->
-      <div class="modal-actions">
-        <button class="btn-secondary-outline" id="btn-cancel-modal" type="button">Cancel</button>
-        <button class="btn-primary-glow" id="btn-save-trial-duration" type="button">Save Changes</button>
-      </div>
 
     </div>
   </div>
 
-  <!-- ===== USER DETAILS MODAL ===== -->
-  <div class="modal-overlay" id="user-details-modal" role="dialog" aria-modal="true" aria-labelledby="user-details-modal-title">
-    <div class="modal-content-card">
-      <div class="modal-header-row">
-        <h3 id="user-details-modal-title">User &amp; Brand Profile</h3>
-        <button class="btn-close-modal" id="btn-close-details-modal" type="button" aria-label="Close modal">✕</button>
+  <!-- ===== SAAS ADMIN DASHBOARD (MATCHING UPLOADED SCREENSHOT) ===== -->
+  <div class="admin-dashboard-layout" id="admin-dashboard-layout" style="display: none;">
+
+    <!-- ===== LEFT SIDEBAR (Matching Image) ===== -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+      
+      <!-- Brand Logo Header -->
+      <div class="sidebar-brand-header">
+        <a href="index.html" class="sidebar-brand-link">
+          <div class="sidebar-brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+          </div>
+          <span class="sidebar-brand-title">FlipPage</span>
+        </a>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding: 14px; background: rgba(255,255,255,0.04); border-radius: 12px;">
-        <div class="user-table-avatar" id="detail-user-avatar" style="width: 48px; height: 48px; font-size: 1.2rem;">U</div>
-        <div>
-          <h4 id="detail-user-name" style="margin: 0 0 4px; font-size: 1.1rem; color: #FFFFFF;">User Name</h4>
-          <span id="detail-user-email" style="color: var(--admin-text-secondary); font-size: 0.85rem;">user@example.com</span>
-        </div>
+      <!-- Quick Search Bar with Shortcut -->
+      <div class="sidebar-search-box">
+        <svg class="sidebar-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="sidebar-quick-search" placeholder="Search..." autocomplete="off">
+        <kbd class="sidebar-search-shortcut">⌘K</kbd>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; margin-bottom: 24px;">
-        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--admin-border); padding-bottom: 8px;">
-          <span style="color: var(--admin-text-muted);">Brand / Company Name:</span>
-          <strong id="detail-brand-name" style="color: #60A5FA;">Not specified</strong>
-        </div>
-        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--admin-border); padding-bottom: 8px;">
-          <span style="color: var(--admin-text-muted);">Brand Custom URL:</span>
-          <span id="detail-brand-url" style="color: #34D399; font-family: monospace;">FlipPage.com/</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--admin-border); padding-bottom: 8px;">
-          <span style="color: var(--admin-text-muted);">Free Trial Duration:</span>
-          <strong id="detail-trial-duration" style="color: #FFFFFF;">14 Days</strong>
-        </div>
-        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--admin-border); padding-bottom: 8px;">
-          <span style="color: var(--admin-text-muted);">Time Remaining:</span>
-          <strong id="detail-time-remaining" style="color: #34D399;">14 days</strong>
-        </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span style="color: var(--admin-text-muted);">Registration Date:</span>
-          <span id="detail-registered-date" style="color: #FFFFFF;">Jan 1, 2026</span>
-        </div>
+      <!-- Main Navigation Menu -->
+      <div class="sidebar-nav-section">
+        <span class="sidebar-section-label">Main Menu</span>
+        
+        <ul class="sidebar-nav-list">
+          <!-- Active Users & Plans Tab (Matching Bright Blue Active Pill in Image) -->
+          <li class="sidebar-nav-item">
+            <a href="#users" class="sidebar-nav-link is-active" id="nav-item-users">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              <span>Users &amp; Plans</span>
+            </a>
+          </li>
+        </ul>
       </div>
 
-      <div class="modal-actions">
-        <button class="btn-primary-glow" id="btn-close-details-bottom" type="button" style="width: 100%; justify-content: center;">Close Details</button>
+      <!-- General Section with Logout -->
+      <div class="sidebar-nav-section" style="margin-top: auto;">
+        <ul class="sidebar-nav-list">
+          <!-- Logout Option in Red -->
+          <li class="sidebar-nav-item">
+            <button type="button" class="sidebar-nav-link is-logout" id="btn-sidebar-logout">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              <span>Logout</span>
+            </button>
+          </li>
+        </ul>
       </div>
-    </div>
-  </div>
 
-  <!-- ===== GLOBAL FOOTER ===== -->
-  <footer id="footer">
-    <div class="footer-outer-wrap">
-      <div class="footer-card">
+    </aside>
 
-        <!-- Top Columns -->
-        <div class="footer-grid">
-          <!-- Col 1: Brand & blurb -->
-          <div class="footer-col footer-col-brand">
-            <div class="footer-brand-header">
-              <span class="brand-title-dark">FLIP</span><span class="brand-title-blue">PAGE</span>
+    <!-- ===== MAIN CONTENT CANVAS ===== -->
+    <div class="admin-main-canvas">
+
+      <!-- Top Header Bar (Matching Screenshot) -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <h2 class="topbar-page-title">Tasks</h2>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Ask AI Gradient Button (Matching "Ask Renza AI" from Screenshot) -->
+          <button type="button" class="btn-ask-ai-gradient" id="btn-topbar-ask-ai">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 4V2"/>
+              <path d="M15 16v-2"/>
+              <path d="M8 9h2"/>
+              <path d="M20 9h2"/>
+              <path d="M17.8 11.8 19 13"/>
+              <path d="M15 9h0"/>
+              <path d="M17.8 6.2 19 5"/>
+              <path d="m3 21 9-9"/>
+              <path d="M12.2 6.2 11 5"/>
+            </svg>
+            <span>Ask FlipPage AI</span>
+          </button>
+
+          <!-- Notification Bell -->
+          <button type="button" class="topbar-icon-btn" aria-label="Notifications" id="btn-admin-notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span class="notification-indicator"></span>
+          </button>
+
+          <!-- Logged In Admin Profile Pill (Matching Guy Hawkins Profile in Screenshot) -->
+          <div class="admin-profile-pill" id="admin-profile-pill">
+            <div class="admin-profile-avatar" id="topbar-admin-avatar">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Admin Avatar" id="topbar-admin-photo">
             </div>
-            <p class="footer-brand-blurb">
-              FlipPage is the premier marketplace and document platform specializing in high-performance flipbook
-              rendering, client-side privacy, and interactive document experiences.
-            </p>
+            <div class="admin-profile-meta">
+              <span class="admin-profile-name" id="topbar-admin-name">Admin</span>
+              <span class="admin-profile-role" id="topbar-admin-role">Super Admin</span>
+            </div>
+            <svg class="admin-profile-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Dashboard View Container -->
+      <main class="dashboard-body">
+
+        <!-- Header Title & Action Buttons Row (Matching Screenshot) -->
+        <div class="dashboard-heading-row">
+          <div class="heading-text">
+            <h1 class="dashboard-section-title">My Tasks</h1>
+            <p class="dashboard-section-sub">Manage and track all your tasks, user plans &amp; time durations</p>
           </div>
 
-          <!-- Col 2: Quick link -->
-          <div class="footer-col">
-            <h4 class="footer-col-title">Quick link</h4>
-            <ul class="footer-col-list">
-              <li><a href="index.html">Home</a></li>
-              <li><a href="index.html#fast-work">Overview</a></li>
-              <li><a href="index.html#solutions">Solutions</a></li>
-              <li><a href="pricing.html">Pricing</a></li>
-              <li><a href="Workspace.html">Workspace</a></li>
-              <li><a href="account.html">Account</a></li>
-            </ul>
-          </div>
+          <div class="heading-action-tools">
+            <!-- Search Icon Button -->
+            <button type="button" class="btn-tool-square" id="btn-focus-search" title="Search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </button>
 
-          <!-- Col 3: Products -->
-          <div class="footer-col">
-            <h4 class="footer-col-title">Products</h4>
-            <ul class="footer-col-list">
-              <li><a href="index.html#fast-work">PDF Documents</a></li>
-              <li><a href="index.html#fast-work">Digital Catalogs</a></li>
-              <li><a href="index.html#fast-work">Magazines &amp; Press</a></li>
-              <li><a href="index.html#fast-work">Annual Reports</a></li>
-              <li><a href="index.html#fast-work">Brochures &amp; Menus</a></li>
-              <li><a href="index.html#fast-work">Portfolio Showcase</a></li>
-            </ul>
-          </div>
+            <!-- Filters Button with Icon (Matching Screenshot) -->
+            <button type="button" class="btn-tool-filter" id="btn-toggle-filters">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" y1="21" x2="4" y2="14"/>
+                <line x1="4" y1="10" x2="4" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12" y2="3"/>
+                <line x1="20" y1="21" x2="20" y2="16"/>
+                <line x1="20" y1="12" x2="20" y2="3"/>
+                <line x1="1" y1="14" x2="7" y2="14"/>
+                <line x1="9" y1="8" x2="15" y2="8"/>
+                <line x1="17" y1="16" x2="23" y2="16"/>
+              </svg>
+              <span>Filters</span>
+            </button>
 
-          <!-- Col 4: Company -->
-          <div class="footer-col">
-            <h4 class="footer-col-title">Company</h4>
-            <ul class="footer-col-list">
-              <li><a href="#">Architecture</a></li>
-              <li><a href="#">System Reqs</a></li>
-              <li><a href="#">Client Privacy</a></li>
-              <li><a href="#">Refund Policy</a></li>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
-            </ul>
-          </div>
-
-          <!-- Col 5: Social -->
-          <div class="footer-col">
-            <h4 class="footer-col-title">Social</h4>
-            <ul class="footer-col-list">
-              <li><a href="https://discord.com" target="_blank" rel="noopener noreferrer">Discord Server</a></li>
-              <li><a href="https://t.me" target="_blank" rel="noopener noreferrer">Telegram Channel</a></li>
-              <li><a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-              <li><a href="https://youtube.com" target="_blank" rel="noopener noreferrer">YouTube Showcase</a></li>
-              <li><a href="#">24/7 Support</a></li>
-            </ul>
+            <!-- Primary Action Button: + Add Tasks / Add User (Matching Screenshot) -->
+            <button type="button" class="btn-primary-add" id="btn-open-add-user-modal">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              <span>+ Add Tasks</span>
+            </button>
           </div>
         </div>
 
-        <!-- Divider & Meta Row -->
-        <div class="footer-meta-row">
-          <span class="footer-copy-text">© 2026 FlipPage. All rights reserved.</span>
-          <span class="footer-powered-text">Engineered by FlipPage — Powered by Client-Side PDF Engine</span>
+        <!-- Filter Chips Sub-Bar (Expandable / Active Filters) -->
+        <div class="filter-chips-bar" id="filter-chips-bar">
+          <button class="filter-chip is-active" data-filter="all" type="button">All (12)</button>
+          <button class="filter-chip" data-filter="pro" type="button">👑 Pro &amp; Crown</button>
+          <button class="filter-chip" data-filter="active" type="button">Active Subscriptions</button>
+          <button class="filter-chip" data-filter="expiring" type="button">Expiring Soon (≤7d)</button>
+          <button class="filter-chip" data-filter="expired" type="button">Expired</button>
+          <button class="filter-chip" data-filter="admin" type="button">Administrators</button>
         </div>
 
-        <!-- Giant Bottom Watermark Typography -->
-        <div class="footer-watermark" aria-hidden="true">
-          <div class="watermark-word watermark-annual">FLIP</div>
-          <div class="watermark-word watermark-flip">PAGE</div>
+        <!-- ===== MAIN DATA TABLE CARD (MATCHING SCREENSHOT) ===== -->
+        <div class="admin-table-card">
+          <div class="table-responsive">
+            <table class="saas-data-table">
+              <thead>
+                <tr>
+                  <th class="col-checkbox">
+                    <input type="checkbox" id="check-all-rows" aria-label="Select all rows">
+                  </th>
+                  <th class="col-task">Task Name</th>
+                  <th class="col-project">Project</th>
+                  <th class="col-assignee">Assignee</th>
+                  <th class="col-priority">Priority</th>
+                  <th class="col-status">Status</th>
+                  <th class="col-due">Due Date</th>
+                  <th class="col-actions"></th>
+                </tr>
+              </thead>
+              <tbody id="users-table-body">
+                <!-- Dynamically populated from Firestore / usersData via js/admin.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Footer with Pagination (Matching Screenshot: Showing 1-10 of 12 tasks • < 1 2 >) -->
+          <div class="table-pagination-footer">
+            <span class="pagination-info" id="pagination-info-text">Showing 1-10 of 12 tasks</span>
+
+            <div class="pagination-controls">
+              <button type="button" class="btn-page-arrow" id="btn-page-prev" aria-label="Previous Page">‹</button>
+              <button type="button" class="btn-page-number is-active" id="btn-page-1">1</button>
+              <button type="button" class="btn-page-number" id="btn-page-2">2</button>
+              <button type="button" class="btn-page-arrow" id="btn-page-next" aria-label="Next Page">›</button>
+            </div>
+          </div>
+
         </div>
 
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- ===== ADD NEW USER & ASSIGN PLAN MODAL ===== -->
+  <div class="modal-backdrop" id="modal-add-user" role="dialog" aria-modal="true" hidden>
+    <div class="modal-card">
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">+ Add New User &amp; Assign Plan</h3>
+        <button type="button" class="modal-card-close" id="btn-close-add-modal">✕</button>
+      </div>
+
+      <form id="form-add-user" class="modal-card-body">
+        <div class="modal-form-group">
+          <label for="new-user-name">Full Name</label>
+          <input type="text" id="new-user-name" placeholder="e.g. Jane Cooper" required>
+        </div>
+
+        <div class="modal-form-group">
+          <label for="new-user-email">Email Address</label>
+          <input type="email" id="new-user-email" placeholder="jane.cooper@example.com" required>
+        </div>
+
+        <div class="modal-form-group">
+          <label for="new-user-project">Project / Task Name</label>
+          <input type="text" id="new-user-project" placeholder="e.g. Landing Page Design" value="Landing Page Design">
+        </div>
+
+        <div class="modal-form-group">
+          <label for="new-user-brand">Brand Name / URL Slug</label>
+          <input type="text" id="new-user-brand" placeholder="e.g. cooper-media">
+        </div>
+
+        <div class="modal-form-group">
+          <label>Plan Tier (FREE or PRO)</label>
+          <div class="plan-option-grid" id="new-plan-options">
+            <button type="button" class="plan-btn-option is-active" data-plan="FREE" data-tier="low">
+              <span>🏷️ FREE Plan</span>
+            </button>
+            <button type="button" class="plan-btn-option" data-plan="PRO" data-tier="pro">
+              <span>👑 PRO Plan (Crown)</span>
+            </button>
+            <button type="button" class="plan-btn-option" data-plan="Starter" data-tier="medium">
+              <span>Starter ($15)</span>
+            </button>
+            <button type="button" class="plan-btn-option" data-plan="Enterprise" data-tier="high">
+              <span>Enterprise ($99)</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-form-group">
+          <label for="new-user-duration">Time Duration (Days)</label>
+          <div class="duration-input-row">
+            <input type="number" id="new-user-duration" min="1" max="3650" value="14">
+            <span class="duration-tag">Days</span>
+          </div>
+        </div>
+
+        <div class="modal-form-actions">
+          <button type="button" class="btn-cancel" id="btn-cancel-add-modal">Cancel</button>
+          <button type="submit" class="btn-submit-primary">Create User &amp; Plan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== EDIT PLAN & TIME DURATION MODAL ===== -->
+  <div class="modal-backdrop" id="modal-edit-plan" role="dialog" aria-modal="true" hidden>
+    <div class="modal-card">
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">Edit User Plan &amp; Duration</h3>
+        <button type="button" class="modal-card-close" id="btn-close-edit-modal">✕</button>
+      </div>
+
+      <div class="modal-card-body">
+        <div class="user-summary-banner">
+          <div class="user-avatar-circle" id="edit-modal-avatar">U</div>
+          <div>
+            <h4 id="edit-modal-user-name" style="margin:0 0 2px; font-weight:700; color:#0F172A;">Jane Cooper</h4>
+            <span id="edit-modal-user-email" style="font-size:0.85rem; color:#64748B;">jane@example.com</span>
+          </div>
+        </div>
+
+        <!-- Plan Tier Selector -->
+        <div class="modal-form-group" style="margin-top:16px;">
+          <label>Select Plan Tier (FREE or PRO)</label>
+          <div class="plan-option-grid" id="edit-plan-options">
+            <button type="button" class="plan-btn-option" data-plan="FREE">
+              <span>🏷️ FREE Plan</span>
+            </button>
+            <button type="button" class="plan-btn-option" data-plan="PRO">
+              <span>👑 PRO Plan (Crown)</span>
+            </button>
+            <button type="button" class="plan-btn-option" data-plan="Starter">
+              <span>Starter</span>
+            </button>
+            <button type="button" class="plan-btn-option" data-plan="Enterprise">
+              <span>Enterprise</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Time Duration Presets -->
+        <div class="modal-form-group">
+          <label>Quick Duration Presets</label>
+          <div class="preset-pill-grid">
+            <button type="button" class="preset-pill" data-days="7">+7 Days</button>
+            <button type="button" class="preset-pill is-active" data-days="14">14 Days</button>
+            <button type="button" class="preset-pill" data-days="30">30 Days</button>
+            <button type="button" class="preset-pill" data-days="60">60 Days</button>
+            <button type="button" class="preset-pill" data-days="90">90 Days</button>
+            <button type="button" class="preset-pill" data-days="365">1 Year</button>
+          </div>
+        </div>
+
+        <!-- Custom Duration & Due Date -->
+        <div class="modal-form-group">
+          <label for="edit-custom-days">Custom Duration (Days)</label>
+          <div class="duration-input-row">
+            <input type="number" id="edit-custom-days" min="1" max="3650" value="14">
+            <span class="duration-tag">Days Total</span>
+          </div>
+        </div>
+
+        <div class="modal-form-group">
+          <label for="edit-plan-status">Plan Status</label>
+          <select id="edit-plan-status" class="modal-select">
+            <option value="active">Active (To Do / In Progress)</option>
+            <option value="extended">Extended (+Days)</option>
+            <option value="review">Review Required</option>
+            <option value="expired">Expired / Overdue</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+
+        <div class="modal-form-actions">
+          <button type="button" class="btn-cancel" id="btn-cancel-edit-modal">Cancel</button>
+          <button type="button" class="btn-submit-primary" id="btn-save-plan-changes">Save Plan &amp; Duration</button>
+        </div>
       </div>
     </div>
-  </footer>
+  </div>
 
-  <!-- Scripts -->
+  <!-- ===== ASK AI ASSISTANT DRAWER (Admin Analytics Helper) ===== -->
+  <div class="ai-drawer-overlay" id="admin-ai-drawer" hidden>
+    <div class="ai-drawer-card">
+      <div class="ai-drawer-header">
+        <div class="ai-drawer-title-wrap">
+          <div class="ai-drawer-sparkle">✨</div>
+          <h3>FlipPage Admin AI Assistant</h3>
+        </div>
+        <button type="button" class="ai-drawer-close" id="btn-close-ai-drawer">✕</button>
+      </div>
+
+      <div class="ai-drawer-messages" id="ai-chat-stream">
+        <div class="ai-msg bot">
+          <strong>Hello Admin 👋</strong>
+          <p>I can help you analyze user plan statistics, find overdue subscriptions, extend durations, or summarize metrics.</p>
+        </div>
+      </div>
+
+      <form class="ai-drawer-form" id="ai-chat-form">
+        <input type="text" id="ai-chat-input" placeholder="Ask about user plans, expiring trials, stats..." required>
+        <button type="submit" class="btn-ai-send">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="admin-toast" id="admin-toast" style="display: none;">
+    <span class="toast-icon">✓</span>
+    <span id="toast-message">Plan updated successfully</span>
+  </div>
+
+  <!-- Admin Controller Modules -->
   <script type="module" src="js/admin.js"></script>
 
 </body>
-
 </html>
