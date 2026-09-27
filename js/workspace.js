@@ -225,6 +225,7 @@ const navTabReported = document.getElementById('nav-tab-reported');
 const navTabCalls = document.getElementById('nav-tab-calls');
 const navTabActivity = document.getElementById('nav-tab-activity');
 const navTabUsage = document.getElementById('nav-tab-usage');
+const navTabSettings = document.getElementById('nav-tab-settings');
 const navTabLab = document.getElementById('nav-tab-lab');
 const navTabTemplates = document.getElementById('nav-tab-templates');
 const navTabAnalytics = document.getElementById('nav-tab-analytics');
@@ -1014,6 +1015,7 @@ function switchTab(tab) {
   const tabViewCalls = document.getElementById('tab-view-calls');
   const tabViewActivity = document.getElementById('tab-view-activity');
   const tabViewUsage = document.getElementById('tab-view-usage');
+  const tabViewSettings = document.getElementById('tab-view-settings');
   const tabViewLab = document.getElementById('tab-view-lab');
   const tabViewTemplates = document.getElementById('tab-view-templates');
   const tabViewAnalytics = document.getElementById('tab-view-analytics');
@@ -1027,6 +1029,7 @@ function switchTab(tab) {
     navTabCalls, 
     navTabActivity, 
     navTabUsage, 
+    navTabSettings,
     navTabLab, 
     navTabTemplates, 
     navTabAnalytics
@@ -1044,6 +1047,7 @@ function switchTab(tab) {
   if (tabViewCalls) tabViewCalls.style.display = (tab === 'calls') ? 'block' : 'none';
   if (tabViewActivity) tabViewActivity.style.display = (tab === 'activity') ? 'block' : 'none';
   if (tabViewUsage) tabViewUsage.style.display = (tab === 'usage') ? 'block' : 'none';
+  if (tabViewSettings) tabViewSettings.style.display = (tab === 'settings') ? 'block' : 'none';
   if (tabViewLab) tabViewLab.style.display = (tab === 'lab') ? 'block' : 'none';
   if (tabViewTemplates) tabViewTemplates.style.display = (tab === 'templates') ? 'block' : 'none';
   if (tabViewAnalytics) tabViewAnalytics.style.display = (tab === 'analytics') ? 'block' : 'none';
@@ -1074,6 +1078,9 @@ function switchTab(tab) {
   } else if (tab === 'usage') {
     if (navTabUsage) navTabUsage.classList.add('is-active');
     if (currentViewTitle) currentViewTitle.textContent = 'Plan & Usage';
+  } else if (tab === 'settings') {
+    if (navTabSettings) navTabSettings.classList.add('is-active');
+    if (currentViewTitle) currentViewTitle.textContent = 'Workspace Settings';
   } else if (tab === 'lab') {
     if (navTabLab) navTabLab.classList.add('is-active');
     if (currentViewTitle) currentViewTitle.textContent = '3D Shader Lab';
@@ -1454,6 +1461,7 @@ function initSearchAndFilter() {
 
   if (navTabChat) {
     navTabChat.addEventListener('click', () => {
+      switchTab('pubs');
       const floatingDrawer = document.getElementById('floating-ai-drawer');
       if (floatingDrawer) {
         floatingDrawer.classList.toggle('is-open');
@@ -1469,6 +1477,7 @@ function initSearchAndFilter() {
   if (navTabCalls) navTabCalls.addEventListener('click', () => switchTab('calls'));
   if (navTabActivity) navTabActivity.addEventListener('click', () => switchTab('activity'));
   if (navTabUsage) navTabUsage.addEventListener('click', () => switchTab('usage'));
+  if (navTabSettings) navTabSettings.addEventListener('click', () => switchTab('settings'));
   if (navTabLab) navTabLab.addEventListener('click', () => switchTab('lab'));
   if (navTabTemplates) navTabTemplates.addEventListener('click', () => switchTab('templates'));
   if (navTabAnalytics) navTabAnalytics.addEventListener('click', () => switchTab('analytics'));

@@ -104,7 +104,44 @@ body.admin-app-body {
   font-size: 0.9rem;
   color: #64748B;
   line-height: 1.5;
-  margin: 0 0 22px;
+  margin: 0 0 16px;
+}
+
+/* Auth Guard Nav Tabs */
+.guard-nav-tabs {
+  display: flex;
+  background: #F1F5F9;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.guard-nav-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #64748B;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.guard-nav-tab:hover:not(.is-active) {
+  color: #0F172A;
+}
+
+.guard-nav-tab.is-active {
+  background: #FFFFFF;
+  color: #2563EB;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .guard-feedback {

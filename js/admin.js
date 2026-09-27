@@ -9,6 +9,8 @@ import {
   onAuthStateChanged, 
   signInWithPopup, 
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
   GoogleAuthProvider, 
   signOut 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -25,7 +27,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseConfig.js";
 
-// Master Admin Access Allowlist
+// Master Admin Access Allowlist & Valid Passkeys
 const ADMIN_EMAILS = [
   "yutrytopipygh@gmail.com",
   "paneljoker145@gmail.com",
@@ -33,6 +35,14 @@ const ADMIN_EMAILS = [
   "admin@gmail.com",
   "admin@northbay.lk",
   "admin@flippage.com"
+];
+
+const VALID_ADMIN_PASSKEYS = [
+  "FLIPPAGE_ADMIN_2026",
+  "ADMIN2026",
+  "FLIPPAGE_SUPERADMIN",
+  "SUPERADMIN",
+  "ADMIN_MASTER_KEY"
 ];
 
 function isAuthorizedAdmin(email, userDocRole) {
@@ -200,6 +210,30 @@ function setupAuth() {
     }
   });
 
+  // Tab Switching on Auth Guard
+  const tabBtnAdminLogin = document.getElementById('tab-btn-admin-login');
+  const tabBtnAdminRegister = document.getElementById('tab-btn-admin-register');
+  const guardSectionSignin = document.getElementById('guard-section-signin');
+  const guardSectionRegister = document.getElementById('guard-section-register');
+
+  if (tabBtnAdminLogin && tabBtnAdminRegister) {
+    tabBtnAdminLogin.addEventListener('click', () => {
+      tabBtnAdminLogin.classList.add('is-active');
+      tabBtnAdminRegister.classList.remove('is-active');
+      if (guardSectionSignin) guardSectionSignin.style.display = 'block';
+      if (guardSectionRegister) guardSectionRegister.style.display = 'none';
+      if (guardFeedback) guardFeedback.style.display = 'none';
+    });
+
+    tabBtnAdminRegister.addEventListener('click', () => {
+      tabBtnAdminRegister.classList.add('is-active');
+      tabBtnAdminLogin.classList.remove('is-active');
+      if (guardSectionSignin) guardSectionSignin.style.display = 'none';
+      if (guardSectionRegister) guardSectionRegister.style.display = 'block';
+      if (guardFeedback) guardFeedback.style.display = 'none';
+    });
+  }
+
   // Google Sign In for Admin
   if (btnAdminGoogleLogin) {
     btnAdminGoogleLogin.addEventListener('click', async () => {
@@ -231,7 +265,7 @@ function setupAuth() {
         if (guardFeedback) {
           guardFeedback.className = 'guard-feedback error';
           guardFeedback.style.display = 'block';
-          guardFeedback.textContent = `Email "${email}" is not an authorized administrator.`;
+          guardFeedback.textContent = `Email "${email}" is not an authorized administrator. Use "Create Admin Account" to provision credentials.`;
         }
         return;
       }
@@ -244,8 +278,103 @@ function setupAuth() {
         if (guardFeedback) {
           guardFeedback.className = 'guard-feedback error';
           guardFeedback.style.display = 'block';
-          guardFeedback.textContent = 'Invalid administrator credentials. Try signing in with Google.';
+          guardFeedback.textContent = 'Invalid administrator credentials. Please check your password or sign in with Google.';
         }
+      }
+    });
+  }
+
+  // Create Admin Account Form Submission
+  const adminRegisterForm = document.getElementById('admin-register-form');
+  const guardRegisterBtn = document.getElementById('guard-register-btn');
+  const btnRegText = document.getElementById('btn-reg-text');
+
+  if (adminRegisterForm) {
+    adminRegisterForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('admin-reg-name').value.trim();
+      const email = document.getElementById('admin-reg-email').value.trim();
+      const password = document.getElementById('admin-reg-password').value;
+      const confirmPassword = document.getElementById('admin-reg-confirm').value;
+      const passkey = document.getElementById('admin-reg-passkey').value.trim().toUpperCase();
+      const org = document.getElementById('admin-reg-org').value.trim() || 'FlipPage Executive Team';
+
+      if (password !== confirmPassword) {
+        if (guardFeedback) {
+          guardFeedback.className = 'guard-feedback error';
+          guardFeedback.style.display = 'block';
+          guardFeedback.textContent = 'Passwords do not match. Please verify and re-type.';
+        }
+        return;
+      }
+
+      if (!VALID_ADMIN_PASSKEYS.includes(passkey) && passkey !== 'FLIPPAGE_ADMIN_2026') {
+        if (guardFeedback) {
+          guardFeedback.className = 'guard-feedback error';
+          guardFeedback.style.display = 'block';
+          guardFeedback.textContent = 'Invalid Master Security Passkey. Please enter a valid security passkey (FLIPPAGE_ADMIN_2026).';
+        }
+        return;
+      }
+
+      try {
+        if (guardFeedback) guardFeedback.style.display = 'none';
+        if (guardRegisterBtn) guardRegisterBtn.disabled = true;
+        if (btnRegText) btnRegText.textContent = 'Provisioning Admin Account...';
+
+        // 1. Create Auth User
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCred.user;
+
+        // 2. Set Profile Display Name
+        await updateProfile(user, { displayName: name });
+
+        // 3. Write Admin Record directly to Firestore
+        const adminDocData = {
+          uid: user.uid,
+          displayName: name,
+          email: email,
+          photoURL: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=2563eb,1d4ed8`,
+          role: 'admin',
+          isAdmin: true,
+          plan: 'Enterprise',
+          isPaid: true,
+          priority: 'High',
+          companyName: org,
+          brandName: org,
+          brandUrl: `FlipPage.com/${slugify(org)}`,
+          trialDays: 3650,
+          trialStartDate: new Date().toISOString(),
+          trialEndDate: new Date(Date.now() + 3650 * 24 * 60 * 60 * 1000).toISOString(),
+          status: 'active',
+          taskName: `${name} (Admin Workspace)`,
+          project: 'Security & Operations',
+          createdAt: new Date().toISOString(),
+          lastLoginAt: new Date().toISOString()
+        };
+
+        await setDoc(doc(db, 'users', user.uid), adminDocData);
+
+        // Allow immediate entry
+        ADMIN_EMAILS.push(email.toLowerCase());
+
+        showToast(`🎉 Super Admin Account "${email}" created successfully!`);
+
+        if (guardFeedback) {
+          guardFeedback.className = 'guard-feedback success';
+          guardFeedback.style.display = 'block';
+          guardFeedback.textContent = 'Admin account provisioned! Entering dashboard...';
+        }
+      } catch (err) {
+        console.error('Admin Registration Error:', err);
+        if (guardFeedback) {
+          guardFeedback.className = 'guard-feedback error';
+          guardFeedback.style.display = 'block';
+          guardFeedback.textContent = err.message || 'Failed to create admin account. If email exists, try signing in.';
+        }
+      } finally {
+        if (guardRegisterBtn) guardRegisterBtn.disabled = false;
+        if (btnRegText) btnRegText.textContent = 'Create Super Admin Account';
       }
     });
   }
@@ -733,6 +862,65 @@ function openEditModal(userId) {
 }
 
 function setupModals() {
+  // Add Admin Modal (Dashboard)
+  const btnOpenAddAdminModal = document.getElementById('btn-open-add-admin-modal');
+  const modalAddAdmin = document.getElementById('modal-add-admin');
+  const btnCloseAddAdminModal = document.getElementById('btn-close-add-admin-modal');
+  const btnCancelAddAdminModal = document.getElementById('btn-cancel-add-admin-modal');
+  const formAddAdmin = document.getElementById('form-add-admin');
+
+  if (btnOpenAddAdminModal) {
+    btnOpenAddAdminModal.addEventListener('click', () => {
+      if (modalAddAdmin) modalAddAdmin.hidden = false;
+    });
+  }
+  if (btnCloseAddAdminModal) btnCloseAddAdminModal.addEventListener('click', () => { if (modalAddAdmin) modalAddAdmin.hidden = true; });
+  if (btnCancelAddAdminModal) btnCancelAddAdminModal.addEventListener('click', () => { if (modalAddAdmin) modalAddAdmin.hidden = true; });
+
+  if (formAddAdmin) {
+    formAddAdmin.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('new-admin-name').value.trim();
+      const email = document.getElementById('new-admin-email').value.trim();
+      const roleType = document.getElementById('new-admin-role-type').value;
+      const org = document.getElementById('new-admin-org').value.trim() || 'FlipPage Leadership';
+
+      const newAdminId = 'admin_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+
+      try {
+        await setDoc(doc(db, 'users', newAdminId), {
+          uid: newAdminId,
+          displayName: name,
+          email: email,
+          photoURL: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=2563eb,1d4ed8`,
+          taskName: `${name} (Admin Workspace)`,
+          project: org,
+          plan: 'Enterprise',
+          isPaid: true,
+          priority: 'High',
+          trialDays: 3650,
+          trialStartDate: new Date().toISOString(),
+          trialEndDate: new Date(Date.now() + 3650 * 24 * 60 * 60 * 1000).toISOString(),
+          status: 'active',
+          role: 'admin',
+          adminTier: roleType,
+          companyName: org,
+          brandName: org,
+          brandUrl: `FlipPage.com/${slugify(org)}`,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+
+        ADMIN_EMAILS.push(email.toLowerCase());
+        showToast(`👑 Administrator "${name}" (${email}) provisioned successfully!`);
+        if (modalAddAdmin) modalAddAdmin.hidden = true;
+        formAddAdmin.reset();
+      } catch (err) {
+        handleFirestoreError(err, 'create', `users/${newAdminId}`);
+      }
+    });
+  }
+
   // Add User Modal
   if (btnOpenAddUserModal) {
     btnOpenAddUserModal.addEventListener('click', () => {
@@ -759,16 +947,19 @@ function setupModals() {
       e.preventDefault();
       const name = document.getElementById('new-user-name').value.trim();
       const email = document.getElementById('new-user-email').value.trim();
-      const project = document.getElementById('new-user-project').value.trim() || 'Landing Page Design';
+      const roleSelect = document.getElementById('new-user-role-select');
+      const role = roleSelect ? roleSelect.value : (isAuthorizedAdmin(email, null) ? 'admin' : 'user');
+      const project = document.getElementById('new-user-project').value.trim() || (role === 'admin' ? 'Administration' : 'Landing Page Design');
       const brand = document.getElementById('new-user-brand').value.trim() || name.toLowerCase().replace(/\s+/g, '-');
-      const duration = parseInt(document.getElementById('new-user-duration').value, 10) || 14;
+      const duration = parseInt(document.getElementById('new-user-duration').value, 10) || (role === 'admin' ? 3650 : 14);
       const activePlanBtn = newPlanOptions ? newPlanOptions.querySelector('.plan-btn-option.is-active') : null;
-      const plan = activePlanBtn ? activePlanBtn.dataset.plan : 'FREE';
-      const isPaid = plan === 'PRO' || plan === 'Enterprise' || plan === 'Starter';
+      let plan = activePlanBtn ? activePlanBtn.dataset.plan : 'FREE';
+      if (role === 'admin') plan = 'Enterprise';
+      const isPaid = plan === 'PRO' || plan === 'Enterprise' || plan === 'Starter' || role === 'admin';
       const priority = isPaid ? 'High' : 'Low';
 
       const dueDateObj = new Date(Date.now() + duration * 24 * 60 * 60 * 1000);
-      const newId = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+      const newId = (role === 'admin' ? 'admin_' : 'user_') + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
 
       // Save directly to Firestore collection users
       try {
@@ -786,14 +977,20 @@ function setupModals() {
           trialStartDate: new Date().toISOString(),
           trialEndDate: dueDateObj.toISOString(),
           status: 'active',
-          role: isAuthorizedAdmin(email, null) ? 'admin' : 'user',
+          role: role,
           companyName: brand,
           brandName: brand,
           brandUrl: `FlipPage.com/${slugify(brand)}`,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         });
-        showToast(`Added ${name} (${email}) to Firestore with ${plan} plan!`);
+
+        if (role === 'admin') {
+          ADMIN_EMAILS.push(email.toLowerCase());
+          showToast(`👑 Admin user ${name} (${email}) created with Enterprise access!`);
+        } else {
+          showToast(`Added ${name} (${email}) to Firestore with ${plan} plan!`);
+        }
       } catch (err) {
         handleFirestoreError(err, 'create', `users/${newId}`);
       }
