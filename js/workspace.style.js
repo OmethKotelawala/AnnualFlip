@@ -48,9 +48,18 @@ export const THEMES = [
 
 export function switchTab(navId) {
   // Update sidebar active state
-  document.querySelectorAll('.sidebar-item-link').forEach(b => b.classList.remove('is-active'));
+  document.querySelectorAll('.sidebar-item-link').forEach(b => {
+    b.classList.remove('is-active');
+    b.classList.remove('active');
+    b.setAttribute('aria-selected', 'false');
+  });
+
   const activeBtn = document.getElementById(navId);
-  if (activeBtn) activeBtn.classList.add('is-active');
+  if (activeBtn) {
+    activeBtn.classList.add('is-active');
+    activeBtn.classList.add('active');
+    activeBtn.setAttribute('aria-selected', 'true');
+  }
 
   const panelId = NAV_MAP[navId];
   if (!panelId) return;
@@ -58,7 +67,9 @@ export function switchTab(navId) {
   // Show correct panel
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   const panel = document.getElementById(panelId);
-  if (panel) panel.classList.add('active');
+  if (panel) {
+    panel.classList.add('active');
+  }
 
   // Update title
   const titleEl = document.getElementById('current-view-title');

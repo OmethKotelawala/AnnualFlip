@@ -35,8 +35,38 @@
 .sidebar-category-label { font-size: 0.68rem; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.08em; padding: 10px 8px 4px; font-family: 'Inter', sans-serif; }
 .sidebar-menu-list { list-style: none; margin: 0 0 4px; padding: 0; }
 .sidebar-item-link { display: flex; align-items: center; justify-content: space-between; width: 100%; background: none; border: none; padding: 8px 10px; border-radius: 9px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.84rem; font-weight: 500; color: var(--ws-muted); transition: all 0.15s ease; text-align: left; }
-.sidebar-item-link:hover { background: var(--ws-bg); color: var(--ws-text); }
-.sidebar-item-link.is-active { background: var(--ws-accent-light) !important; color: var(--ws-accent) !important; font-weight: 700; }
+.sidebar-item-link:hover:not(.is-active) { background: var(--ws-bg); color: var(--ws-text); }
+.sidebar-item-link.is-active,
+.sidebar-item-link.active,
+.sidebar-item-link[aria-selected="true"] { 
+  background: #2563EB !important; 
+  color: #FFFFFF !important; 
+  font-weight: 700 !important; 
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25) !important; 
+}
+.sidebar-item-link.is-active .sidebar-item-text,
+.sidebar-item-link.active .sidebar-item-text {
+  color: #FFFFFF !important;
+}
+.sidebar-item-link.is-active svg,
+.sidebar-item-link.active svg,
+.sidebar-item-link.is-active svg *,
+.sidebar-item-link.active svg * {
+  stroke: #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+.sidebar-item-link.is-active .nav-badge.crown,
+.sidebar-item-link.active .nav-badge.crown {
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
+.sidebar-item-link.is-active .nav-badge.new,
+.sidebar-item-link.active .nav-badge.new {
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
 .sidebar-item-main { display: flex; align-items: center; gap: 8px; flex: 1; }
 .sidebar-item-icon-wrap { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex-shrink: 0; }
 .sidebar-item-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
