@@ -42,7 +42,8 @@ const VALID_ADMIN_PASSKEYS = [
   "ADMIN2026",
   "FLIPPAGE_SUPERADMIN",
   "SUPERADMIN",
-  "ADMIN_MASTER_KEY"
+  "ADMIN_MASTER_KEY",
+  "FLIPPAGE_OWNER_2026"
 ];
 
 function isAuthorizedAdmin(email, userDocRole) {
