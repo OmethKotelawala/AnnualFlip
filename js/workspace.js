@@ -743,11 +743,19 @@ function openShareModal(pubId) {
   if (shareModalTw) shareModalTw.href = `https://twitter.com/intent/tweet?url=${encUrl}&text=${encTxt}`;
   if (shareModalLi) shareModalLi.href = `https://www.linkedin.com/sharing/share-offsite/?url=${encUrl}`;
 
-  if (shareModal) shareModal.hidden = false;
+  if (shareModal) {
+    shareModal.hidden = false;
+    shareModal.removeAttribute('hidden');
+    shareModal.style.display = 'flex';
+  }
 }
 
 function closeShareModal() {
-  if (shareModal) shareModal.hidden = true;
+  if (shareModal) {
+    shareModal.hidden = true;
+    shareModal.setAttribute('hidden', '');
+    shareModal.style.display = 'none';
+  }
 }
 
 // ============ CREATE NEW PUBLICATION ============
