@@ -1,15 +1,13 @@
 /**
- * FlipPage Enterprise Workspace Interactive Flipbook Studio Controller
+ * FlipPage Enterprise Workspace Interactive Studio Controller (js/workspace.js)
  * Real-time Firebase Firestore Sync, Free and Paid (👑 Yellow Crown) Tier Management,
- * PDF.js client-side page extraction, sharing & embed generator.
+ * PDF.js client-side page extraction, URL Flipbook import, Sharing, Embed & QR generator.
  */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { 
   getAuth, 
   onAuthStateChanged, 
-  signOut,
-  signInWithPopup,
-  GoogleAuthProvider
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { 
   getFirestore, 
@@ -18,33 +16,33 @@ import {
   setDoc, 
   updateDoc, 
   deleteDoc, 
-  onSnapshot, 
-  getDocs,
-  serverTimestamp 
+  onSnapshot 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseConfig.js";
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+const db = getFirestore(app);
 
-// Standard Error Handler per Firebase Skill
-function handleFirestoreError(error, operationType, path) {
-  const errInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified
-    },
-    operationType,
-    path
-  };
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  showToast(error?.message || 'Database error occurred');
+// ---- Global Toast Helper ----
+export function showToast(msg, type = 'success') {
+  const t = document.getElementById('ws-toast');
+  const m = document.getElementById('ws-toast-msg');
+  if (!t || !m) return;
+  m.textContent = msg;
+  t.style.display = 'flex';
+  t.style.background = (type === 'error') ? '#EF4444' : '#0F172A';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.display = 'none'; }, 2800);
+}
+window.showToast = showToast;
+
+function escapeHtml(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// Initial In-Memory / Fallback Data
+// Initial Data & State
 let publications = [
   {
     id: 'p1',
@@ -56,7 +54,7 @@ let publications = [
     shares: 340,
     avgTime: '3m 42s',
     status: 'live',
-    planTier: 'paid', // 'paid' | 'free'
+    planTier: 'paid',
     isPaid: true,
     thumbBg: '#BBF7D0',
     thumbColor: '#166534',
@@ -131,64 +129,13 @@ let publications = [
   }
 ];
 
-// Pre-built templates
-const TEMPLATES_CATALOG = [
-  {
-    id: 't-annual',
-    title: 'Corporate Annual ESG Report',
-    category: 'Annual Report',
-    pages: 32,
-    emoji: '📊',
-    bg: '#DCFCE7',
-    color: '#15803D',
-    planTier: 'paid',
-    desc: 'Executive summary, sustainability metrics, balance sheets & typography.'
-  },
-  {
-    id: 't-lookbook',
-    title: 'Luxury Fashion & Apparel Lookbook',
-    category: 'Lookbook & Catalog',
-    pages: 40,
-    emoji: '✨',
-    bg: '#FEE2E2',
-    color: '#B91C1C',
-    planTier: 'paid',
-    desc: 'Full-bleed high-definition photography spreads & product cards.'
-  },
-  {
-    id: 't-brochure',
-    title: 'Modern Architecture Brochure',
-    category: 'Brochure',
-    pages: 16,
-    emoji: '🏛️',
-    bg: '#FEF3C7',
-    color: '#B45309',
-    planTier: 'free',
-    desc: 'Tri-fold and multi-page property brochures with high vector clarity.'
-  },
-  {
-    id: 't-pitch',
-    title: 'Series A Investor Pitch Deck',
-    category: 'Pitch Deck',
-    pages: 18,
-    emoji: '🚀',
-    bg: '#E0E7FF',
-    color: '#4338CA',
-    planTier: 'free',
-    desc: 'Problem, solution, market size TAM, unit economics, and team.'
-  }
-];
-
 let selectedPubId = 'p1';
 let activeFilter = 'all';
-let currentTab = 'pubs'; // 'pubs' | 'collections' | 'users' | 'reported' | 'calls' | 'activity' | 'usage' | 'lab'
-let activeFirebaseUser = null;
-let newPubTierSelected = 'free'; // 'free' | 'paid'
+let newPubTierSelected = 'free';
+let urlFlipbooks = [];
 
 // DOM Elements
 const pubGrid = document.getElementById('publications-grid-container');
-const collectionsGrid = document.getElementById('collections-grid-container');
-const templatesGrid = document.getElementById('templates-grid-container');
 const searchInput = document.getElementById('search-pubs-input');
 const filterPills = document.querySelectorAll('.filter-pill');
 
@@ -197,6 +144,7 @@ const statTotalPubs = document.getElementById('stat-total-pubs');
 const statTotalReads = document.getElementById('stat-total-reads');
 const statPaidPubs = document.getElementById('stat-paid-pubs');
 const statSharesCount = document.getElementById('stat-shares-count');
+const pubsCountLabel = document.getElementById('pubs-count-label');
 
 // Detail Pane DOMs
 const detailTierBadge = document.getElementById('detail-tier-badge');
@@ -206,6 +154,7 @@ const detailBookTitle = document.getElementById('detail-book-title');
 const detailBookDesc = document.getElementById('detail-book-desc');
 const detailOpenReaderBtn = document.getElementById('btn-detail-open-reader');
 const detailShareBtn = document.getElementById('btn-detail-share');
+const detailEmbedBtn = document.getElementById('btn-detail-embed');
 const detailToggleTierBtn = document.getElementById('btn-detail-toggle-tier');
 const detailTierBtnLabel = document.getElementById('detail-tier-btn-label');
 const detailTierDesc = document.getElementById('detail-tier-description');
@@ -215,21 +164,7 @@ const detailSpecReads = document.getElementById('detail-spec-reads');
 const detailSpecTime = document.getElementById('detail-spec-time');
 const detailSpecUrl = document.getElementById('detail-spec-url');
 const detailSpreadsList = document.getElementById('detail-spreads-list');
-
-// Navigation Tabs
-const navTabChat = document.getElementById('nav-tab-chat');
-const navTabPubs = document.getElementById('nav-tab-pubs');
-const navTabCollections = document.getElementById('nav-tab-collections');
-const navTabUsers = document.getElementById('nav-tab-users');
-const navTabReported = document.getElementById('nav-tab-reported');
-const navTabCalls = document.getElementById('nav-tab-calls');
-const navTabActivity = document.getElementById('nav-tab-activity');
-const navTabUsage = document.getElementById('nav-tab-usage');
-const navTabSettings = document.getElementById('nav-tab-settings');
-const navTabLab = document.getElementById('nav-tab-lab');
-const navTabTemplates = document.getElementById('nav-tab-templates');
-const navTabAnalytics = document.getElementById('nav-tab-analytics');
-const currentViewTitle = document.getElementById('current-view-title');
+const btnCopyDetailUrl = document.getElementById('btn-copy-detail-url');
 
 // Modals
 const uploadModal = document.getElementById('upload-modal');
@@ -260,160 +195,11 @@ const shareModalWa = document.getElementById('share-modal-wa');
 const shareModalTw = document.getElementById('share-modal-tw');
 const shareModalLi = document.getElementById('share-modal-li');
 
-// Pro Plan Modal DOM
-const proModal = document.getElementById('pro-modal');
-const navBtnUpgradePlan = document.getElementById('nav-btn-upgrade-plan');
-const closeProModalBtn = document.getElementById('close-pro-modal-btn');
-const btnCloseProModal = document.getElementById('btn-close-pro-modal');
-const btnActivateProWorkspace = document.getElementById('btn-activate-pro-workspace');
-
-// User / Account DOMs
-const sidebarUserCard = document.getElementById('sidebar-user-card');
-const switchPopup = document.getElementById('switch-accounts-popup');
-const sidebarName = document.getElementById('sidebar-user-name');
-const sidebarEmail = document.getElementById('sidebar-user-email');
-const sidebarAvatar = document.getElementById('sidebar-avatar-initial');
-const sidebarUserTierBadge = document.getElementById('sidebar-user-tier-badge');
-const switchUserTierBadge = document.getElementById('switch-user-tier-badge');
-const switchName = document.getElementById('switch-active-name');
-const switchEmail = document.getElementById('switch-active-email');
-const switchAvatar = document.getElementById('switch-active-avatar');
-const btnSwitchLogout = document.getElementById('btn-switch-logout');
-
-let isUserPro = false;
-let currentUserPlan = 'FREE';
-let currentUserTrialDays = 14;
-let currentUserTrialEndDate = '';
-let currentUserStatus = 'active';
-
-function initUserPlanListener(uid) {
-  if (!uid) return;
-  try {
-    const userDocRef = doc(db, 'users', uid);
-    onSnapshot(userDocRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const userData = docSnap.data() || {};
-        const planStr = String(userData.plan || '').trim().toUpperCase();
-        const priorityStr = String(userData.priority || '').trim().toUpperCase();
-        const isPaidBool = (userData.isPaid === true);
-
-        // When Priority is set to FREE or Low in Firestore, immediately downgrade/switch to FREE
-        if (planStr === 'FREE' || userData.isPaid === false || priorityStr === 'LOW') {
-          currentUserPlan = 'FREE';
-          isUserPro = false;
-        } else if (planStr === 'PRO' || planStr === 'ENTERPRISE' || planStr === 'STARTER' || priorityStr === 'HIGH' || isPaidBool) {
-          currentUserPlan = 'PRO';
-          isUserPro = true;
-        } else {
-          currentUserPlan = 'FREE';
-          isUserPro = false;
-        }
-
-        currentUserTrialDays = Number(userData.trialDays) || 14;
-        currentUserTrialEndDate = userData.trialEndDate || '';
-        currentUserStatus = userData.status || 'active';
-
-        if (userData.companyName) {
-          const breadcrumbBrandName = document.getElementById('breadcrumb-brand-name');
-          const breadcrumbBrandAvatar = document.getElementById('breadcrumb-brand-avatar');
-          if (breadcrumbBrandName) {
-            breadcrumbBrandName.textContent = userData.companyName;
-          }
-          if (breadcrumbBrandAvatar) {
-            breadcrumbBrandAvatar.textContent = (userData.companyName.charAt(0) || 'W').toUpperCase();
-          }
-        }
-
-        localStorage.setItem('flippage_pro_tier', isUserPro ? 'true' : 'false');
-        localStorage.setItem('flippage_user_plan', currentUserPlan);
-
-        updateUserTierBadge();
-        renderPublications();
-        renderStats();
-        renderDetailPane();
-      }
-    }, (err) => {
-      console.warn('User Plan Snapshot Notice:', err);
-    });
-  } catch (err) {
-    console.warn('initUserPlanListener error:', err);
-  }
-}
-
-function updateUserTierBadge() {
-  // Calculate remaining trial days
-  let daysLeftText = `${currentUserTrialDays}d`;
-  if (currentUserTrialEndDate) {
-    const diff = Math.ceil((new Date(currentUserTrialEndDate) - new Date()) / (1000 * 60 * 60 * 24));
-    if (diff > 0) daysLeftText = `${diff}d left`;
-    else if (diff === 0) daysLeftText = 'Ends today';
-    else daysLeftText = 'Expired';
-  }
-
-  const badgeHtml = isUserPro 
-    ? `<img src="src/svg/crown.svg" class="crown-svg-icon" alt="Pro Crown"><span>PRO</span>`
-    : `<img src="src/svg/free.svg" class="free-svg-icon" alt="Free Tier"><span>FREE</span>`;
-  
-  const badgeClass = isUserPro ? 'user-tier-badge pro' : 'user-tier-badge free';
-  
-  if (sidebarUserTierBadge) {
-    sidebarUserTierBadge.className = badgeClass;
-    sidebarUserTierBadge.innerHTML = badgeHtml;
-    sidebarUserTierBadge.title = isUserPro 
-      ? `👑 Pro Plan Active (${daysLeftText})` 
-      : `🏷️ Free Plan (${daysLeftText} Trial)`;
-  }
-  if (switchUserTierBadge) {
-    switchUserTierBadge.className = badgeClass;
-    switchUserTierBadge.innerHTML = badgeHtml;
-  }
-
-  // Update topbar upgrade or plan tag if present
-  const topbarPlanPill = document.getElementById('topbar-user-plan-pill');
-  if (topbarPlanPill) {
-    if (isUserPro) {
-      topbarPlanPill.className = 'topbar-plan-pill pro';
-      topbarPlanPill.innerHTML = `<img src="src/svg/crown.svg" class="crown-svg-icon" alt="Crown"> <span>PRO Plan</span>`;
-      topbarPlanPill.title = `Pro Plan Active • ${daysLeftText}`;
-    } else {
-      topbarPlanPill.className = 'topbar-plan-pill free';
-      topbarPlanPill.innerHTML = `<img src="src/svg/free.svg" class="free-svg-icon" alt="Free"> <span>FREE Tier (${daysLeftText})</span>`;
-      topbarPlanPill.title = 'Free Plan • Click to Upgrade';
-    }
-  }
-
-  // Update upgrade button state in workspace
-  if (navBtnUpgradePlan) {
-    if (isUserPro) {
-      navBtnUpgradePlan.innerHTML = `<img src="src/svg/crown.svg" class="crown-svg-icon" style="width:14px; height:14px;" alt="Crown"> <span>👑 PRO Plan Active</span>`;
-      navBtnUpgradePlan.style.background = '#FEF3C7';
-      navBtnUpgradePlan.style.color = '#B45309';
-      navBtnUpgradePlan.style.borderColor = '#FCD34D';
-    } else {
-      navBtnUpgradePlan.innerHTML = `<img src="src/svg/crown.svg" class="crown-svg-icon" style="width:14px; height:14px;" alt="Crown"> <span>Upgrade to PRO 👑</span>`;
-      navBtnUpgradePlan.style.background = '';
-      navBtnUpgradePlan.style.color = '';
-      navBtnUpgradePlan.style.borderColor = '';
-    }
-  }
-}
-
-// Toast DOM
-const wsToast = document.getElementById('ws-toast');
-const wsToastMsg = document.getElementById('ws-toast-msg');
-
-function showToast(msg) {
-  if (!wsToast) return;
-  if (wsToastMsg) wsToastMsg.textContent = msg;
-  wsToast.style.display = 'flex';
-  setTimeout(() => {
-    wsToast.style.display = 'none';
-  }, 2600);
-}
-
-function escapeHtml(str) {
-  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
+// Preview Tab Elements
+const previewSelector = document.getElementById('preview-pub-selector');
+const previewFrame = document.getElementById('preview-reader-frame');
+const previewPlaceholder = document.getElementById('preview-placeholder');
+const previewOpenBtn = document.getElementById('preview-open-reader-btn');
 
 // ============ REAL-TIME FIRESTORE SYNC ============
 function initFirestoreSync() {
@@ -444,20 +230,22 @@ function initFirestoreSync() {
         });
       });
 
-      // Merge / overwrite with Firestore source of truth
       publications = liveList;
       renderPublications();
       renderStats();
+      updateShareAndPreviewSelectors();
       if (!publications.find(p => p.id === selectedPubId) && publications.length > 0) {
         selectedPubId = publications[0].id;
       }
       renderDetailPane();
     } else {
-      // Seed default publications if collection is empty
       seedInitialPublications();
     }
   }, (err) => {
-    handleFirestoreError(err, 'list', 'publications');
+    console.warn('Firestore publications sync warning:', err);
+    renderPublications();
+    renderStats();
+    updateShareAndPreviewSelectors();
   });
 }
 
@@ -475,7 +263,7 @@ async function seedInitialPublications() {
       }, { merge: true });
     }
   } catch (err) {
-    console.warn('Initial seeding fallback:', err);
+    console.warn('Initial seeding notice:', err);
   }
 }
 
@@ -487,13 +275,11 @@ function renderPublications() {
   const query = (searchInput?.value || '').toLowerCase().trim();
   
   const filtered = publications.filter(p => {
-    // Filter pill logic
     if (activeFilter === 'paid' && !p.isPaid && p.planTier !== 'paid') return false;
     if (activeFilter === 'free' && (p.isPaid || p.planTier === 'paid')) return false;
     if (activeFilter === 'live' && p.status !== 'live') return false;
     if (activeFilter === 'draft' && p.status !== 'draft') return false;
 
-    // Search query logic
     if (query) {
       const matchTitle = (p.title || '').toLowerCase().includes(query);
       const matchCategory = (p.category || '').toLowerCase().includes(query);
@@ -501,6 +287,10 @@ function renderPublications() {
     }
     return true;
   });
+
+  if (pubsCountLabel) {
+    pubsCountLabel.textContent = `${filtered.length} of ${publications.length}`;
+  }
 
   if (filtered.length === 0) {
     pubGrid.innerHTML = `
@@ -522,23 +312,28 @@ function renderPublications() {
     card.dataset.id = pub.id;
 
     card.innerHTML = `
-      <div class="pub-card-top">
-        <div class="pub-thumb-cover" style="background:${pub.thumbBg || '#EFF6FF'}; color:${pub.thumbColor || '#1E40AF'};">
-          <span>${pub.thumbEmoji || '📖'}</span>
+      <div class="pub-card-cover" style="background:${pub.thumbBg || '#EFF6FF'}; color:${pub.thumbColor || '#1E40AF'};">
+        <span style="position:relative; z-index:1;">${pub.thumbEmoji || '📖'}</span>
+        <div class="pub-card-cover-shimmer"></div>
+        <span class="pub-card-status-dot ${pub.status === 'live' ? 'live' : 'draft'}"></span>
+        <span class="pub-card-pages-badge">${pub.pages || 20}p</span>
+      </div>
+
+      <div class="pub-card-body">
+        <div class="pub-card-tags">
+          ${isPaid 
+            ? `<span class="crown-badge"><img src="src/svg/crown.svg" class="crown-svg-icon" alt="Crown">PRO</span>` 
+            : `<span class="crown-badge free"><img src="src/svg/free.svg" class="free-svg-icon" alt="Free">FREE</span>`}
+          <span class="category-tag">${escapeHtml(pub.category || 'Report')}</span>
         </div>
-        <div class="pub-card-info">
-          <div class="pub-card-tags">
-            ${isPaid 
-              ? `<span class="crown-badge"><img src="src/svg/crown.svg" class="crown-svg-icon" alt="Pro Crown">PRO</span>` 
-              : `<span class="crown-badge free"><img src="src/svg/free.svg" class="free-svg-icon" alt="Free">FREE</span>`}
-            <span style="font-size:0.72rem; color:#64748B; background:#F1F5F9; padding:2px 6px; border-radius:4px; font-weight:600;">${escapeHtml(pub.category || 'Report')}</span>
-          </div>
-          <h4 class="pub-card-title">${escapeHtml(pub.title)}</h4>
-          <div class="pub-card-meta">
-            <span>📄 ${pub.pages || 20}p</span>
-            <span>•</span>
-            <span>👁️ ${pub.reads || 0} reads</span>
-          </div>
+        <h4 class="pub-card-title">${escapeHtml(pub.title)}</h4>
+        <div class="pub-card-meta">
+          <span>👁️ ${(pub.reads || 0).toLocaleString()} reads</span>
+          <span>•</span>
+          <span>🔗 ${(pub.shares || 0)} shares</span>
+        </div>
+        <div class="pub-card-progress">
+          <div class="pub-card-progress-bar" style="width: ${Math.min(100, Math.max(15, (pub.reads || 0) / 150))}%"></div>
         </div>
       </div>
 
@@ -547,13 +342,13 @@ function renderPublications() {
           <a href="reader.html?id=${encodeURIComponent(pub.id)}" target="_blank" class="pub-btn primary" title="Open in 3D Reader" onclick="event.stopPropagation();">
             <span>📖 Read</span>
           </a>
-          <button type="button" class="pub-btn btn-share-pub" data-id="${pub.id}" title="Share &amp; Embed link" onclick="event.stopPropagation();">
+          <button type="button" class="pub-btn btn-share-pub" data-id="${pub.id}" title="Share & Embed link" onclick="event.stopPropagation();">
             <span>🔗 Share</span>
           </button>
         </div>
 
         <div class="pub-action-btn-group">
-          <button type="button" class="tier-toggle-btn ${isPaid ? 'is-paid' : 'is-free'} btn-quick-toggle-tier" data-id="${pub.id}" title="Toggle Free vs Paid Crown Tier" onclick="event.stopPropagation();">
+          <button type="button" class="tier-toggle-btn ${isPaid ? 'is-paid' : 'is-free'} btn-quick-toggle-tier" data-id="${pub.id}" title="Toggle Free vs Pro Crown Tier" onclick="event.stopPropagation();">
             <span class="crown-icon">${isPaid ? '👑' : '📄'}</span>
             <span>${isPaid ? 'Pro' : 'Free'}</span>
           </button>
@@ -576,21 +371,15 @@ function renderPublications() {
 
   // Wire inner buttons
   document.querySelectorAll('.btn-share-pub').forEach(btn => {
-    btn.addEventListener('click', () => {
-      openShareModal(btn.dataset.id);
-    });
+    btn.addEventListener('click', () => openShareModal(btn.dataset.id));
   });
 
   document.querySelectorAll('.btn-quick-toggle-tier').forEach(btn => {
-    btn.addEventListener('click', () => {
-      togglePublicationTier(btn.dataset.id);
-    });
+    btn.addEventListener('click', () => togglePublicationTier(btn.dataset.id));
   });
 
   document.querySelectorAll('.btn-delete-pub').forEach(btn => {
-    btn.addEventListener('click', () => {
-      deletePublication(btn.dataset.id);
-    });
+    btn.addEventListener('click', () => deletePublication(btn.dataset.id));
   });
 }
 
@@ -614,7 +403,17 @@ function renderStats() {
 
 function renderDetailPane() {
   const pub = publications.find(p => p.id === selectedPubId) || publications[0];
-  if (!pub) return;
+  const noPubState = document.getElementById('detail-no-pub-state');
+  const paneContent = document.getElementById('detail-pane-content');
+
+  if (!pub) {
+    if (noPubState) noPubState.style.display = 'flex';
+    if (paneContent) paneContent.style.display = 'none';
+    return;
+  }
+
+  if (noPubState) noPubState.style.display = 'none';
+  if (paneContent) paneContent.style.display = 'block';
 
   const isPaid = Boolean(pub.isPaid || pub.planTier === 'paid');
 
@@ -631,7 +430,7 @@ function renderDetailPane() {
   }
   if (detailBookEmoji) detailBookEmoji.textContent = pub.thumbEmoji || '📖';
   if (detailBookTitle) detailBookTitle.textContent = pub.title;
-  if (detailBookDesc) detailBookDesc.textContent = `${pub.pages || 20} pages • ${pub.reads || 0} direct reads • Dual spread interactive 3D physics active.`;
+  if (detailBookDesc) detailBookDesc.textContent = `${pub.pages || 20} pages • ${(pub.reads || 0).toLocaleString()} direct reads • Dual spread interactive 3D physics active.`;
 
   if (detailOpenReaderBtn) detailOpenReaderBtn.href = `reader.html?id=${encodeURIComponent(pub.id)}`;
   
@@ -648,7 +447,7 @@ function renderDetailPane() {
   if (detailSpecStatus) detailSpecStatus.textContent = pub.status === 'live' ? '● Live' : '○ Draft';
   if (detailSpecReads) detailSpecReads.textContent = (pub.reads || 0).toLocaleString();
   if (detailSpecTime) detailSpecTime.textContent = pub.avgTime || '2m 30s';
-  if (detailSpecUrl) detailSpecUrl.textContent = `flippage.io/read?id=${pub.id}`;
+  if (detailSpecUrl) detailSpecUrl.textContent = `${window.location.origin}/reader.html?id=${pub.id}`;
 
   if (detailSpreadsList) {
     detailSpreadsList.innerHTML = '';
@@ -659,7 +458,7 @@ function renderDetailPane() {
 
     spreads.forEach(s => {
       const row = document.createElement('div');
-      row.style.cssText = "display:flex; align-items:center; justify-content:space-between; background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:8px 10px; font-size:0.78rem;";
+      row.className = 'detail-spread-row';
       row.innerHTML = `
         <span style="font-weight:700; color:#334155;">Spreads ${s.left}-${s.right || s.left + 1}</span>
         <span style="color:#64748B;">${escapeHtml(s.title || s.graphic || 'Content Page')}</span>
@@ -669,7 +468,7 @@ function renderDetailPane() {
   }
 }
 
-// ============ TIER TOGGLE (FREE ↔ 👑 PAID) ============
+// ============ TIER TOGGLE ============
 async function togglePublicationTier(pubId) {
   const pub = publications.find(p => p.id === pubId);
   if (!pub) return;
@@ -677,7 +476,6 @@ async function togglePublicationTier(pubId) {
   const nextIsPaid = !Boolean(pub.isPaid || pub.planTier === 'paid');
   const nextTier = nextIsPaid ? 'paid' : 'free';
 
-  // Optimistic local update
   pub.isPaid = nextIsPaid;
   pub.planTier = nextTier;
   renderPublications();
@@ -686,7 +484,6 @@ async function togglePublicationTier(pubId) {
 
   showToast(nextIsPaid ? `👑 Upgraded "${pub.title}" to Pro Tier!` : `Switched "${pub.title}" to Free Tier`);
 
-  // Firestore sync
   try {
     const docRef = doc(db, 'publications', pubId);
     await updateDoc(docRef, {
@@ -695,7 +492,7 @@ async function togglePublicationTier(pubId) {
       updatedAt: new Date().toISOString()
     });
   } catch (err) {
-    handleFirestoreError(err, 'update', `publications/${pubId}`);
+    console.warn('Tier update note:', err);
   }
 }
 
@@ -713,6 +510,7 @@ async function deletePublication(pubId) {
   renderPublications();
   renderStats();
   renderDetailPane();
+  updateShareAndPreviewSelectors();
 
   showToast(`Deleted "${pub.title}"`);
 
@@ -720,17 +518,16 @@ async function deletePublication(pubId) {
     const docRef = doc(db, 'publications', pubId);
     await deleteDoc(docRef);
   } catch (err) {
-    handleFirestoreError(err, 'delete', `publications/${pubId}`);
+    console.warn('Delete publication error:', err);
   }
 }
 
 // ============ SHARE & EMBED MODAL ============
-function openShareModal(pubId) {
+export function openShareModal(pubId) {
   const pub = publications.find(p => p.id === (pubId || selectedPubId)) || publications[0];
   if (!pub) return;
 
-  const baseUrl = window.location.origin;
-  const directUrl = `${baseUrl}/reader.html?id=${encodeURIComponent(pub.id)}`;
+  const directUrl = `${window.location.origin}/reader.html?id=${encodeURIComponent(pub.id)}`;
   const embedCode = `<iframe src="${directUrl}" width="100%" height="600" frameborder="0" allowfullscreen allow="clipboard-read; clipboard-write"></iframe>`;
 
   if (shareModalUrlInput) shareModalUrlInput.value = directUrl;
@@ -750,7 +547,7 @@ function openShareModal(pubId) {
   }
 }
 
-function closeShareModal() {
+export function closeShareModal() {
   if (shareModal) {
     shareModal.hidden = true;
     shareModal.setAttribute('hidden', '');
@@ -758,28 +555,202 @@ function closeShareModal() {
   }
 }
 
-// ============ CREATE NEW PUBLICATION ============
+// ============ UPDATE SELECTORS ============
+function updateShareAndPreviewSelectors() {
+  const shareSel = document.getElementById('share-pub-selector');
+  const previewSel = document.getElementById('preview-pub-selector');
+
+  [shareSel, previewSel].forEach(sel => {
+    if (!sel) return;
+    const currentVal = sel.value;
+    sel.innerHTML = '<option value="">Select a flipbook...</option>';
+
+    publications.forEach(p => {
+      const opt = new Option(`${p.thumbEmoji || '📖'} ${p.title}`, p.id);
+      opt.dataset.readerUrl = `reader.html?id=${encodeURIComponent(p.id)}`;
+      sel.appendChild(opt);
+    });
+
+    urlFlipbooks.forEach(fb => {
+      const urlKey = 'url-' + btoa(fb.url).slice(0, 12);
+      const opt = new Option(`📎 ${fb.title}`, urlKey);
+      opt.dataset.readerUrl = `reader.html?url=${encodeURIComponent(fb.url)}&title=${encodeURIComponent(fb.title)}`;
+      sel.appendChild(opt);
+    });
+
+    if (currentVal) sel.value = currentVal;
+  });
+}
+
+// ============ URL FLIPBOOKS IMPORT ============
+function initUrlFlipbooks() {
+  const pdfUrlInput = document.getElementById('pdf-url-input');
+  const btnFetchPdfUrl = document.getElementById('btn-fetch-pdf-url');
+  const urlFlipbooksGrid = document.getElementById('url-flipbooks-grid');
+  const urlCountLabel = document.getElementById('url-count-label');
+
+  try {
+    urlFlipbooks = JSON.parse(localStorage.getItem('fp_url_flipbooks') || '[]');
+  } catch(e) {
+    urlFlipbooks = [];
+  }
+
+  function renderUrlFlipbooks() {
+    if (!urlFlipbooksGrid) return;
+    if (urlCountLabel) urlCountLabel.textContent = `${urlFlipbooks.length} flipbook${urlFlipbooks.length !== 1 ? 's' : ''}`;
+
+    if (urlFlipbooks.length === 0) {
+      urlFlipbooksGrid.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;">
+          <div class="empty-state-icon">🔗</div>
+          <h4 class="empty-state-title">No URL Flipbooks Yet</h4>
+          <p class="empty-state-sub">Paste a PDF URL above to instantly create a 3D flipbook without uploading files.</p>
+        </div>
+      `;
+      return;
+    }
+
+    urlFlipbooksGrid.innerHTML = '';
+    urlFlipbooks.forEach((fb, idx) => {
+      const card = document.createElement('div');
+      card.className = 'pdf-url-card';
+      card.innerHTML = `
+        <div class="pdf-url-preview">
+          <span style="position:relative; z-index:1;">📄</span>
+          <div class="pub-card-pages-badge">${fb.pages || '?'} pages</div>
+        </div>
+        <div class="pdf-url-body">
+          <div class="pub-card-tags" style="margin-bottom:5px;">
+            <span class="crown-badge free">FREE</span>
+            <span class="category-tag">${escapeHtml(fb.category || 'PDF')}</span>
+          </div>
+          <h4 class="pub-card-title" style="font-size:0.82rem;">${escapeHtml(fb.title)}</h4>
+          <a class="pdf-url-link" href="${fb.url}" target="_blank" title="${fb.url}">${fb.url.length > 45 ? fb.url.substring(0, 45) + '...' : fb.url}</a>
+          <div class="pub-card-actions" style="padding:8px 0 0; border:none; background:none; gap:6px;">
+            <a href="reader.html?url=${encodeURIComponent(fb.url)}&title=${encodeURIComponent(fb.title)}" target="_blank" class="pub-btn primary" style="font-size:0.74rem;">📖 Open Reader</a>
+            <button class="pub-btn btn-copy-raw-url" data-url="${fb.url}" style="font-size:0.74rem;">🔗 Copy URL</button>
+            <button class="pub-btn danger btn-del-url-fb" data-idx="${idx}" style="font-size:0.74rem;">🗑️</button>
+          </div>
+        </div>
+      `;
+      urlFlipbooksGrid.appendChild(card);
+    });
+
+    urlFlipbooksGrid.querySelectorAll('.btn-copy-raw-url').forEach(b => {
+      b.addEventListener('click', () => {
+        navigator.clipboard.writeText(b.dataset.url);
+        showToast('URL copied!');
+      });
+    });
+
+    urlFlipbooksGrid.querySelectorAll('.btn-del-url-fb').forEach(b => {
+      b.addEventListener('click', () => {
+        const i = parseInt(b.dataset.idx, 10);
+        urlFlipbooks.splice(i, 1);
+        localStorage.setItem('fp_url_flipbooks', JSON.stringify(urlFlipbooks));
+        renderUrlFlipbooks();
+        updateShareAndPreviewSelectors();
+        showToast('Flipbook removed');
+      });
+    });
+  }
+
+  renderUrlFlipbooks();
+
+  if (btnFetchPdfUrl && pdfUrlInput) {
+    btnFetchPdfUrl.addEventListener('click', async () => {
+      let rawUrl = pdfUrlInput.value.trim();
+      if (!rawUrl) {
+        showToast('Please enter a PDF URL', 'error');
+        return;
+      }
+
+      // Google Drive link converter
+      const gdMatch = rawUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)\//);
+      if (gdMatch) rawUrl = `https://drive.google.com/uc?export=download&id=${gdMatch[1]}`;
+
+      btnFetchPdfUrl.textContent = 'Processing...';
+      btnFetchPdfUrl.disabled = true;
+
+      try {
+        let pageCount = 0;
+        if (typeof pdfjsLib !== 'undefined') {
+          try {
+            const loadingTask = pdfjsLib.getDocument({ url: rawUrl, withCredentials: false });
+            const pdfDoc = await loadingTask.promise;
+            pageCount = pdfDoc.numPages;
+          } catch(e) {
+            pageCount = 0;
+          }
+        }
+
+        const title = rawUrl.split('/').pop().replace(/\.pdf$/i, '').replace(/[-_]/g, ' ') || 'PDF Flipbook';
+        const fb = { url: rawUrl, title, category: 'PDF Document', pages: pageCount, createdAt: new Date().toISOString() };
+
+        urlFlipbooks.unshift(fb);
+        localStorage.setItem('fp_url_flipbooks', JSON.stringify(urlFlipbooks));
+        renderUrlFlipbooks();
+        updateShareAndPreviewSelectors();
+        pdfUrlInput.value = '';
+        showToast(`✅ Flipbook created from URL! ${pageCount > 0 ? `(${pageCount} pages)` : ''}`);
+      } catch(err) {
+        showToast('Could not load PDF from that URL. Ensure it is public and directly accessible.', 'error');
+      } finally {
+        btnFetchPdfUrl.textContent = 'Create Flipbook';
+        btnFetchPdfUrl.disabled = false;
+      }
+    });
+  }
+
+  // Modal Validate URL Button
+  const btnModalValidateUrl = document.getElementById('btn-modal-validate-url');
+  const modalPdfUrl = document.getElementById('modal-pdf-url');
+  if (btnModalValidateUrl && modalPdfUrl) {
+    btnModalValidateUrl.addEventListener('click', async () => {
+      const url = modalPdfUrl.value.trim();
+      if (!url) { showToast('Please enter a PDF URL', 'error'); return; }
+      btnModalValidateUrl.textContent = 'Checking...';
+      try {
+        if (typeof pdfjsLib !== 'undefined') {
+          const pdf = await pdfjsLib.getDocument({ url }).promise;
+          const titleEl = document.getElementById('pub-input-title');
+          const pagesEl = document.getElementById('pub-input-pages');
+          if (pagesEl) pagesEl.value = pdf.numPages;
+          if (titleEl && !titleEl.value) titleEl.value = url.split('/').pop().replace(/\.pdf$/i, '').replace(/[-_]/g, ' ');
+          showToast(`✅ Valid PDF! ${pdf.numPages} pages detected.`);
+        }
+      } catch(e) {
+        showToast('Could not validate PDF URL. It may not be accessible.', 'error');
+      }
+      btnModalValidateUrl.textContent = 'Validate';
+    });
+  }
+}
+
+// ============ CREATE FLIPBOOK MODAL ============
 function initCreateModal() {
   if (btnOpenCreateModal) {
     btnOpenCreateModal.addEventListener('click', () => {
-      if (uploadModal) uploadModal.hidden = false;
+      if (uploadModal) {
+        uploadModal.hidden = false;
+        uploadModal.removeAttribute('hidden');
+        uploadModal.style.display = 'flex';
+      }
       if (pubInputTitle) pubInputTitle.focus();
     });
   }
 
-  if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', () => {
-      if (uploadModal) uploadModal.hidden = true;
-    });
-  }
+  const hideUploadModal = () => {
+    if (uploadModal) {
+      uploadModal.hidden = true;
+      uploadModal.setAttribute('hidden', '');
+      uploadModal.style.display = 'none';
+    }
+  };
 
-  if (btnCancelCreate) {
-    btnCancelCreate.addEventListener('click', () => {
-      if (uploadModal) uploadModal.hidden = true;
-    });
-  }
+  if (closeModalBtn) closeModalBtn.addEventListener('click', hideUploadModal);
+  if (btnCancelCreate) btnCancelCreate.addEventListener('click', hideUploadModal);
 
-  // Tier Selection
   if (optTierFree && optTierPaid) {
     optTierFree.addEventListener('click', () => {
       newPubTierSelected = 'free';
@@ -796,7 +767,6 @@ function initCreateModal() {
     });
   }
 
-  // Dropzone file handling & PDF.js page counting
   if (modalDropzone && pdfFileInput) {
     modalDropzone.addEventListener('click', () => pdfFileInput.click());
 
@@ -807,13 +777,13 @@ function initCreateModal() {
     });
 
     modalDropzone.addEventListener('dragleave', () => {
-      modalDropzone.style.borderColor = '#CBD5E1';
+      modalDropzone.style.borderColor = '#E2E8F0';
       modalDropzone.style.background = '#F8FAFC';
     });
 
     modalDropzone.addEventListener('drop', (e) => {
       e.preventDefault();
-      modalDropzone.style.borderColor = '#CBD5E1';
+      modalDropzone.style.borderColor = '#E2E8F0';
       modalDropzone.style.background = '#F8FAFC';
       if (e.dataTransfer.files && e.dataTransfer.files[0]) {
         processUploadedPdf(e.dataTransfer.files[0]);
@@ -827,18 +797,17 @@ function initCreateModal() {
     });
   }
 
-  // Form Submit
   if (createPubForm) {
     createPubForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const title = pubInputTitle.value.trim();
-      const category = pubInputCategory.value;
-      const pages = parseInt(pubInputPages.value, 10) || 20;
+      const category = pubInputCategory?.value || 'General Report';
+      const pages = parseInt(pubInputPages?.value, 10) || 20;
       const password = pubInputPassword ? pubInputPassword.value.trim() : '';
 
       if (!title) {
-        showToast('Please enter a publication title');
+        showToast('Please enter a publication title', 'error');
         return;
       }
 
@@ -871,27 +840,26 @@ function initCreateModal() {
         updatedAt: new Date().toISOString()
       };
 
-      // Optimistic insert
       publications.unshift(newPublication);
       selectedPubId = newId;
       renderPublications();
       renderStats();
       renderDetailPane();
+      updateShareAndPreviewSelectors();
 
-      if (uploadModal) uploadModal.hidden = true;
+      hideUploadModal();
       createPubForm.reset();
       showToast(isPaid ? `👑 Created Pro Flipbook "${title}"!` : `Created Flipbook "${title}"!`);
 
-      // Firestore save
       try {
         const docRef = doc(db, 'publications', newId);
         await setDoc(docRef, {
           ...newPublication,
-          ownerId: auth.currentUser?.uid || 'user-101',
-          ownerEmail: auth.currentUser?.email || 'user@flippage.com'
+          ownerId: auth.currentUser?.uid || 'guest-user',
+          ownerEmail: auth.currentUser?.email || ''
         });
       } catch (err) {
-        handleFirestoreError(err, 'create', `publications/${newId}`);
+        console.warn('Create publication note:', err);
       }
     });
   }
@@ -899,7 +867,7 @@ function initCreateModal() {
 
 async function processUploadedPdf(file) {
   if (!file || file.type !== 'application/pdf') {
-    showToast('Please select a valid PDF file');
+    showToast('Please select a valid PDF file', 'error');
     return;
   }
 
@@ -924,534 +892,187 @@ async function processUploadedPdf(file) {
   }
 }
 
-// ============ TEMPLATES CLONING ============
-function initTemplatesTab() {
-  if (!templatesGrid) return;
-  templatesGrid.innerHTML = '';
-
-  TEMPLATES_CATALOG.forEach(t => {
-    const card = document.createElement('div');
-    card.className = 'pub-card';
-    card.innerHTML = `
-      <div class="pub-card-top">
-        <div class="pub-thumb-cover" style="background:${t.bg}; color:${t.color};">
-          <span>${t.emoji}</span>
-        </div>
-        <div class="pub-card-info">
-          <div class="pub-card-tags">
-            ${t.planTier === 'paid' 
-              ? `<span class="crown-badge"><span class="crown-icon">👑</span>PRO</span>` 
-              : `<span class="crown-badge free">FREE</span>`}
-            <span style="font-size:0.72rem; color:#64748B; background:#F1F5F9; padding:2px 6px; border-radius:4px; font-weight:600;">${t.category}</span>
-          </div>
-          <h4 class="pub-card-title">${t.title}</h4>
-          <p style="font-size:0.78rem; color:#64748B; margin:4px 0 0; line-height:1.4;">${t.desc}</p>
-        </div>
-      </div>
-
-      <div class="pub-card-actions">
-        <span style="font-size:0.76rem; font-weight:700; color:#0F172A;">${t.pages} Pre-built Pages</span>
-        <button type="button" class="btn-new-pub btn-clone-template" data-id="${t.id}" style="padding:6px 14px; font-size:0.78rem;">
-          <span>Use Template</span>
-        </button>
-      </div>
-    `;
-
-    templatesGrid.appendChild(card);
-  });
-
-  document.querySelectorAll('.btn-clone-template').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const template = TEMPLATES_CATALOG.find(t => t.id === btn.dataset.id);
-      if (!template) return;
-
-      const newId = `pub-t-${Date.now()}`;
-      const isPaid = template.planTier === 'paid';
-      const cloned = {
-        id: newId,
-        title: template.title,
-        slug: template.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-        category: template.category,
-        pages: template.pages,
-        reads: 0,
-        shares: 0,
-        avgTime: '0m',
-        status: 'live',
-        planTier: template.planTier,
-        isPaid: isPaid,
-        thumbBg: template.bg,
-        thumbColor: template.color,
-        thumbEmoji: template.emoji,
-        previewText: `${template.pages} pages • Cloned from ${template.category} template`,
-        spreads: [
-          { left: 2, right: 3, title: 'Executive Summary', graphic: '📊 Key Financial Highlights' },
-          { left: 4, right: 5, title: 'Growth Strategies', graphic: '🌱 Sustainable Milestones' }
-        ],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-
-      publications.unshift(cloned);
-      selectedPubId = newId;
-      switchTab('pubs');
-      showToast(`Cloned template "${template.title}" into your workspace!`);
-
-      // Firestore save
-      try {
-        const docRef = doc(db, 'publications', newId);
-        setDoc(docRef, {
-          ...cloned,
-          ownerId: auth.currentUser?.uid || 'user-101',
-          ownerEmail: auth.currentUser?.email || 'user@flippage.com'
-        });
-      } catch (err) {
-        handleFirestoreError(err, 'create', `publications/${newId}`);
-      }
-    });
-  });
-}
-
-// ============ TAB SWITCHER ============
-function switchTab(tab) {
-  currentTab = tab;
-  
-  const tabViewChat = document.getElementById('tab-view-chat');
-  const tabViewPubs = document.getElementById('tab-view-pubs');
-  const tabViewCollections = document.getElementById('tab-view-collections');
-  const tabViewUsers = document.getElementById('tab-view-users');
-  const tabViewReported = document.getElementById('tab-view-reported');
-  const tabViewCalls = document.getElementById('tab-view-calls');
-  const tabViewActivity = document.getElementById('tab-view-activity');
-  const tabViewUsage = document.getElementById('tab-view-usage');
-  const tabViewSettings = document.getElementById('tab-view-settings');
-  const tabViewLab = document.getElementById('tab-view-lab');
-  const tabViewTemplates = document.getElementById('tab-view-templates');
-  const tabViewAnalytics = document.getElementById('tab-view-analytics');
-
-  const allNavTabs = [
-    navTabChat, 
-    navTabPubs, 
-    navTabCollections, 
-    navTabUsers, 
-    navTabReported, 
-    navTabCalls, 
-    navTabActivity, 
-    navTabUsage, 
-    navTabSettings,
-    navTabLab, 
-    navTabTemplates, 
-    navTabAnalytics
-  ];
-
-  allNavTabs.forEach(btn => {
-    if (btn) btn.classList.remove('is-active');
-  });
-
-  if (tabViewChat) tabViewChat.style.display = (tab === 'chat') ? 'block' : 'none';
-  if (tabViewPubs) tabViewPubs.style.display = (tab === 'pubs') ? 'block' : 'none';
-  if (tabViewCollections) tabViewCollections.style.display = (tab === 'collections') ? 'block' : 'none';
-  if (tabViewUsers) tabViewUsers.style.display = (tab === 'users') ? 'block' : 'none';
-  if (tabViewReported) tabViewReported.style.display = (tab === 'reported') ? 'block' : 'none';
-  if (tabViewCalls) tabViewCalls.style.display = (tab === 'calls') ? 'block' : 'none';
-  if (tabViewActivity) tabViewActivity.style.display = (tab === 'activity') ? 'block' : 'none';
-  if (tabViewUsage) tabViewUsage.style.display = (tab === 'usage') ? 'block' : 'none';
-  if (tabViewSettings) tabViewSettings.style.display = (tab === 'settings') ? 'block' : 'none';
-  if (tabViewLab) tabViewLab.style.display = (tab === 'lab') ? 'block' : 'none';
-  if (tabViewTemplates) tabViewTemplates.style.display = (tab === 'templates') ? 'block' : 'none';
-  if (tabViewAnalytics) tabViewAnalytics.style.display = (tab === 'analytics') ? 'block' : 'none';
-
-  if (tab === 'chat') {
-    if (navTabChat) navTabChat.classList.add('is-active');
-    if (currentViewTitle) currentViewTitle.textContent = 'Workspace Chat';
-  } else if (tab === 'pubs') {
-    if (navTabPubs) navTabPubs.classList.add('is-active');
-    if (currentViewTitle) currentViewTitle.textContent = 'Digital Flipbooks';
-    renderPublications();
-  } else if (tab === 'collections') {
-    if (navTabCollections) navTabCollections.classList.add('is-active');
-    if (currentViewTitle) currentViewTitle.textContent = 'Digital Bookshelf';
-    renderBookshelfHub();
-  } else if (tab === 'users') {
-    if (navTabUsers) navTabUsers.classList.add('is-active');
-    if (currentViewTitle) currentViewTitle.textContent = 'Users & Roles';
-  } else if (tab === 'reported') {
-    if (navTabReported) navTabReported.classList.add('is-active');
-    if (currentViewTitle) currentViewTitle.textContent = 'Reported Content';
-  } else if (tab === 'calls') {
-    if (navTabCalls) navTabCalls.classList.add('is-active');
-    if (currentViewTitle) currentViewTitle.textContent = 'Call Logs';
-  } else if (tab === 'activity') {
-    if (navTabActivity) navTabActivity.classList.add('is-active');
-    if (currentViewTitle) currentViewTitle.textContent = 'Activity Logs';
-  } else if (tab === 'usage') {
-    if (navTabUsage) navTabUsage.classList.add('is-active');
-    if (currentViewTitle) currentViewTitle.textContent = 'Plan & Usage';
-  } else if (tab === 'settings') {
-    if (navTabSettings) navTabSettings.classList.add('is-active');
-    if (currentViewTitle) currentViewTitle.textContent = 'Workspace Settings';
-  } else if (tab === 'lab') {
-    if (navTabLab) navTabLab.classList.add('is-active');
-    if (currentViewTitle) currentViewTitle.textContent = '3D Shader Lab';
-  } else if (tab === 'templates') {
-    if (navTabTemplates) navTabTemplates.classList.add('is-active');
-    if (currentViewTitle) currentViewTitle.textContent = 'Templates Gallery';
-    initTemplatesTab();
-  } else if (tab === 'analytics') {
-    if (navTabAnalytics) navTabAnalytics.classList.add('is-active');
-    if (currentViewTitle) currentViewTitle.textContent = 'Reader Insights';
-  }
-}
-
-// ============ WORKSPACE CHAT & FLOATING ASSISTANT WIDGET ============
-function initWorkspaceChat() {
-  const chatForm = document.getElementById('workspace-chat-form');
-  const chatInput = document.getElementById('workspace-chat-input');
-  const chatStream = document.getElementById('workspace-chat-stream');
-  const quickPillsStack = document.getElementById('widget-quick-pills');
-
-  // Floating Drawer elements
-  const btnFloatingLauncher = document.getElementById('btn-floating-ai-launcher');
-  const floatingDrawer = document.getElementById('floating-ai-drawer');
-  const btnCloseFloating = document.getElementById('btn-close-floating-drawer');
-  const floatingForm = document.getElementById('floating-chat-form');
-  const floatingInput = document.getElementById('floating-chat-input');
-  const floatingStream = document.getElementById('floating-chat-stream');
-  const floatingPillsStack = document.getElementById('floating-quick-pills');
-
-  // Helper to format current time e.g. "11:08 AM"
-  function getFormattedTime() {
-    const now = new Date();
-    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
-  // Toggle Floating Drawer
-  if (btnFloatingLauncher && floatingDrawer) {
-    btnFloatingLauncher.addEventListener('click', (e) => {
+// ============ SHARE & PREVIEW PANEL LOGIC ============
+function initShareAndPreviewPanels() {
+  // Share modal handlers
+  if (closeShareModalBtn) {
+    closeShareModalBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
-      floatingDrawer.classList.toggle('is-open');
+      closeShareModal();
     });
   }
 
-  if (btnCloseFloating && floatingDrawer) {
-    btnCloseFloating.addEventListener('click', () => {
-      floatingDrawer.classList.remove('is-open');
+  if (shareModal) {
+    shareModal.addEventListener('click', (e) => {
+      if (e.target === shareModal) closeShareModal();
     });
   }
 
-  document.addEventListener('click', (e) => {
-    if (floatingDrawer && floatingDrawer.classList.contains('is-open')) {
-      if (!floatingDrawer.contains(e.target) && btnFloatingLauncher && !btnFloatingLauncher.contains(e.target)) {
-        floatingDrawer.classList.remove('is-open');
-      }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && shareModal && !shareModal.hidden) {
+      closeShareModal();
     }
   });
 
-  function appendMessageToStream(stream, text, isUser = true) {
-    if (!stream) return;
-    const msgDiv = document.createElement('div');
-    const timeStr = getFormattedTime();
-
-    if (isUser) {
-      msgDiv.className = 'ai-user-bubble';
-      msgDiv.textContent = text;
-    } else {
-      msgDiv.className = 'ai-bot-bubble';
-      msgDiv.innerHTML = `
-        <span class="greeting-body">${escapeHtml(text)}</span>
-        <span class="bubble-time">${timeStr}</span>
-      `;
-    }
-    
-    stream.appendChild(msgDiv);
-    stream.scrollTop = stream.scrollHeight;
+  if (btnCopyModalUrl) {
+    btnCopyModalUrl.addEventListener('click', () => {
+      if (shareModalUrlInput?.value) {
+        navigator.clipboard.writeText(shareModalUrlInput.value);
+        showToast('Link copied!');
+      }
+    });
   }
 
-  function generateAssistantResponse(query, targetStream) {
-    const q = query.toLowerCase();
-    
-    // Simulate typing delay
-    setTimeout(() => {
-      let reply = "";
-      if (q.includes('service') || q.includes('offer')) {
-        reply = "We offer interactive 3D digital flipbook conversion from PDF, vector rendering, customizable branding, audio page turns, embed widgets, and reader insights analytics!";
-      } else if (q.includes('support') || q.includes('contact')) {
-        reply = "You can reach our dedicated FlipPage support team 24/7 at support@flippage.io or message us directly through this Virtual Assistant.";
-      } else if (q.includes('cost') || q.includes('price') || q.includes('plan')) {
-        reply = "We have a Free Tier with basic 3D publishing, and a Pro Tier ($19/mo) with zero watermarks, HD vector rendering, password protection, and custom sub-domains. You currently have 14 days left on your Pro trial!";
-      } else if (q.includes('upload') || q.includes('pdf') || q.includes('create')) {
-        reply = "To create a 3D flipbook, click '+ New Flipbook' in the top right or drop your PDF document into the creation modal. It compiles into interactive double-sided spreads instantly.";
-      } else if (q.includes('summary') || q.includes('reads')) {
-        reply = `📊 Reader Insights: Across your ${publications.length} active publications, you have 18,100 reads with an average reading duration of 3m 42s.`;
+  if (btnCopyModalEmbed) {
+    btnCopyModalEmbed.addEventListener('click', () => {
+      if (shareModalEmbedInput?.value) {
+        navigator.clipboard.writeText(shareModalEmbedInput.value);
+        showToast('Embed code copied!');
+      }
+    });
+  }
+
+  if (detailShareBtn) {
+    detailShareBtn.addEventListener('click', () => openShareModal(selectedPubId));
+  }
+
+  if (detailEmbedBtn) {
+    detailEmbedBtn.addEventListener('click', () => openShareModal(selectedPubId));
+  }
+
+  if (detailToggleTierBtn) {
+    detailToggleTierBtn.addEventListener('click', () => togglePublicationTier(selectedPubId));
+  }
+
+  if (btnCopyDetailUrl) {
+    btnCopyDetailUrl.addEventListener('click', () => {
+      const url = detailSpecUrl?.textContent;
+      if (url && url !== '—') {
+        navigator.clipboard.writeText(url);
+        showToast('URL copied!');
+      }
+    });
+  }
+
+  // Preview Panel Selector
+  if (previewSelector) {
+    previewSelector.addEventListener('change', () => {
+      const selected = previewSelector.options[previewSelector.selectedIndex];
+      const readerUrl = selected?.dataset?.readerUrl;
+      if (readerUrl && selected.value) {
+        if (previewFrame) { previewFrame.src = readerUrl; previewFrame.style.display = 'block'; }
+        if (previewPlaceholder) previewPlaceholder.style.display = 'none';
+        if (previewOpenBtn) previewOpenBtn.href = readerUrl;
       } else {
-        reply = `Thanks for asking about "${query}". I'm ready to help you optimize your flipbooks, customize your 3D physics settings, or launch reader presentations.`;
+        if (previewFrame) previewFrame.style.display = 'none';
+        if (previewPlaceholder) previewPlaceholder.style.display = 'flex';
       }
-
-      appendMessageToStream(targetStream || chatStream, reply, false);
-      if (targetStream !== floatingStream && floatingStream) {
-        appendMessageToStream(floatingStream, reply, false);
-      }
-    }, 450);
-  }
-
-  // Handle Tab View Chat Form
-  if (chatForm && chatInput) {
-    chatForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const val = chatInput.value.trim();
-      if (!val) return;
-      
-      // Hide initial pills once custom conversation starts
-      if (quickPillsStack) quickPillsStack.style.display = 'none';
-      
-      appendMessageToStream(chatStream, val, true);
-      chatInput.value = '';
-      generateAssistantResponse(val, chatStream);
     });
   }
 
-  // Handle Tab Quick Action Pills
-  document.querySelectorAll('.chat-prompt-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const prompt = chip.dataset.prompt;
-      if (!prompt) return;
-      if (quickPillsStack) quickPillsStack.style.display = 'none';
-      appendMessageToStream(chatStream, prompt, true);
-      generateAssistantResponse(prompt, chatStream);
-    });
-  });
+  // Share Panel Selector
+  const sharePubSelector = document.getElementById('share-pub-selector');
+  if (sharePubSelector) {
+    sharePubSelector.addEventListener('change', () => {
+      const selected = sharePubSelector.options[sharePubSelector.selectedIndex];
+      const readerUrl = selected?.dataset?.readerUrl;
+      const shareUrlBox = document.getElementById('share-url-box');
+      const shareUrlDisplay = document.getElementById('share-url-display');
+      const shareEmbedCode = document.getElementById('share-embed-code');
+      
+      if (!sharePubSelector.value || !readerUrl) {
+        if (shareUrlBox) shareUrlBox.style.display = 'none';
+        return;
+      }
 
-  // Handle Floating Drawer Chat Form
-  if (floatingForm && floatingInput) {
-    floatingForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const val = floatingInput.value.trim();
-      if (!val) return;
-      if (floatingPillsStack) floatingPillsStack.style.display = 'none';
-      appendMessageToStream(floatingStream, val, true);
-      floatingInput.value = '';
-      generateAssistantResponse(val, floatingStream);
+      const fullUrl = readerUrl.startsWith('http') ? readerUrl : `${window.location.origin}/${readerUrl}`;
+      if (shareUrlDisplay) shareUrlDisplay.textContent = fullUrl;
+      if (shareUrlBox) shareUrlBox.style.display = 'flex';
+      if (shareEmbedCode) shareEmbedCode.value = `<iframe src="${fullUrl}" width="100%" height="600" frameborder="0" allowfullscreen></iframe>`;
     });
   }
 
-  // Handle Floating Quick Action Pills
-  document.querySelectorAll('.floating-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const prompt = chip.dataset.prompt;
-      if (!prompt) return;
-      if (floatingPillsStack) floatingPillsStack.style.display = 'none';
-      appendMessageToStream(floatingStream, prompt, true);
-      generateAssistantResponse(prompt, floatingStream);
+  // Share Panel Copy buttons
+  const btnCopyShareUrl = document.getElementById('btn-copy-share-url');
+  if (btnCopyShareUrl) {
+    btnCopyShareUrl.addEventListener('click', () => {
+      const url = document.getElementById('share-url-display')?.textContent;
+      if (url) { navigator.clipboard.writeText(url); showToast('Share link copied!'); }
     });
-  });
-}
-
-function renderBookshelfHub() {
-  if (!collectionsGrid) return;
-  collectionsGrid.innerHTML = '';
-
-  publications.forEach(pub => {
-    const card = document.createElement('div');
-    card.className = 'pub-card';
-    card.innerHTML = `
-      <div class="pub-card-top">
-        <div class="pub-thumb-cover" style="background:${pub.thumbBg || '#EFF6FF'}; color:${pub.thumbColor || '#1E40AF'};">
-          <span>${pub.thumbEmoji || '📖'}</span>
-        </div>
-        <div class="pub-card-info">
-          <div class="pub-card-tags">
-            ${pub.isPaid ? `<span class="crown-badge"><span class="crown-icon">👑</span>PRO</span>` : `<span class="crown-badge free">FREE</span>`}
-          </div>
-          <h4 class="pub-card-title">${escapeHtml(pub.title)}</h4>
-          <span style="font-size:0.75rem; color:#64748B;">${pub.pages || 20} Pages • ${pub.reads || 0} Reads</span>
-        </div>
-      </div>
-      <div class="pub-card-actions">
-        <a href="reader.html?id=${encodeURIComponent(pub.id)}" target="_blank" class="pub-btn primary" style="width:100%; justify-content:center;">
-          <span>📖 Open Book</span>
-        </a>
-      </div>
-    `;
-    collectionsGrid.appendChild(card);
-  });
-}
-
-// ============ CLOCK & AUTH LISTENERS ============
-function initClock() {
-  const clock = document.getElementById('topbar-clock');
-  function update() {
-    if (!clock) return;
-    const now = new Date();
-    const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-    clock.innerHTML = now.toLocaleDateString('en-US', options);
   }
-  update();
-  setInterval(update, 30000);
-}
 
-function initAuth() {
-  const btnSwitchLogin = document.getElementById('btn-switch-login');
-  const topbarSigninBtn = document.getElementById('topbar-signin-btn');
-  const topbarSigninText = document.getElementById('topbar-signin-text');
-  const authGateOverlay = document.getElementById('auth-gate-overlay');
-  const authGateMessage = document.getElementById('auth-gate-message');
+  const btnCopyEmbedCode = document.getElementById('btn-copy-embed-code');
+  if (btnCopyEmbedCode) {
+    btnCopyEmbedCode.addEventListener('click', () => {
+      const code = document.getElementById('share-embed-code')?.value;
+      if (code) { navigator.clipboard.writeText(code); showToast('Embed code copied!'); }
+    });
+  }
 
-  // Purge any stale demo or guest keys
-  try {
-    localStorage.removeItem('flippage_guest_user');
-  } catch (_) {}
+  // Social share triggers
+  const getSocialShareUrl = () => document.getElementById('share-url-display')?.textContent || window.location.href;
+  document.getElementById('social-wa')?.addEventListener('click', () => { window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent('Check out this interactive flipbook: ' + getSocialShareUrl())}`, '_blank'); });
+  document.getElementById('social-tw')?.addEventListener('click', () => { window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(getSocialShareUrl())}&text=${encodeURIComponent('Check out this interactive 3D flipbook on FlipPage!')}`, '_blank'); });
+  document.getElementById('social-li')?.addEventListener('click', () => { window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getSocialShareUrl())}`, '_blank'); });
+  document.getElementById('social-email')?.addEventListener('click', () => { window.location.href = `mailto:?subject=Check out this Flipbook&body=I wanted to share this interactive digital flipbook with you: ${getSocialShareUrl()}`; });
+  document.getElementById('social-fb')?.addEventListener('click', () => { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getSocialShareUrl())}`, '_blank'); });
+  document.getElementById('social-copy')?.addEventListener('click', () => { navigator.clipboard.writeText(getSocialShareUrl()); showToast('Link copied!'); });
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // User is Authenticated: Unlock Workspace
-      if (authGateOverlay) authGateOverlay.style.display = 'none';
-      activeFirebaseUser = user;
-      const name = user.displayName || (user.email ? user.email.split('@')[0] : 'Workspace Member');
-      const email = user.email || '';
-      let photo = user.photoURL || '';
-
-      if (photo && photo.includes('googleusercontent.com')) {
-        photo = photo.replace(/=s\d+(-c)?/i, '=s384-c');
-      }
-
-      if (sidebarName) sidebarName.textContent = name;
-      if (sidebarEmail) {
-        sidebarEmail.textContent = email;
-        sidebarEmail.style.color = '#8896A6';
-        sidebarEmail.style.fontWeight = '400';
-      }
-      if (switchName) switchName.textContent = name;
-      if (switchEmail) switchEmail.textContent = email;
-
-      const initial = (name.charAt(0) || 'U').toUpperCase();
-
-      if (sidebarAvatar) {
-        sidebarAvatar.style.background = '#2563EB';
-        if (photo) {
-          sidebarAvatar.innerHTML = `<img src="${photo}" alt="${escapeHtml(name)}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.parentElement.textContent='${initial}';">`;
-          sidebarAvatar.style.padding = '0';
-        } else {
-          sidebarAvatar.textContent = initial;
-        }
-      }
-
-      if (switchAvatar) {
-        if (photo) {
-          switchAvatar.innerHTML = `<img src="${photo}" alt="${escapeHtml(name)}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.parentElement.textContent='${initial}';">`;
-        } else {
-          switchAvatar.textContent = initial;
-        }
-      }
-
-      if (topbarSigninBtn && topbarSigninText) {
-        topbarSigninText.textContent = name;
-        topbarSigninBtn.title = `Connected as ${email}`;
-      }
-
-      if (btnSwitchLogout) btnSwitchLogout.style.display = 'flex';
-      if (btnSwitchLogin) {
-        btnSwitchLogin.innerHTML = `
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
-          </svg>
-          <span>Switch / Add Account</span>
-        `;
-      }
-      
-      // Initialize real-time plan & duration listener for user
-      initUserPlanListener(user.uid);
-      initFirestoreSync();
-      renderPublications();
-      renderStats();
-      renderDetailPane();
-    } else {
-      // User is Unauthenticated: Block workspace and immediately redirect to account.html
-      activeFirebaseUser = null;
-      if (authGateOverlay) {
-        authGateOverlay.style.display = 'flex';
-      }
-      if (authGateMessage) {
-        authGateMessage.textContent = 'Account required to access workspace. Redirecting to sign in / create account...';
-      }
-      
-      // Auto-reconnect / redirect to account.html page
-      setTimeout(() => {
-        window.location.replace('account.html?auth=required');
-      }, 150);
+  // QR Code generator
+  document.getElementById('btn-generate-qr')?.addEventListener('click', () => {
+    const url = getSocialShareUrl();
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
+    const qrPlaceholder = document.getElementById('qr-placeholder');
+    if (qrPlaceholder) {
+      qrPlaceholder.innerHTML = `<img src="${qrUrl}" alt="QR Code" style="width:100%; height:100%; object-fit:contain; border-radius:8px;">`;
+      showToast('QR code generated!');
     }
   });
-
-  if (sidebarUserCard && switchPopup) {
-    sidebarUserCard.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isHidden = switchPopup.hidden;
-      switchPopup.hidden = !isHidden;
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!switchPopup.contains(e.target) && !sidebarUserCard.contains(e.target)) {
-        switchPopup.hidden = true;
-      }
-    });
-  }
-
-  if (btnSwitchLogout) {
-    btnSwitchLogout.addEventListener('click', async () => {
-      try {
-        localStorage.clear();
-      } catch (_) {}
-      await signOut(auth);
-      window.location.replace('account.html');
-    });
-  }
 }
 
-// ============ PRO MODAL & GENERAL LISTENERS ============
-function initProModal() {
-  if (navBtnUpgradePlan && proModal) {
-    navBtnUpgradePlan.addEventListener('click', () => {
-      proModal.hidden = false;
-    });
-  }
+// ============ AUTH STATE ============
+function initAuthState() {
+  onAuthStateChanged(auth, (user) => {
+    const nameEl = document.getElementById('sidebar-user-name');
+    const emailEl = document.getElementById('sidebar-user-email');
+    const avatarEl = document.getElementById('sidebar-avatar-initial');
+    const logoutBtn = document.getElementById('btn-switch-logout');
+    const loginBtn = document.getElementById('btn-switch-login');
 
-  if (closeProModalBtn) closeProModalBtn.addEventListener('click', () => { if (proModal) proModal.hidden = true; });
-  if (btnCloseProModal) btnCloseProModal.addEventListener('click', () => { if (proModal) proModal.hidden = true; });
+    if (user) {
+      if (nameEl) nameEl.textContent = user.displayName || user.email?.split('@')[0] || 'User';
+      if (emailEl) { emailEl.textContent = user.email || ''; emailEl.style.color = '#64748B'; emailEl.style.fontWeight = '500'; }
+      if (avatarEl) {
+        avatarEl.style.background = '#2563EB';
+        avatarEl.innerHTML = `<span style="color:#fff; font-weight:700; font-size:1rem;">${(user.displayName || user.email || 'U').charAt(0).toUpperCase()}</span>`;
+      }
+      if (logoutBtn) logoutBtn.style.display = 'flex';
+      if (loginBtn) loginBtn.style.display = 'none';
 
-  if (btnActivateProWorkspace) {
-    btnActivateProWorkspace.addEventListener('click', async () => {
-      isUserPro = true;
-      currentUserPlan = 'PRO';
-      localStorage.setItem('flippage_pro_tier', 'true');
-      localStorage.setItem('flippage_user_plan', 'PRO');
-
-      if (activeFirebaseUser) {
-        try {
-          const userRef = doc(db, 'users', activeFirebaseUser.uid);
-          await updateDoc(userRef, {
-            plan: 'PRO',
-            isPaid: true,
-            priority: 'High',
-            updatedAt: new Date().toISOString()
-          });
-        } catch (e) {
-          console.warn('Could not sync pro activation to Firestore:', e);
-        }
+      if (logoutBtn && !logoutBtn._hasListener) {
+        logoutBtn._hasListener = true;
+        logoutBtn.addEventListener('click', async () => {
+          await signOut(auth);
+          showToast('Signed out successfully');
+        });
       }
 
-      publications.forEach(p => {
-        p.isPaid = true;
-        p.planTier = 'paid';
-      });
-      renderPublications();
-      renderStats();
-      renderDetailPane();
-      updateUserTierBadge();
-      if (proModal) proModal.hidden = true;
-      showToast('👑 Activated FlipPage Pro with Crown across workspace!');
-    });
-  }
+      const swName = document.getElementById('switch-active-name');
+      const swEmail = document.getElementById('switch-active-email');
+      if (swName) swName.textContent = user.displayName || user.email?.split('@')[0] || 'User';
+      if (swEmail) swEmail.textContent = user.email || 'Signed in';
+    } else {
+      if (nameEl) nameEl.textContent = 'Guest User';
+      if (emailEl) { emailEl.textContent = 'Click to Sign In'; emailEl.style.color = '#2563EB'; emailEl.style.fontWeight = '600'; }
+      if (logoutBtn) logoutBtn.style.display = 'none';
+      if (loginBtn) loginBtn.style.display = 'flex';
+    }
+  });
 }
 
-function initSearchAndFilter() {
+// ============ SEARCH & FILTERS ============
+function initSearchAndFilters() {
   if (searchInput) {
     searchInput.addEventListener('input', () => {
       renderPublications();
@@ -1466,61 +1087,17 @@ function initSearchAndFilter() {
       renderPublications();
     });
   });
-
-  if (navTabChat) {
-    navTabChat.addEventListener('click', () => {
-      switchTab('pubs');
-      const floatingDrawer = document.getElementById('floating-ai-drawer');
-      if (floatingDrawer) {
-        floatingDrawer.classList.toggle('is-open');
-        const input = document.getElementById('floating-chat-input');
-        if (input) input.focus();
-      }
-    });
-  }
-  if (navTabPubs) navTabPubs.addEventListener('click', () => switchTab('pubs'));
-  if (navTabCollections) navTabCollections.addEventListener('click', () => switchTab('collections'));
-  if (navTabUsers) navTabUsers.addEventListener('click', () => switchTab('users'));
-  if (navTabReported) navTabReported.addEventListener('click', () => switchTab('reported'));
-  if (navTabCalls) navTabCalls.addEventListener('click', () => switchTab('calls'));
-  if (navTabActivity) navTabActivity.addEventListener('click', () => switchTab('activity'));
-  if (navTabUsage) navTabUsage.addEventListener('click', () => switchTab('usage'));
-  if (navTabSettings) navTabSettings.addEventListener('click', () => switchTab('settings'));
-  if (navTabLab) navTabLab.addEventListener('click', () => switchTab('lab'));
-  if (navTabTemplates) navTabTemplates.addEventListener('click', () => switchTab('templates'));
-  if (navTabAnalytics) navTabAnalytics.addEventListener('click', () => switchTab('analytics'));
-
-  if (detailShareBtn) {
-    detailShareBtn.addEventListener('click', () => openShareModal(selectedPubId));
-  }
-
-  if (detailToggleTierBtn) {
-    detailToggleTierBtn.addEventListener('click', () => togglePublicationTier(selectedPubId));
-  }
-
-  // Share Modal copy buttons
-  if (closeShareModalBtn) closeShareModalBtn.addEventListener('click', closeShareModal);
-  if (btnCopyModalUrl && shareModalUrlInput) {
-    btnCopyModalUrl.addEventListener('click', () => {
-      navigator.clipboard.writeText(shareModalUrlInput.value);
-      showToast('Reader URL copied to clipboard!');
-    });
-  }
-  if (btnCopyModalEmbed && shareModalEmbedInput) {
-    btnCopyModalEmbed.addEventListener('click', () => {
-      navigator.clipboard.writeText(shareModalEmbedInput.value);
-      showToast('iFrame embed code copied!');
-    });
-  }
 }
 
-// Boot
+// ============ INITIALIZATION ============
 document.addEventListener('DOMContentLoaded', () => {
-  initClock();
-  initAuth();
-  initSearchAndFilter();
-  initWorkspaceChat();
+  renderPublications();
+  renderStats();
+  renderDetailPane();
+  initSearchAndFilters();
   initCreateModal();
-  initProModal();
-  updateUserTierBadge();
+  initUrlFlipbooks();
+  initShareAndPreviewPanels();
+  initAuthState();
+  initFirestoreSync();
 });
