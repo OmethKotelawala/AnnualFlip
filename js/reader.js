@@ -12,6 +12,7 @@ import {
   increment 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseConfig.js";
+import { getPdfDocument } from "./pdfStorage.js";
 
 // Load Firebase Config
 let app = null;
@@ -19,9 +20,13 @@ let db = null;
 
 try {
   app = initializeApp(firebaseConfig);
-  db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+  db = firebaseConfig && firebaseConfig.firestoreDatabaseId ? getFirestore(app, firebaseConfig.firestoreDatabaseId) : getFirestore(app);
 } catch (e) {
-  console.warn("Firebase reader init fallback:", e);
+  try {
+    db = getFirestore();
+  } catch (_) {
+    console.warn("Firebase reader init fallback:", e);
+  }
 }
 
 // Global Config
@@ -245,13 +250,53 @@ function buildPages(n) {
   els.book.appendChild(frag);
 }
 
-// ============ RENDER ARTISTIC SPREADS / PDF ============
+// ============ RENDER ARTISTIC SPREADS / PDF / BACKEND IMAGES ============
 function renderPageContent(index) {
   if (rendered.has(index) || rendering.has(index)) return Promise.resolve();
   if (index < 0 || index >= totalPages) return Promise.resolve();
   rendering.add(index);
 
-  // If we have a real PDF loaded
+  // 1. If we have Backend Converted Page Images
+  if (currentBookData.pages && currentBookData.pages[index] && currentBookData.pages[index].imageUrl) {
+    const pageObj = currentBookData.pages[index];
+    const surface = pageEls[index];
+    if (!surface) {
+      rendering.delete(index);
+      return Promise.resolve();
+    }
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = pageObj.width || img.naturalWidth || 900;
+        canvas.height = pageObj.height || img.naturalHeight || 1272;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        surface.innerHTML = "";
+        surface.appendChild(canvas);
+
+        // Watermark for free tier
+        if (!currentBookData.isPaid) {
+          const wm = document.createElement("div");
+          wm.style.cssText = "position:absolute; bottom:12px; right:14px; font-size:11px; font-weight:600; color:rgba(0,0,0,0.35); pointer-events:none; letter-spacing:0.4px;";
+          wm.textContent = "Created with FlipPage • Free";
+          surface.appendChild(wm);
+        }
+
+        rendered.add(index);
+        rendering.delete(index);
+        resolve();
+      };
+      img.onerror = () => {
+        rendering.delete(index);
+        resolve();
+      };
+      img.src = pageObj.imageUrl;
+    });
+  }
+
+  // 2. If we have a real PDF loaded
   if (pdfDoc) {
     const scale = currentBookData.isPaid ? 2.8 : 2.0;
     return pdfDoc.getPage(index + 1).then(page => {
@@ -1069,48 +1114,172 @@ function wireControls() {
 
 // ============ LOAD PUBLICATION METADATA & INIT ============
 async function loadPublicationAndInit() {
+  let pathSlug = '';
+  const pathname = window.location.pathname;
+  if (pathname.startsWith('/read/')) {
+    pathSlug = pathname.replace(/^\/read\//, '').replace(/\/$/, '');
+  }
+
   const urlParams = new URLSearchParams(window.location.search);
-  const pubId = urlParams.get('id') || 'p1';
-  const customPdfUrl = urlParams.get('pdf');
+  const slug = urlParams.get('slug') || pathSlug;
+  const pubId = urlParams.get('id') || urlParams.get('doc') || urlParams.get('bookId') || (slug ? null : 'p1');
+  const customPdfUrl = urlParams.get('url') || urlParams.get('pdf');
+  const customTitle = urlParams.get('title');
 
-  // Load from Firestore or default publications catalogue
-  if (pubId && db) {
+  let backendLoaded = false;
+
+  // 1. Try fetching from Backend API by slug or ID
+  const searchKey = slug || pubId;
+  if (searchKey && searchKey !== 'p1' && searchKey !== 'p2' && searchKey !== 'p3' && searchKey !== 'p4') {
     try {
-      const docRef = doc(db, 'publications', pubId);
-      const snap = await getDoc(docRef);
-      if (snap.exists()) {
-        const data = snap.data();
-        currentBookData = {
-          id: pubId,
-          title: data.title || 'Digital Flipbook',
-          pages: data.pages || 20,
-          planTier: data.planTier || (data.isPaid ? 'paid' : 'free'),
-          isPaid: Boolean(data.isPaid || data.planTier === 'paid'),
-          pdfUrl: data.pdfUrl || '',
-          pdfData: data.pdfData || null,
-          spreads: data.spreads || []
-        };
+      if (els.loader) {
+        els.loader.classList.remove('hide');
+        if (els.loaderTxt) els.loaderTxt.textContent = 'Loading 3D Digital Flipbook...';
+      }
 
-        // Increment read view count in Firestore
-        try {
-          updateDoc(docRef, { reads: increment(1) });
-        } catch (_) {}
-      } else if (DEFAULT_PUBLICATIONS[pubId]) {
-        currentBookData = DEFAULT_PUBLICATIONS[pubId];
+      let res = await fetch(`/api/public/books/${encodeURIComponent(searchKey)}`);
+      if (!res.ok) {
+        res = await fetch(`/api/books/${encodeURIComponent(searchKey)}`);
+      }
+
+      if (res.ok) {
+        const book = await res.json();
+        
+        // Handle background conversion if status is PROCESSING
+        if (book.status === 'PROCESSING') {
+          if (els.loaderTxt) els.loaderTxt.textContent = 'Converting PDF to Digital 3D Flipbook...';
+          if (els.loaderSub) els.loaderSub.textContent = 'Rendering vector page images and extracting contents';
+
+          // Poll progress
+          let isReady = false;
+          for (let attempt = 0; attempt < 30; attempt++) {
+            await new Promise(r => setTimeout(r, 1500));
+            const pRes = await fetch(`/api/books/${encodeURIComponent(book.id || searchKey)}/progress`);
+            if (pRes.ok) {
+              const pData = await pRes.json();
+              if (pData.status === 'READY') {
+                const freshRes = await fetch(`/api/public/books/${encodeURIComponent(searchKey)}`);
+                if (freshRes.ok) {
+                  const freshBook = await freshRes.json();
+                  Object.assign(book, freshBook);
+                  isReady = true;
+                  break;
+                }
+              } else if (pData.status === 'FAILED') {
+                showError(pData.errorMessage || 'PDF Conversion Failed on Server');
+                return;
+              }
+            }
+          }
+        }
+
+        if (book.pages && book.pages.length > 0) {
+          currentBookData = {
+            id: book.id || searchKey,
+            title: book.title || customTitle || 'Digital Flipbook',
+            pages: book.pageCount || book.pages.length,
+            planTier: 'paid',
+            isPaid: true,
+            pages: book.pages,
+            settings: book.settings || {}
+          };
+          totalPages = currentBookData.pages;
+          backendLoaded = true;
+
+          if (book.settings) {
+            applyCustomizationConfig(book.settings);
+          }
+        }
       }
     } catch (err) {
-      console.warn("Firestore book load notice, using catalog:", err);
-      if (DEFAULT_PUBLICATIONS[pubId]) currentBookData = DEFAULT_PUBLICATIONS[pubId];
+      console.warn("Backend API book fetch notice:", err);
     }
-  } else if (DEFAULT_PUBLICATIONS[pubId]) {
-    currentBookData = DEFAULT_PUBLICATIONS[pubId];
   }
 
-  if (customPdfUrl) {
+  // 2. Check IndexedDB for locally uploaded PDF
+  if (!backendLoaded) {
+    try {
+      const storedDoc = await getPdfDocument(pubId || slug);
+      if (storedDoc && storedDoc.data) {
+        currentBookData = {
+          id: pubId || slug,
+          title: storedDoc.metadata?.title || customTitle || 'Uploaded Digital Flipbook',
+          pages: storedDoc.metadata?.pages || 20,
+          planTier: 'paid',
+          isPaid: true,
+          pdfData: storedDoc.data,
+          spreads: []
+        };
+
+        if (typeof pdfjsLib !== "undefined") {
+          try {
+            const loadingTask = pdfjsLib.getDocument({ data: storedDoc.data });
+            pdfDoc = await loadingTask.promise;
+            totalPages = pdfDoc.numPages;
+            currentBookData.pages = totalPages;
+            backendLoaded = true;
+          } catch (e) {
+            console.warn("Could not parse stored PDF binary with pdf.js:", e);
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("IndexedDB lookup notice:", err);
+    }
+  }
+
+  // 3. If not in IndexedDB or Backend, load from Firestore or catalog
+  if (!backendLoaded && !pdfDoc) {
+    const lookupId = pubId || slug || 'p1';
+    if (lookupId && db) {
+      try {
+        const docRef = doc(db, 'publications', lookupId);
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          const data = snap.data();
+          currentBookData = {
+            id: lookupId,
+            title: data.title || customTitle || 'Digital Flipbook',
+            pages: data.pages || 20,
+            planTier: data.planTier || (data.isPaid ? 'paid' : 'free'),
+            isPaid: Boolean(data.isPaid || data.planTier === 'paid'),
+            pdfUrl: data.pdfUrl || customPdfUrl || '',
+            pdfData: data.pdfData || null,
+            spreads: data.spreads || []
+          };
+
+          try {
+            updateDoc(docRef, { reads: increment(1) });
+          } catch (_) {}
+        } else if (DEFAULT_PUBLICATIONS[lookupId]) {
+          currentBookData = DEFAULT_PUBLICATIONS[lookupId];
+        }
+      } catch (err) {
+        if (DEFAULT_PUBLICATIONS[lookupId]) currentBookData = DEFAULT_PUBLICATIONS[lookupId];
+      }
+    } else if (DEFAULT_PUBLICATIONS[lookupId]) {
+      currentBookData = DEFAULT_PUBLICATIONS[lookupId];
+    }
+  }
+
+  // 4. If direct custom PDF URL passed
+  if (customPdfUrl && !backendLoaded) {
     currentBookData.pdfUrl = customPdfUrl;
+    if (customTitle) currentBookData.title = customTitle;
+    if (typeof pdfjsLib !== "undefined" && !pdfDoc) {
+      try {
+        const loadingTask = pdfjsLib.getDocument({ url: customPdfUrl, withCredentials: false });
+        pdfDoc = await loadingTask.promise;
+        totalPages = pdfDoc.numPages;
+        currentBookData.pages = totalPages;
+      } catch (e) {
+        console.warn("Could not parse remote PDF URL:", e);
+      }
+    }
   }
 
-  totalPages = currentBookData.pages || 28;
+  if (customTitle) currentBookData.title = customTitle;
+  totalPages = currentBookData.pages || (pdfDoc ? pdfDoc.numPages : 28);
 
   // Update UI Elements
   if (els.bookTitleText) els.bookTitleText.textContent = currentBookData.title;
@@ -1141,8 +1310,34 @@ async function loadPublicationAndInit() {
   els.book.style.width = `${size.spreadWidth}px`;
   els.book.style.height = `${size.height}px`;
 
+  // Wait for 3D page flip engine to be ready
+  let isStReady = typeof St !== "undefined" && Boolean(St.PageFlip);
+  if (!isStReady) {
+    const start = Date.now();
+    while ((typeof St === "undefined" || !St.PageFlip) && Date.now() - start < 4000) {
+      await new Promise(r => setTimeout(r, 60));
+    }
+    isStReady = typeof St !== "undefined" && Boolean(St.PageFlip);
+  }
+
+  if (!isStReady) {
+    try {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/page-flip@2.0.7/dist/js/page-flip.browser.js';
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+      const start2 = Date.now();
+      while ((typeof St === "undefined" || !St.PageFlip) && Date.now() - start2 < 2000) {
+        await new Promise(r => setTimeout(r, 50));
+      }
+    } catch (_) {}
+  }
+
   if (typeof St === "undefined" || !St.PageFlip) {
-    showError("The 3D page flip engine is loading... please refresh.");
+    showError("The 3D page flip engine is initializing... please click reload.");
     return;
   }
 
@@ -1201,8 +1396,159 @@ async function loadPublicationAndInit() {
   await renderAround(initialIndex);
   updateIndicator();
 
+  // Check stored custom settings
+  try {
+    const savedCustom = localStorage.getItem(`fp_custom_${pubId}`) || localStorage.getItem('fp_global_custom');
+    if (savedCustom) {
+      applyCustomizationConfig(JSON.parse(savedCustom));
+    }
+  } catch (_) {}
+
   if (els.loader) els.loader.classList.add("hide");
 }
+
+// ============ LIVE WORKSPACE CUSTOMIZATION HANDLER ============
+export function applyCustomizationConfig(cfg) {
+  if (!cfg) return;
+  const root = document.documentElement;
+
+  // 1. Backgrounds & Themes
+  if (cfg.bgType === 'solid' && cfg.bgColor) {
+    root.style.setProperty('--canvas-bg', cfg.bgColor);
+    root.style.setProperty('--canvas-grad', cfg.bgColor);
+    document.body.style.background = cfg.bgColor;
+    document.body.style.backgroundImage = 'none';
+  } else if (cfg.bgType === 'gradient') {
+    const grad = `radial-gradient(ellipse at center, ${cfg.bgColor || '#F1F5F9'} 0%, #0F172A 100%)`;
+    root.style.setProperty('--canvas-grad', grad);
+    document.body.style.backgroundImage = grad;
+  } else if (cfg.bgType === 'dark') {
+    root.style.setProperty('--canvas-bg', '#0B0F19');
+    root.style.setProperty('--canvas-grad', 'radial-gradient(circle at center, #1E293B 0%, #0B0F19 100%)');
+    document.body.style.background = '#0B0F19';
+    document.body.style.backgroundImage = 'radial-gradient(circle at center, #1E293B 0%, #0B0F19 100%)';
+  } else if (cfg.bgType === 'light') {
+    root.style.setProperty('--canvas-bg', '#F8FAFC');
+    root.style.setProperty('--canvas-grad', 'radial-gradient(ellipse at center, #F1F5F9 0%, #E2E8F0 100%)');
+    document.body.style.background = '#F8FAFC';
+    document.body.style.backgroundImage = 'radial-gradient(ellipse at center, #F1F5F9 0%, #E2E8F0 100%)';
+  } else if (cfg.bgColor) {
+    root.style.setProperty('--canvas-bg', cfg.bgColor);
+    document.body.style.background = cfg.bgColor;
+  }
+
+  // 2. Accent Color
+  if (cfg.accentColor || cfg.accent) {
+    const acc = cfg.accentColor || cfg.accent;
+    root.style.setProperty('--accent', acc);
+    root.style.setProperty('--ws-accent', acc);
+  }
+
+  // 3. Toolbar Text & Background
+  if (cfg.toolbarBg) root.style.setProperty('--tb-bg', cfg.toolbarBg);
+  if (cfg.textColor) root.style.setProperty('--tb-fg', cfg.textColor);
+
+  // 4. Sound
+  if (typeof cfg.soundEnabled === 'boolean') {
+    soundEnabled = cfg.soundEnabled;
+    updateSoundUI();
+  }
+
+  // 5. Logo & Brand
+  if (cfg.logoUrl) {
+    const logoImg = document.querySelector('.reader-brand-logo');
+    if (logoImg) logoImg.src = cfg.logoUrl;
+  }
+  if (cfg.brandName && els.bookTitleText) {
+    els.bookTitleText.textContent = cfg.brandName;
+  }
+
+  // 6. Navigation Controls Visibility
+  if (typeof cfg.topbarVisible === 'boolean' && els.topbar) {
+    els.topbar.style.display = cfg.topbarVisible ? 'flex' : 'none';
+    if (els.stage) els.stage.style.top = cfg.topbarVisible ? '50px' : '0px';
+  }
+  if (typeof cfg.toolbarVisible === 'boolean' && els.toolbar) {
+    els.toolbar.style.display = cfg.toolbarVisible ? 'flex' : 'none';
+    if (els.stage) els.stage.style.bottom = cfg.toolbarVisible ? '50px' : '0px';
+  }
+  if (typeof cfg.navArrowsVisible === 'boolean') {
+    if (els.navLeft) els.navLeft.style.display = cfg.navArrowsVisible ? 'flex' : 'none';
+    if (els.navRight) els.navRight.style.display = cfg.navArrowsVisible ? 'flex' : 'none';
+  }
+
+  // 7. Page Flip Physics
+  if (pageFlip && cfg.flippingTime) {
+    try {
+      pageFlip.flippingTime = parseInt(cfg.flippingTime, 10) || 700;
+    } catch (_) {}
+  }
+}
+
+// Global Message Listener from workspace.html
+window.addEventListener('message', async (e) => {
+  if (!e.data || typeof e.data !== 'object') return;
+  const msg = e.data;
+
+  switch (msg.type) {
+    case 'APPLY_CUSTOMIZATION':
+    case 'CUSTOMIZE_STYLE':
+      applyCustomizationConfig(msg.config || msg);
+      break;
+
+    case 'CHANGE_THEME':
+      if (msg.theme === 'dark') {
+        applyCustomizationConfig({ bgType: 'dark', accentColor: '#3B82F6' });
+      } else if (msg.theme === 'ocean') {
+        applyCustomizationConfig({ bgType: 'solid', bgColor: '#0C4A6E', accentColor: '#0EA5E9' });
+      } else if (msg.theme === 'forest') {
+        applyCustomizationConfig({ bgType: 'solid', bgColor: '#14532D', accentColor: '#16A34A' });
+      } else if (msg.theme === 'sunset') {
+        applyCustomizationConfig({ bgType: 'solid', bgColor: '#7C2D12', accentColor: '#F97316' });
+      } else if (msg.theme === 'purple') {
+        applyCustomizationConfig({ bgType: 'solid', bgColor: '#4C1D95', accentColor: '#8B5CF6' });
+      } else if (msg.theme === 'minimal') {
+        applyCustomizationConfig({ bgType: 'light', accentColor: '#2563EB' });
+      } else if (msg.theme === 'midnight') {
+        applyCustomizationConfig({ bgType: 'solid', bgColor: '#1C1917', accentColor: '#F59E0B' });
+      } else if (msg.theme === 'coral') {
+        applyCustomizationConfig({ bgType: 'solid', bgColor: '#831843', accentColor: '#EC4899' });
+      } else if (msg.theme === 'gold') {
+        applyCustomizationConfig({ bgType: 'solid', bgColor: '#78350F', accentColor: '#F59E0B' });
+      }
+      break;
+
+    case 'LOAD_PDF_URL':
+      if (msg.url) {
+        window.location.href = `reader.html?url=${encodeURIComponent(msg.url)}${msg.title ? `&title=${encodeURIComponent(msg.title)}` : ''}`;
+      }
+      break;
+
+    case 'NEXT_PAGE':
+      if (pageFlip && pageFlip.flipNext) pageFlip.flipNext();
+      break;
+
+    case 'PREV_PAGE':
+      if (pageFlip && pageFlip.flipPrev) pageFlip.flipPrev();
+      break;
+
+    case 'SET_PAGE':
+      if (pageFlip && typeof msg.page === 'number') {
+        const idx = Math.max(0, Math.min(totalPages - 1, msg.page - 1));
+        pageFlip.turnToPage(idx);
+      }
+      break;
+
+    case 'TOGGLE_SOUND':
+      soundEnabled = !soundEnabled;
+      updateSoundUI();
+      break;
+
+    case 'RELOAD_READER':
+      window.location.reload();
+      break;
+  }
+});
 
 // Initial Boot
 document.addEventListener("DOMContentLoaded", () => {

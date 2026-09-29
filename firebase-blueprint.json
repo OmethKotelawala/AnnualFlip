@@ -60,6 +60,49 @@
         "updatedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "ownerId", "title", "pages"]
+    },
+    "Book": {
+      "title": "Digital Flipbook Book",
+      "description": "Backend converted PDF Flipbook book entity with page images, extracted text, and conversion status",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "slug": { "type": "string", "maxLength": 150 },
+        "sourcePdfUrl": { "type": "string", "maxLength": 2000 },
+        "pageCount": { "type": "number" },
+        "status": { "type": "string", "enum": ["QUEUED", "PROCESSING", "READY", "PUBLISHED", "FAILED"] },
+        "pages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "page": { "type": "number" },
+              "imageUrl": { "type": "string", "maxLength": 2000 },
+              "text": { "type": "string" },
+              "width": { "type": "number" },
+              "height": { "type": "number" }
+            },
+            "required": ["page", "imageUrl"]
+          }
+        },
+        "settings": {
+          "type": "object",
+          "properties": {
+            "soundEnabled": { "type": "boolean" },
+            "theme": { "type": "string" },
+            "allowDownload": { "type": "boolean" },
+            "bgType": { "type": "string" },
+            "bgColor": { "type": "string" },
+            "accentColor": { "type": "string" }
+          }
+        },
+        "readerUrl": { "type": "string", "maxLength": 1000 },
+        "errorMessage": { "type": "string", "maxLength": 1000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "slug", "sourcePdfUrl", "status"]
     }
   },
   "firestore": {
@@ -70,6 +113,10 @@
     "/publications/{pubId}": {
       "schema": "Publication",
       "description": "Interactive digital 3D flipbook publications created and shared by users"
+    },
+    "/books/{bookId}": {
+      "schema": "Book",
+      "description": "Server-side converted PDF flipbook data with rendered page image URLs and extracted text"
     }
   }
 }
