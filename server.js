@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 let db = null;
 try {
   const firebaseApp = initializeApp(firebaseConfig, 'server-app');
-  db = getFirestore(firebaseApp);
+  db = firebaseConfig?.firestoreDatabaseId ? getFirestore(firebaseApp, firebaseConfig.firestoreDatabaseId) : getFirestore(firebaseApp);
 } catch (err) {
   console.warn('Server Firebase init notice:', err);
 }
@@ -122,7 +122,7 @@ async function getBookByIdOrSlug(identifier) {
 
 /**
  * POST /api/import-pdf-url
- * Validates public PDF URL, starts conversion, and returns bookId + initial status.
+ * Validates public PDF URL, downloads & caches PDF, counts pages, and returns READY status with readerUrl.
  */
 app.post('/api/import-pdf-url', async (req, res) => {
   const { pdfUrl, title, slug } = req.body || {};
@@ -147,8 +147,9 @@ app.post('/api/import-pdf-url', async (req, res) => {
     title: cleanTitle,
     slug: cleanSlug,
     sourcePdfUrl: validatedUrl,
-    pageCount: 0,
-    status: 'PROCESSING', // 'QUEUED' | 'PROCESSING' | 'READY' | 'PUBLISHED' | 'FAILED'
+    pdfUrl: `/api/books/${bookId}/source.pdf`,
+    pageCount: 1,
+    status: 'PROCESSING',
     pages: [],
     settings: {
       soundEnabled: true,
@@ -163,47 +164,62 @@ app.post('/api/import-pdf-url', async (req, res) => {
     updatedAt: new Date().toISOString()
   };
 
-  await saveBookToStore(initialBook);
+  try {
+    console.log(`[PDF Backend] Downloading PDF for book ${bookId} from ${validatedUrl}`);
+    const pdfBuffer = await downloadPdfBuffer(validatedUrl);
 
-  // Return immediately with bookId and PROCESSING status
-  res.status(202).json({
-    bookId,
-    slug: cleanSlug,
-    status: 'PROCESSING',
-    readerUrl: `/read/${cleanSlug}`
-  });
+    console.log(`[PDF Backend] Processing pages & metadata for book ${bookId} (${pdfBuffer.length} bytes)`);
+    const { pageCount, pages } = await convertPdfToFlipbook(bookId, cleanSlug, pdfBuffer);
 
-  // Asynchronous conversion pipeline
-  (async () => {
-    try {
-      console.log(`[PDF Backend] Starting download for book ${bookId} from ${validatedUrl}`);
-      const pdfBuffer = await downloadPdfBuffer(validatedUrl);
+    const completedBook = {
+      ...initialBook,
+      pageCount: pageCount || 1,
+      pages,
+      pdfUrl: `/api/books/${bookId}/source.pdf`,
+      status: 'READY',
+      updatedAt: new Date().toISOString()
+    };
 
-      console.log(`[PDF Backend] Converting pages to web images for book ${bookId} (${pdfBuffer.length} bytes)`);
-      const { pageCount, pages } = await convertPdfToFlipbook(bookId, cleanSlug, pdfBuffer);
+    await saveBookToStore(completedBook);
+    console.log(`[PDF Backend] Successfully converted book ${bookId} (${pageCount} pages) - Status: READY`);
 
-      const completedBook = {
-        ...initialBook,
-        pageCount,
-        pages,
-        pdfUrl: `/api/books/${bookId}/source.pdf`,
-        status: 'READY',
-        updatedAt: new Date().toISOString()
-      };
+    return res.status(200).json({
+      bookId,
+      slug: cleanSlug,
+      title: cleanTitle,
+      pageCount,
+      status: 'READY',
+      pdfUrl: `/api/books/${bookId}/source.pdf`,
+      readerUrl: `/read/${cleanSlug}`
+    });
+  } catch (err) {
+    console.error(`[PDF Backend] Error processing PDF for book ${bookId}:`, err);
+    return res.status(500).json({
+      error: err.message || 'Failed to download and process PDF document'
+    });
+  }
+});
 
-      await saveBookToStore(completedBook);
-      console.log(`[PDF Backend] Successfully converted book ${bookId} (${pageCount} pages) - Status: READY`);
-    } catch (conversionErr) {
-      console.error(`[PDF Backend] Conversion failed for book ${bookId}:`, conversionErr);
-      const failedBook = {
-        ...initialBook,
-        status: 'FAILED',
-        errorMessage: conversionErr.message,
-        updatedAt: new Date().toISOString()
-      };
-      await saveBookToStore(failedBook);
-    }
-  })();
+/**
+ * GET /api/proxy-pdf
+ * Proxies remote PDF stream with SSRF protection and permissive CORS headers
+ */
+app.get('/api/proxy-pdf', async (req, res) => {
+  const targetUrl = req.query.url;
+  if (!targetUrl) {
+    return res.status(400).send('URL query parameter required');
+  }
+
+  try {
+    const validatedUrl = await validatePdfUrl(targetUrl);
+    const pdfBuffer = await downloadPdfBuffer(validatedUrl);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.send(pdfBuffer);
+  } catch (err) {
+    res.status(400).send(`Failed to proxy PDF: ${err.message}`);
+  }
 });
 
 /**

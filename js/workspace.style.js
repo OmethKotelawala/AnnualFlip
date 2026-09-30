@@ -80,6 +80,18 @@ export function updateClock() {
   el.textContent = now.toLocaleDateString('en-US', options);
 }
 
+export function generateThemeColorString(accent = '#2563EB', bg = '#F8FAFC') {
+  return `--ws-accent: ${accent}; --ws-accent-hover: #1D4ED8; --canvas-bg: ${bg}; --tb-bg: rgba(255, 255, 255, 0.95); --tb-fg: #475569; --page-bg: #FFFFFF;`;
+}
+
+export function updateThemeColorStringUI(accent = '#2563EB', bg = '#F8FAFC') {
+  const box = document.getElementById('theme-colors-string-box');
+  if (box) {
+    const str = generateThemeColorString(accent, bg);
+    box.textContent = str;
+  }
+}
+
 // Helper to broadcast custom configuration to live reader iframe
 export function broadcastCustomization() {
   const bgType = document.getElementById('design-bg-type')?.value || 'light';
@@ -95,8 +107,11 @@ export function broadcastCustomization() {
     accentColor,
     soundEnabled,
     logoUrl,
-    brandName
+    brandName,
+    themeColors: generateThemeColorString(accentColor, bgColor)
   };
+
+  updateThemeColorStringUI(accentColor, bgColor);
 
   try {
     localStorage.setItem('fp_global_custom', JSON.stringify(cfg));
@@ -106,6 +121,9 @@ export function broadcastCustomization() {
   if (iframe && iframe.contentWindow) {
     iframe.contentWindow.postMessage({ type: 'APPLY_CUSTOMIZATION', config: cfg }, '*');
   }
+
+  // Also notify workspace.js if needed
+  window.dispatchEvent(new CustomEvent('workspace:theme-changed', { detail: cfg }));
 }
 
 export function initStudioControls() {

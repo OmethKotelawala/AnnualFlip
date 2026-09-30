@@ -124,12 +124,19 @@ let activeFirebaseUser = null;
 let activeUserFirestoreData = null;
 let unsubscribeUserDoc = null;
 
-// Check URL params for auth=required notification
+// Check URL params for auth=required, setup=required, or mode=signup
 try {
   const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('mode') === 'signup' || urlParams.get('action') === 'signup') {
+    setTimeout(() => { setMode('signup'); }, 50);
+  }
   if (urlParams.get('auth') === 'required') {
     setTimeout(() => {
-      showStatus('🔒 Please sign in or create an account to access the FlipPage Workspace.', false);
+      showStatus('🔒 Account Required: Please sign in or create an account to access the FlipPage Workspace.', false);
+    }, 100);
+  } else if (urlParams.get('setup') === 'required') {
+    setTimeout(() => {
+      showStatus('🏢 Please complete your company and workspace profile to enter.', false);
     }, 100);
   }
 } catch (_) {}

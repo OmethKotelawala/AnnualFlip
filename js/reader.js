@@ -31,7 +31,7 @@ try {
 
 // Global Config
 if (typeof pdfjsLib !== "undefined") {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 }
 
 let currentBookData = {
@@ -256,7 +256,39 @@ function renderPageContent(index) {
   if (index < 0 || index >= totalPages) return Promise.resolve();
   rendering.add(index);
 
-  // 1. If we have Backend Converted Page Images
+  // 1. If we have a real PDF loaded in pdf.js
+  if (pdfDoc) {
+    const scale = currentBookData.isPaid ? 2.5 : 2.0;
+    return pdfDoc.getPage(index + 1).then(page => {
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement("canvas");
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext("2d");
+      return page.render({ canvasContext: ctx, viewport }).promise.then(() => {
+        const surface = pageEls[index];
+        if (surface) {
+          surface.innerHTML = "";
+          surface.appendChild(canvas);
+          
+          // If Free tier, add sleek watermark badge
+          if (!currentBookData.isPaid) {
+            const wm = document.createElement("div");
+            wm.style.cssText = "position:absolute; bottom:12px; right:14px; font-size:11px; font-weight:600; color:rgba(0,0,0,0.35); pointer-events:none; letter-spacing:0.4px;";
+            wm.textContent = "Created with FlipPage • Free";
+            surface.appendChild(wm);
+          }
+        }
+        rendered.add(index);
+        rendering.delete(index);
+      });
+    }).catch(err => {
+      rendering.delete(index);
+      console.warn("Failed to render page from pdfDoc", index + 1, err);
+    });
+  }
+
+  // 2. If we have Backend Converted Page Images
   if (currentBookData.pages && currentBookData.pages[index] && currentBookData.pages[index].imageUrl) {
     const pageObj = currentBookData.pages[index];
     const surface = pageEls[index];
@@ -293,38 +325,6 @@ function renderPageContent(index) {
         resolve();
       };
       img.src = pageObj.imageUrl;
-    });
-  }
-
-  // 2. If we have a real PDF loaded
-  if (pdfDoc) {
-    const scale = currentBookData.isPaid ? 2.8 : 2.0;
-    return pdfDoc.getPage(index + 1).then(page => {
-      const viewport = page.getViewport({ scale });
-      const canvas = document.createElement("canvas");
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      const ctx = canvas.getContext("2d");
-      return page.render({ canvasContext: ctx, viewport }).promise.then(() => {
-        const surface = pageEls[index];
-        if (surface) {
-          surface.innerHTML = "";
-          surface.appendChild(canvas);
-          
-          // If Free tier, add sleek watermark badge
-          if (!currentBookData.isPaid) {
-            const wm = document.createElement("div");
-            wm.style.cssText = "position:absolute; bottom:12px; right:14px; font-size:11px; font-weight:600; color:rgba(0,0,0,0.35); pointer-events:none; letter-spacing:0.4px;";
-            wm.textContent = "Created with FlipPage • Free";
-            surface.appendChild(wm);
-          }
-        }
-        rendered.add(index);
-        rendering.delete(index);
-      });
-    }).catch(err => {
-      rendering.delete(index);
-      console.warn("Failed to render page", index + 1, err);
     });
   }
 
@@ -1173,16 +1173,31 @@ async function loadPublicationAndInit() {
           }
         }
 
-        if (book.pages && book.pages.length > 0) {
+        if (book) {
+          const pdfSource = book.pdfUrl || `/api/books/${book.id || searchKey}/source.pdf`;
           currentBookData = {
             id: book.id || searchKey,
             title: book.title || customTitle || 'Digital Flipbook',
-            pages: book.pageCount || book.pages.length,
+            pages: book.pageCount || (book.pages ? book.pages.length : 20),
             planTier: 'paid',
             isPaid: true,
-            pages: book.pages,
+            pdfUrl: pdfSource,
+            pages: book.pages || [],
             settings: book.settings || {}
           };
+
+          if (typeof pdfjsLib !== "undefined") {
+            try {
+              const loadingTask = pdfjsLib.getDocument({ url: pdfSource, withCredentials: false });
+              pdfDoc = await loadingTask.promise;
+              totalPages = pdfDoc.numPages;
+              currentBookData.pages = totalPages;
+              backendLoaded = true;
+            } catch (pdfErr) {
+              console.warn("Direct PDF load notice, trying fallback:", pdfErr);
+            }
+          }
+
           totalPages = currentBookData.pages;
           backendLoaded = true;
 
@@ -1248,6 +1263,15 @@ async function loadPublicationAndInit() {
             spreads: data.spreads || []
           };
 
+          if (data.pdfUrl && typeof pdfjsLib !== "undefined") {
+            try {
+              const loadingTask = pdfjsLib.getDocument({ url: data.pdfUrl, withCredentials: false });
+              pdfDoc = await loadingTask.promise;
+              totalPages = pdfDoc.numPages;
+              currentBookData.pages = totalPages;
+            } catch (_) {}
+          }
+
           try {
             updateDoc(docRef, { reads: increment(1) });
           } catch (_) {}
@@ -1263,17 +1287,26 @@ async function loadPublicationAndInit() {
   }
 
   // 4. If direct custom PDF URL passed
-  if (customPdfUrl && !backendLoaded) {
+  if (customPdfUrl && !pdfDoc) {
     currentBookData.pdfUrl = customPdfUrl;
     if (customTitle) currentBookData.title = customTitle;
-    if (typeof pdfjsLib !== "undefined" && !pdfDoc) {
+    if (typeof pdfjsLib !== "undefined") {
       try {
         const loadingTask = pdfjsLib.getDocument({ url: customPdfUrl, withCredentials: false });
         pdfDoc = await loadingTask.promise;
         totalPages = pdfDoc.numPages;
         currentBookData.pages = totalPages;
       } catch (e) {
-        console.warn("Could not parse remote PDF URL:", e);
+        console.warn("Direct PDF url failed, trying /api/proxy-pdf:", e);
+        try {
+          const proxyUrl = `/api/proxy-pdf?url=${encodeURIComponent(customPdfUrl)}`;
+          const loadingTask = pdfjsLib.getDocument({ url: proxyUrl, withCredentials: false });
+          pdfDoc = await loadingTask.promise;
+          totalPages = pdfDoc.numPages;
+          currentBookData.pages = totalPages;
+        } catch (proxyErr) {
+          console.warn("Could not parse remote PDF URL via proxy:", proxyErr);
+        }
       }
     }
   }

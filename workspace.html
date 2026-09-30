@@ -267,8 +267,28 @@
                 <span>📖 Active Flipbook & Custom Reader URL</span>
                 <span class="nav-badge new">Live Sync</span>
               </h4>
+
+              <!-- Publication Filter Bar: All vs Liked Files -->
+              <div class="pub-filter-bar">
+                <button type="button" class="pub-filter-btn is-active" id="filter-btn-all">
+                  <span>📚 All Files</span>
+                  <span class="like-counter-badge" id="count-all-pubs">3</span>
+                </button>
+                <button type="button" class="pub-filter-btn" id="filter-btn-liked">
+                  <span>❤️ Liked Files</span>
+                  <span class="like-counter-badge" id="count-liked-pubs">0</span>
+                </button>
+              </div>
+
               <div class="form-group">
-                <label class="form-label">Choose Flipbook to Edit & Preview</label>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <label class="form-label" style="margin-bottom:0;">Choose Flipbook to Edit & Preview</label>
+                  <button type="button" class="btn-like-pub" id="btn-toggle-like-pub" title="Like / Favorite this Flipbook">
+                    <span class="like-heart-icon">🤍</span>
+                    <span id="pub-like-text">Like</span>
+                    <span class="like-counter-badge" id="pub-like-count">0</span>
+                  </button>
+                </div>
                 <select class="form-input" id="preview-pub-selector">
                   <!-- Filled by JS -->
                 </select>
@@ -284,6 +304,14 @@
                 <div class="color-picker-row">
                   <input type="text" class="form-input" id="detail-book-slug" placeholder="e.g. annual-report-2026" style="font-family:monospace; font-size:0.80rem;">
                   <button class="btn-new-pub" id="btn-save-custom-slug" type="button" style="padding:8px 12px; flex-shrink:0;">Save Slug</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Digital Book's PDF URI (pdf_url)</label>
+                <div class="color-picker-row">
+                  <input type="text" class="form-input" id="detail-pdf-uri" readonly style="font-family:monospace; font-size:0.75rem; background:#F8FAFC;" placeholder="Source PDF URI...">
+                  <button class="btn-new-pub" id="btn-copy-pdf-uri" type="button" style="padding:8px 12px; flex-shrink:0; background:#F1F5F9; color:#0F172A; border:1px solid #CBD5E1;">Copy URI</button>
                 </div>
               </div>
 
@@ -347,8 +375,13 @@
                 <input type="url" class="form-input" id="pdf-url-input" placeholder="https://example.com/document.pdf or Google Drive link...">
               </div>
               <div style="display:flex; gap:8px; margin-top:8px;">
-                <button class="btn-new-pub" id="btn-fetch-pdf-url" type="button" style="width:100%; justify-content:center;">
-                  <span>Convert to Flipbook</span>
+                <button class="btn-convert-pdf-action" id="btn-fetch-pdf-url" type="button">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-convert-icon" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span id="btn-fetch-pdf-url-text">Convert &amp; Render Flipbook</span>
                 </button>
               </div>
               <div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">
@@ -444,6 +477,17 @@
             </div>
 
             <div class="customize-card">
+              <h4 class="customize-card-title">🎨 Theme Colors CSS String for Frontend</h4>
+              <p style="font-size:0.75rem; color:#64748B; margin:0 0 6px;">Generated CSS color variables string for FlipBook Frontend:</p>
+              <div class="theme-string-box" id="theme-colors-string-box">--ws-accent:#2563EB; --canvas-bg:#F8FAFC; --tb-bg:rgba(255,255,255,0.95); --page-bg:#FFFFFF;</div>
+              <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                <button type="button" class="btn-new-pub" id="btn-copy-theme-string" style="padding:6px 12px; font-size:0.75rem;">
+                  <span>Copy Theme String</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="customize-card">
               <h4 class="customize-card-title">🌙 Display Mode</h4>
               <div class="toggle-row">
                 <div>
@@ -534,7 +578,7 @@
           <div class="tab-panel" id="panel-profile">
             <div class="panel-header-block">
               <h2 class="panel-headline">Author & Publisher Profile</h2>
-              <p class="panel-subtext">Manage your publisher account, name, credentials and branding.</p>
+              <p class="panel-subtext">Manage your publisher account, platform username, and liked workspace files.</p>
             </div>
 
             <div class="customize-card">
@@ -543,8 +587,19 @@
                 <input type="text" class="form-input" id="profile-user-display-name" value="Publisher Admin" placeholder="Your Full Name">
               </div>
               <div class="form-group">
+                <label class="form-label">Platform Username <span style="font-size:0.75rem; color:#2563EB; font-weight:600;">(Without Space — for digital flipbook URLs)</span></label>
+                <div class="brand-url-field-box" style="display:flex; align-items:center; background:#F8FAFC; border:1px solid var(--ws-border); border-radius:8px; padding:0 10px;">
+                  <span style="font-size:0.75rem; color:#64748B; font-weight:700;">FlipPage.com /</span>
+                  <input type="text" class="form-input" id="profile-user-username" placeholder="username" style="border:none; background:transparent; font-family:monospace; padding-left:4px; font-weight:700;">
+                </div>
+              </div>
+              <div class="form-group" style="margin-top:10px;">
                 <label class="form-label">Email Address</label>
-                <input type="email" class="form-input" id="profile-user-email" value="user@flippage.io" placeholder="name@company.com">
+                <input type="email" class="form-input" id="profile-user-email" value="" placeholder="name@company.com" readonly style="background:#F1F5F9; cursor:not-allowed;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Company / Organization Workspace</label>
+                <input type="text" class="form-input" id="profile-user-company" value="" placeholder="Your Company Name">
               </div>
               <div class="form-group">
                 <label class="form-label">Role / Organization Title</label>
@@ -554,13 +609,31 @@
                 <label class="form-label">Publisher Bio</label>
                 <textarea class="form-input" id="profile-user-bio" rows="3">Publishing interactive 3D digital magazines, annual reports, pitch decks, and lookbooks.</textarea>
               </div>
-              <div style="display:flex; gap:8px; margin-top:12px;">
-                <button type="button" class="btn-new-pub" id="btn-save-user-profile" style="flex:1; justify-content:center;">
-                  <span>💾 Save Profile</span>
+              <div style="display:flex; flex-direction:column; gap:8px; margin-top:14px;">
+                <div style="display:flex; gap:8px;">
+                  <button type="button" class="btn-new-pub" id="btn-save-user-profile" style="flex:1; justify-content:center;">
+                    <span>💾 Save Profile</span>
+                  </button>
+                  <a href="account.html" class="preview-nav-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+                    <span>Account Settings ↗</span>
+                  </a>
+                </div>
+                <button type="button" id="btn-workspace-signout" class="preview-nav-btn" style="background:#FEF2F2; color:#DC2626; border-color:#FECACA; justify-content:center; width:100%; font-weight:600; cursor:pointer;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                  <span>Sign Out &amp; Reconnect to Account</span>
                 </button>
-                <a href="account.html" class="preview-nav-btn" style="text-decoration:none; display:inline-flex; align-items:center;">
-                  <span>Account Settings ↗</span>
-                </a>
+              </div>
+            </div>
+
+            <!-- Liked Workspace Files Section in Profile -->
+            <div class="customize-card">
+              <h4 class="customize-card-title">
+                <span>❤️ Real Liked Workspace Files</span>
+                <span class="nav-badge crown" id="profile-liked-count-badge">0 Liked</span>
+              </h4>
+              <p style="font-size:0.75rem; color:#64748B; margin:0 0 8px;">Documents you have liked or favorited across your workspace:</p>
+              <div class="liked-files-list" id="profile-liked-files-list">
+                <div style="font-size:0.78rem; color:#94A3B8; text-align:center; padding:12px;">No liked flipbooks yet. Click the ❤️ icon on any publication to save it here!</div>
               </div>
             </div>
           </div>
@@ -569,7 +642,26 @@
           <div class="tab-panel" id="panel-share-social">
             <div class="panel-header-block">
               <h2 class="panel-headline">Share & Embed Flipbook</h2>
-              <p class="panel-subtext">Distribute your 3D flipbook to clients, websites and social media.</p>
+              <p class="panel-subtext">Distribute your 3D flipbook with custom username URLs and viewer reactions.</p>
+            </div>
+
+            <!-- Username URL Toggle & Reactions Toggle -->
+            <div class="customize-card">
+              <h4 class="customize-card-title">⚙️ URL & Engagement Settings</h4>
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Include Username in Share URL</div>
+                  <div class="toggle-desc">Generate branded reader URL with your username (e.g. FlipPage.com/<span id="share-username-preview-tag" style="color:#2563EB; font-weight:700;">username</span>/slug)</div>
+                </div>
+                <button class="toggle-switch on" id="toggle-include-username" type="button" aria-pressed="true"></button>
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Enable Viewer Likes & Reaction Bar</div>
+                  <div class="toggle-desc">Allow readers to like and react to this publication online</div>
+                </div>
+                <button class="toggle-switch on" id="toggle-reader-reactions" type="button" aria-pressed="true"></button>
+              </div>
             </div>
 
             <div class="customize-card">

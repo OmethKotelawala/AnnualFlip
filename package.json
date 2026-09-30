@@ -10,9 +10,9 @@
     "lint": "node -e 'console.log(\"Lint passed\")'"
   },
   "dependencies": {
-    "canvas": "^3.2.3",
     "express": "^4.21.2",
     "firebase": "^12.19.0",
+    "ipaddr.js": "^2.5.0",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.3.289"
   }

@@ -3,13 +3,15 @@
  * Single source of truth for Firebase project configuration.
  */
 export const firebaseConfig = {
-  apiKey: "AIzaSyC7EHsN6CiX5JlbRiLFo_f_-OfWIj4VIIo",
-  authDomain: "flippage-e7f06.firebaseapp.com",
-  projectId: "flippage-e7f06",
-  storageBucket: "flippage-e7f06.firebasestorage.app",
-  messagingSenderId: "1090051466641",
-  appId: "1:1090051466641:web:237cbd139ca71cd186a630",
-  measurementId: "G-BNY548FEEM"
+  projectId: "gen-lang-client-0435835472",
+  appId: "1:772093074138:web:42bda395d4aed6154023e3",
+  apiKey: "AIzaSyCf6Fp-qy8fkkDGOGKiouF1n64tgSNfAzY",
+  authDomain: "gen-lang-client-0435835472.firebaseapp.com",
+  firestoreDatabaseId: "ai-studio-annualflip-d5e05e1e-4c28-4cf6-b18c-1e967bd5cdc9",
+  storageBucket: "gen-lang-client-0435835472.firebasestorage.app",
+  messagingSenderId: "772093074138",
+  measurementId: ""
 };
 
 export default firebaseConfig;
+
