@@ -6,9 +6,10 @@
 
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { firebaseConfig } from './js/firebaseConfig.js';
 import {
   validatePdfUrl,
@@ -27,9 +28,26 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 
-// Enable JSON parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+// Enable JSON & URL encoded parsing with large payload capacity for PDF base64 / binary
+app.use(express.json({ limit: '60mb' }));
+app.use(express.urlencoded({ extended: true, limit: '60mb' }));
+
+// Serve static assets first so /css, /js, /scr, /Icons are never captured by wildcard or slug routes
+app.use(express.static(__dirname, {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    } else if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
+
+// Route fallback for .min.css and .min.js aliases
+app.get('/css/style.min.css', (req, res) => res.sendFile(path.join(__dirname, 'css', 'style.css')));
+app.get('/css/wig.min.css', (req, res) => res.sendFile(path.join(__dirname, 'css', 'reader.css')));
+app.get('/js/script.min.js', (req, res) => res.sendFile(path.join(__dirname, 'js', 'script.js')));
+app.get('/js/wig.min.js', (req, res) => res.sendFile(path.join(__dirname, 'js', 'reader.js')));
 
 // Initialize Firestore
 let db = null;
@@ -40,8 +58,14 @@ try {
   console.warn('Server Firebase init notice:', err);
 }
 
+// Cache directory
+const CACHE_DIR = path.join(__dirname, '.cache_books');
+if (!fs.existsSync(CACHE_DIR)) {
+  fs.mkdirSync(CACHE_DIR, { recursive: true });
+}
+
 // =========================================================================
-// BACKEND API ROUTES FOR PDF -> DIGITAL FLIPBOOK
+// BACKEND API ROUTES (AUTHOR DASHBOARD & FLIPBOOK VIEWER SPEC)
 // =========================================================================
 
 /**
@@ -78,6 +102,8 @@ async function saveBookToStore(bookData) {
  * Helper: Get book record by ID or Slug
  */
 async function getBookByIdOrSlug(identifier) {
+  if (!identifier) return null;
+
   // 1. Check memory cache by ID
   if (memoryBooksStore.has(identifier)) {
     return memoryBooksStore.get(identifier);
@@ -121,11 +147,240 @@ async function getBookByIdOrSlug(identifier) {
 }
 
 /**
+ * POST /api/auth/login
+ * Authors / Users authentication session sync
+ */
+app.post('/api/auth/login', async (req, res) => {
+  const { uid, name, email, avatar, companyName, role, plan } = req.body || {};
+
+  if (!uid || !email) {
+    return res.status(400).json({ error: 'uid and email are required for login sync' });
+  }
+
+  const userData = {
+    id: uid,
+    uid,
+    name: name || (email ? email.split('@')[0] : 'Author'),
+    displayName: name || (email ? email.split('@')[0] : 'Author'),
+    email,
+    avatar: avatar || null,
+    photoURL: avatar || null,
+    companyName: companyName || '',
+    role: role || 'user',
+    plan: plan || 'PRO',
+    created_at: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  if (db) {
+    try {
+      const userRef = doc(db, 'users', uid);
+      await setDoc(userRef, userData, { merge: true });
+    } catch (err) {
+      console.warn('Firestore user save notice:', err.message);
+    }
+  }
+
+  res.status(200).json({
+    success: true,
+    user: userData
+  });
+});
+
+/**
+ * GET /api/books
+ * Lists all books for the author dashboard (optionally filtered by ?user_id=...)
+ */
+app.get('/api/books', async (req, res) => {
+  const { user_id } = req.query;
+  const results = [];
+
+  if (db) {
+    try {
+      let q = collection(db, 'books');
+      if (user_id) {
+        q = query(collection(db, 'books'), where('user_id', '==', user_id));
+      }
+      const qSnap = await getDocs(q);
+      qSnap.forEach(docSnap => {
+        results.push(docSnap.data());
+      });
+    } catch (err) {
+      console.warn('Firestore get books notice:', err.message);
+    }
+  }
+
+  // If Firestore empty or fallback, return in-memory store items
+  if (results.length === 0) {
+    for (const book of memoryBooksStore.values()) {
+      if (!user_id || book.user_id === user_id) {
+        results.push(book);
+      }
+    }
+  }
+
+  res.status(200).json(results);
+});
+
+/**
+ * POST /api/books
+ * Creates or updates book data in database
+ */
+app.post('/api/books', async (req, res) => {
+  const { user_id, title, slug, pdf_url, cover_url, description, status, pageCount, settings } = req.body || {};
+
+  const bookId = `book-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+  const cleanTitle = (title || 'Digital Flipbook').trim();
+  const cleanSlug = sanitizeSlug(slug, cleanTitle, bookId);
+
+  const bookData = {
+    id: bookId,
+    user_id: user_id || 'anonymous',
+    title: cleanTitle,
+    slug: cleanSlug,
+    pdf_url: pdf_url || `/api/books/${bookId}/source.pdf`,
+    pdfUrl: pdf_url || `/api/books/${bookId}/source.pdf`,
+    cover_url: cover_url || null,
+    description: description || '',
+    status: status || 'live',
+    views: 0,
+    pageCount: pageCount || 1,
+    settings: settings || {
+      soundEnabled: true,
+      theme: 'light',
+      allowDownload: true,
+      bgType: 'light',
+      bgColor: '#F8FAFC',
+      accentColor: '#2563EB'
+    },
+    readerUrl: `/b/${cleanSlug}`,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+
+  await saveBookToStore(bookData);
+
+  res.status(201).json({
+    success: true,
+    book: bookData,
+    readerUrl: `/b/${cleanSlug}`
+  });
+});
+
+/**
+ * DELETE /api/books/:id
+ * Deletes book from database and object storage cache
+ */
+app.delete('/api/books/:id', async (req, res) => {
+  const { id } = req.params;
+  const book = await getBookByIdOrSlug(id);
+  const actualId = book ? book.id : id;
+
+  memoryBooksStore.delete(actualId);
+  if (book && book.slug) memorySlugIndex.delete(book.slug);
+
+  if (db) {
+    try {
+      const docRef = doc(db, 'books', actualId);
+      await deleteDoc(docRef);
+    } catch (err) {
+      console.warn('Firestore delete notice:', err.message);
+    }
+  }
+
+  // Remove cached files
+  try {
+    const bookDir = path.join(CACHE_DIR, actualId);
+    if (fs.existsSync(bookDir)) {
+      fs.rmSync(bookDir, { recursive: true, force: true });
+    }
+  } catch (_) {}
+
+  res.status(200).json({
+    success: true,
+    message: `Book ${actualId} deleted successfully`
+  });
+});
+
+/**
+ * POST /api/upload
+ * Accepts PDF upload (Buffer, binary, or Base64 data URL), stores in Object Storage cache, extracts metadata, saves to database
+ */
+app.post('/api/upload', async (req, res) => {
+  try {
+    let pdfBuffer;
+    const { fileData, fileName, title, slug, user_id, description } = req.body || {};
+
+    if (fileData) {
+      // Base64 Data URL format: "data:application/pdf;base64,JVBERi0x..."
+      const base64Data = fileData.replace(/^data:application\/pdf;base64,/, '').replace(/^data:[^;]+;base64,/, '');
+      pdfBuffer = Buffer.from(base64Data, 'base64');
+    } else if (Buffer.isBuffer(req.body)) {
+      pdfBuffer = req.body;
+    } else {
+      return res.status(400).json({ error: 'No PDF file data provided in request' });
+    }
+
+    if (!pdfBuffer || pdfBuffer.length < 10) {
+      return res.status(400).json({ error: 'Invalid or empty PDF file payload' });
+    }
+
+    const bookId = `book-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+    const cleanTitle = (title || fileName || 'Uploaded Flipbook').replace(/\.pdf$/i, '').trim();
+    const cleanSlug = sanitizeSlug(slug, cleanTitle, bookId);
+
+    const { pageCount, pages } = await convertPdfToFlipbook(bookId, cleanSlug, pdfBuffer);
+
+    const bookData = {
+      id: bookId,
+      user_id: user_id || 'anonymous',
+      title: cleanTitle,
+      slug: cleanSlug,
+      pdf_url: `/api/books/${bookId}/source.pdf`,
+      pdfUrl: `/api/books/${bookId}/source.pdf`,
+      cover_url: pages[0] ? pages[0].imageUrl : null,
+      description: description || '',
+      status: 'live',
+      views: 0,
+      pageCount: pageCount || 1,
+      pages,
+      settings: {
+        soundEnabled: true,
+        theme: 'light',
+        allowDownload: true,
+        bgType: 'light',
+        bgColor: '#F8FAFC',
+        accentColor: '#2563EB'
+      },
+      readerUrl: `/b/${cleanSlug}`,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    await saveBookToStore(bookData);
+
+    return res.status(201).json({
+      success: true,
+      bookId,
+      slug: cleanSlug,
+      title: cleanTitle,
+      pageCount,
+      pdf_url: `/api/books/${bookId}/source.pdf`,
+      readerUrl: `/b/${cleanSlug}`,
+      book: bookData
+    });
+  } catch (err) {
+    console.error('[PDF Upload Engine Error]:', err);
+    return res.status(500).json({ error: err.message || 'PDF upload and processing failed' });
+  }
+});
+
+/**
  * POST /api/import-pdf-url
  * Validates public PDF URL, downloads & caches PDF, counts pages, and returns READY status with readerUrl.
  */
 app.post('/api/import-pdf-url', async (req, res) => {
-  const { pdfUrl, title, slug } = req.body || {};
+  const { pdfUrl, title, slug, user_id } = req.body || {};
 
   if (!pdfUrl) {
     return res.status(400).json({ error: 'pdfUrl parameter is required' });
@@ -144,12 +399,17 @@ app.post('/api/import-pdf-url', async (req, res) => {
 
   const initialBook = {
     id: bookId,
+    user_id: user_id || 'anonymous',
     title: cleanTitle,
     slug: cleanSlug,
     sourcePdfUrl: validatedUrl,
+    pdf_url: `/api/books/${bookId}/source.pdf`,
     pdfUrl: `/api/books/${bookId}/source.pdf`,
+    cover_url: null,
+    description: '',
     pageCount: 1,
-    status: 'PROCESSING',
+    status: 'live',
+    views: 0,
     pages: [],
     settings: {
       soundEnabled: true,
@@ -159,9 +419,9 @@ app.post('/api/import-pdf-url', async (req, res) => {
       bgColor: '#F8FAFC',
       accentColor: '#2563EB'
     },
-    readerUrl: `/read/${cleanSlug}`,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    readerUrl: `/b/${cleanSlug}`,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   };
 
   try {
@@ -175,22 +435,27 @@ app.post('/api/import-pdf-url', async (req, res) => {
       ...initialBook,
       pageCount: pageCount || 1,
       pages,
+      cover_url: pages[0] ? pages[0].imageUrl : null,
+      pdf_url: `/api/books/${bookId}/source.pdf`,
       pdfUrl: `/api/books/${bookId}/source.pdf`,
-      status: 'READY',
-      updatedAt: new Date().toISOString()
+      status: 'live',
+      updated_at: new Date().toISOString()
     };
 
     await saveBookToStore(completedBook);
     console.log(`[PDF Backend] Successfully converted book ${bookId} (${pageCount} pages) - Status: READY`);
 
     return res.status(200).json({
+      success: true,
       bookId,
       slug: cleanSlug,
       title: cleanTitle,
       pageCount,
       status: 'READY',
+      pdf_url: `/api/books/${bookId}/source.pdf`,
       pdfUrl: `/api/books/${bookId}/source.pdf`,
-      readerUrl: `/read/${cleanSlug}`
+      readerUrl: `/b/${cleanSlug}`,
+      book: completedBook
     });
   } catch (err) {
     console.error(`[PDF Backend] Error processing PDF for book ${bookId}:`, err);
@@ -249,9 +514,9 @@ app.get('/api/books/:bookId/progress', async (req, res) => {
     slug: book.slug,
     status: book.status,
     pageCount: book.pageCount || 0,
-    readerUrl: book.readerUrl,
+    readerUrl: book.readerUrl || `/b/${book.slug}`,
     errorMessage: book.errorMessage || null,
-    updatedAt: book.updatedAt
+    updatedAt: book.updatedAt || book.updated_at
   });
 });
 
@@ -271,11 +536,12 @@ app.get('/api/public/books/:slug', async (req, res) => {
     slug: book.slug,
     pageCount: book.pageCount,
     status: book.status,
-    pdfUrl: `/api/books/${book.id}/source.pdf`,
+    pdf_url: book.pdf_url || `/api/books/${book.id}/source.pdf`,
+    pdfUrl: book.pdf_url || `/api/books/${book.id}/source.pdf`,
     pages: book.pages || [],
     settings: book.settings || {},
-    readerUrl: book.readerUrl,
-    createdAt: book.createdAt
+    readerUrl: book.readerUrl || `/b/${book.slug}`,
+    createdAt: book.createdAt || book.created_at
   });
 });
 
@@ -331,21 +597,22 @@ app.get('/api/public/books/:slug/pages/:pageNum.jpg', async (req, res) => {
 });
 
 // =========================================================================
-// FRONTEND PAGE ROUTING & SHORT LINKS
+// FRONTEND ROUTING & SHORT LINKS (/dashboard, /b/:slug, /view/:id)
 // =========================================================================
 
-// Direct reader short URLs: /read/:slug and /read/:bookId
-app.get(['/read/:slug', '/read/:slug/'], (req, res) => {
+// Author Dashboard SPA: /dashboard and /workspace
+app.get(['/dashboard', '/dashboard/', '/workspace', '/workspace.html', '/Workspace.html'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'workspace.html'));
+});
+
+// Reader short links: /b/:slug, /view/:id, /read/:slug
+app.get(['/b/:slug', '/b/:slug/', '/view/:id', '/view/:id/', '/read/:slug', '/read/:slug/'], (req, res) => {
   res.sendFile(path.join(__dirname, 'reader.html'));
 });
 
 // Explicit clean page handlers
 app.get(['/platform', '/platform.html', '/Platform.html'], (req, res) => {
   res.sendFile(path.join(__dirname, 'Platform.html'));
-});
-
-app.get(['/workspace', '/workspace.html', '/Workspace.html'], (req, res) => {
-  res.sendFile(path.join(__dirname, 'workspace.html'));
 });
 
 app.get(['/reader', '/reader.html', '/read', '/book'], (req, res) => {

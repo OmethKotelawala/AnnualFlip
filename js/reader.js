@@ -1116,8 +1116,12 @@ function wireControls() {
 async function loadPublicationAndInit() {
   let pathSlug = '';
   const pathname = window.location.pathname;
-  if (pathname.startsWith('/read/')) {
+  if (pathname.startsWith('/b/')) {
+    pathSlug = pathname.replace(/^\/b\//, '').replace(/\/$/, '');
+  } else if (pathname.startsWith('/read/')) {
     pathSlug = pathname.replace(/^\/read\//, '').replace(/\/$/, '');
+  } else if (pathname.startsWith('/view/')) {
+    pathSlug = pathname.replace(/^\/view\//, '').replace(/\/$/, '');
   }
 
   const urlParams = new URLSearchParams(window.location.search);

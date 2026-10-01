@@ -210,8 +210,16 @@ function populatePublicationSelector() {
 export function getCustomReaderUrl(pub) {
   if (!pub) return `${window.location.origin}/reader.html`;
   
-  const rawUsername = currentUserProfile?.username || (currentUserProfile?.email ? currentUserProfile.email.split('@')[0] : 'publisher');
+  const rawUsername = currentUserProfile?.username || (currentUserProfile?.email ? currentUserProfile.email.split('@')[0] : 'author');
   const cleanUsername = rawUsername.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+
+  if (pub.slug) {
+    let url = `${window.location.origin}/b/${encodeURIComponent(pub.slug)}`;
+    if (includeUsernameInShare && cleanUsername) {
+      url += `?user=${encodeURIComponent(cleanUsername)}`;
+    }
+    return url;
+  }
 
   let url = `${window.location.origin}/reader.html?id=${encodeURIComponent(pub.id)}`;
   if (pub.slug) url += `&slug=${encodeURIComponent(pub.slug)}`;
@@ -616,6 +624,31 @@ function initSelectorEvents() {
         const docRef = doc(db, 'publications', selectedPubId);
         await updateDoc(docRef, { planTier: pub.planTier, isPaid: pub.isPaid });
       } catch (_) {}
+    });
+  }
+
+  // Delete Book action button
+  const btnDetailDelete = document.getElementById('btn-detail-delete');
+  if (btnDetailDelete) {
+    btnDetailDelete.addEventListener('click', async () => {
+      const pub = publications.find(p => p.id === selectedPubId);
+      if (!pub) return;
+      if (!confirm(`Are you sure you want to delete "${pub.title}"?`)) return;
+
+      const deleteId = selectedPubId;
+      try {
+        await fetch(`/api/books/${encodeURIComponent(deleteId)}`, { method: 'DELETE' });
+        if (db) {
+          await deleteDoc(doc(db, 'publications', deleteId)).catch(() => {});
+          await deleteDoc(doc(db, 'books', deleteId)).catch(() => {});
+        }
+      } catch (_) {}
+
+      publications = publications.filter(p => p.id !== deleteId);
+      selectedPubId = publications[0]?.id || '';
+      populatePublicationSelector();
+      updateActivePublicationDisplay();
+      showToast(`🗑️ Deleted "${pub.title}"`);
     });
   }
 }

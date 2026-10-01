@@ -75,11 +75,16 @@
       "type": "object",
       "properties": {
         "id": { "type": "string", "maxLength": 128 },
+        "user_id": { "type": "string", "maxLength": 128 },
         "title": { "type": "string", "maxLength": 200 },
         "slug": { "type": "string", "maxLength": 150 },
+        "pdf_url": { "type": "string", "maxLength": 2000 },
+        "cover_url": { "type": "string", "maxLength": 2000 },
+        "description": { "type": "string", "maxLength": 1000 },
         "sourcePdfUrl": { "type": "string", "maxLength": 2000 },
         "pageCount": { "type": "number" },
-        "status": { "type": "string", "enum": ["QUEUED", "PROCESSING", "READY", "PUBLISHED", "FAILED"] },
+        "views": { "type": "number" },
+        "status": { "type": "string", "enum": ["live", "draft", "QUEUED", "PROCESSING", "READY", "PUBLISHED", "FAILED"] },
         "pages": {
           "type": "array",
           "items": {
@@ -91,7 +96,7 @@
               "width": { "type": "number" },
               "height": { "type": "number" }
             },
-            "required": ["page", "imageUrl"]
+            "required": ["page"]
           }
         },
         "settings": {
@@ -107,10 +112,12 @@
         },
         "readerUrl": { "type": "string", "maxLength": 1000 },
         "errorMessage": { "type": "string", "maxLength": 1000 },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" },
         "createdAt": { "type": "string", "format": "date-time" },
         "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["title", "slug", "sourcePdfUrl", "status"]
+      "required": ["title", "slug"]
     }
   },
   "firestore": {
