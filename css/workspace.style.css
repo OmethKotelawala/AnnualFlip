@@ -1102,6 +1102,57 @@ body, html {
   border-color: #CBD5E1;
 }
 
+/* Targeted styles for URL Flipbooks Grid Actions */
+div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > main#main-tab-stage:nth-of-type(1) > div#panel-import:nth-of-type(2) > div:nth-of-type(3) > div#url-flipbooks-grid:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > a:nth-of-type(1),
+#url-flipbooks-grid a.preview-nav-btn,
+.url-flipbook-open-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #EFF6FF;
+  color: #2563EB;
+  border: 1px solid #BFDBFE;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > main#main-tab-stage:nth-of-type(1) > div#panel-import:nth-of-type(2) > div:nth-of-type(3) > div#url-flipbooks-grid:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > a:nth-of-type(1):hover,
+#url-flipbooks-grid a.preview-nav-btn:hover {
+  background: #DBEAFE;
+  color: #1D4ED8;
+  border-color: #93C5FD;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.15);
+}
+
+div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > main#main-tab-stage:nth-of-type(1) > div#panel-import:nth-of-type(2) > div:nth-of-type(3) > div#url-flipbooks-grid:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > button:nth-of-type(1),
+#url-flipbooks-grid .btn-load-url-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #2563EB;
+  color: #FFFFFF;
+  border: 1px solid #1D4ED8;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.2);
+}
+
+div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > main#main-tab-stage:nth-of-type(1) > div#panel-import:nth-of-type(2) > div:nth-of-type(3) > div#url-flipbooks-grid:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > button:nth-of-type(1):hover,
+#url-flipbooks-grid .btn-load-url-preview:hover {
+  background: #1D4ED8;
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.35);
+  transform: translateY(-0.5px);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .workspace-studio-split {

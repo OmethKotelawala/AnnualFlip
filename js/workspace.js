@@ -707,8 +707,31 @@ export async function processAndUploadPdfFile(file, customTitle = '', customCate
     // 4. Update preview reader frame to load newly uploaded PDF
     const previewFrame = document.getElementById('preview-reader-frame');
     if (previewFrame) {
-      previewFrame.src = `reader.html?id=${encodeURIComponent(newId)}`;
+      previewFrame.src = `/reader.html?id=${encodeURIComponent(newId)}&t=${Date.now()}`;
     }
+
+    // Also upload to backend API storage asynchronously
+    try {
+      let binary = '';
+      const bytes = new Uint8Array(arrayBuffer);
+      const len = bytes.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const base64Data = btoa(binary);
+
+      fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileData: `data:application/pdf;base64,${base64Data}`,
+          fileName: file.name,
+          title,
+          slug,
+          user_id: auth.currentUser?.uid || 'user'
+        })
+      }).catch(e => console.warn('Backend upload async notice:', e));
+    } catch (_) {}
 
     // 5. Sync metadata to Firestore
     try {

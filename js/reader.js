@@ -289,8 +289,9 @@ function renderPageContent(index) {
   }
 
   // 2. If we have Backend Converted Page Images
-  if (currentBookData.pages && currentBookData.pages[index] && currentBookData.pages[index].imageUrl) {
-    const pageObj = currentBookData.pages[index];
+  const pageItems = currentBookData.pageItems || (Array.isArray(currentBookData.pages) ? currentBookData.pages : []);
+  if (pageItems && pageItems[index] && pageItems[index].imageUrl) {
+    const pageObj = pageItems[index];
     const surface = pageEls[index];
     if (!surface) {
       rendering.delete(index);
@@ -1178,15 +1179,22 @@ async function loadPublicationAndInit() {
         }
 
         if (book) {
-          const pdfSource = book.pdfUrl || `/api/books/${book.id || searchKey}/source.pdf`;
+          const pdfSource = book.pdf_url || book.pdfUrl || `/api/books/${book.id || searchKey}/source.pdf`;
+          const resolvedPageCount = typeof book.pageCount === 'number' && book.pageCount > 0
+            ? book.pageCount
+            : (Array.isArray(book.pages) && book.pages.length > 0)
+              ? book.pages.length
+              : 20;
+
           currentBookData = {
             id: book.id || searchKey,
             title: book.title || customTitle || 'Digital Flipbook',
-            pages: book.pageCount || (book.pages ? book.pages.length : 20),
+            pages: resolvedPageCount,
+            pageCount: resolvedPageCount,
+            pageItems: Array.isArray(book.pages) ? book.pages : [],
             planTier: 'paid',
             isPaid: true,
             pdfUrl: pdfSource,
-            pages: book.pages || [],
             settings: book.settings || {}
           };
 
@@ -1196,13 +1204,14 @@ async function loadPublicationAndInit() {
               pdfDoc = await loadingTask.promise;
               totalPages = pdfDoc.numPages;
               currentBookData.pages = totalPages;
+              currentBookData.pageCount = totalPages;
               backendLoaded = true;
             } catch (pdfErr) {
               console.warn("Direct PDF load notice, trying fallback:", pdfErr);
             }
           }
 
-          totalPages = currentBookData.pages;
+          totalPages = typeof currentBookData.pages === 'number' ? currentBookData.pages : resolvedPageCount;
           backendLoaded = true;
 
           if (book.settings) {
@@ -1220,10 +1229,13 @@ async function loadPublicationAndInit() {
     try {
       const storedDoc = await getPdfDocument(pubId || slug);
       if (storedDoc && storedDoc.data) {
+        const storedPageCount = storedDoc.metadata?.pages || 20;
         currentBookData = {
           id: pubId || slug,
           title: storedDoc.metadata?.title || customTitle || 'Uploaded Digital Flipbook',
-          pages: storedDoc.metadata?.pages || 20,
+          pages: storedPageCount,
+          pageCount: storedPageCount,
+          pageItems: [],
           planTier: 'paid',
           isPaid: true,
           pdfData: storedDoc.data,
@@ -1236,6 +1248,7 @@ async function loadPublicationAndInit() {
             pdfDoc = await loadingTask.promise;
             totalPages = pdfDoc.numPages;
             currentBookData.pages = totalPages;
+            currentBookData.pageCount = totalPages;
             backendLoaded = true;
           } catch (e) {
             console.warn("Could not parse stored PDF binary with pdf.js:", e);
@@ -1256,23 +1269,27 @@ async function loadPublicationAndInit() {
         const snap = await getDoc(docRef);
         if (snap.exists()) {
           const data = snap.data();
+          const pCount = typeof data.pages === 'number' ? data.pages : 20;
           currentBookData = {
             id: lookupId,
             title: data.title || customTitle || 'Digital Flipbook',
-            pages: data.pages || 20,
+            pages: pCount,
+            pageCount: pCount,
+            pageItems: Array.isArray(data.pages) ? data.pages : [],
             planTier: data.planTier || (data.isPaid ? 'paid' : 'free'),
             isPaid: Boolean(data.isPaid || data.planTier === 'paid'),
-            pdfUrl: data.pdfUrl || customPdfUrl || '',
+            pdfUrl: data.pdf_url || data.pdfUrl || customPdfUrl || '',
             pdfData: data.pdfData || null,
             spreads: data.spreads || []
           };
 
-          if (data.pdfUrl && typeof pdfjsLib !== "undefined") {
+          if (currentBookData.pdfUrl && typeof pdfjsLib !== "undefined") {
             try {
-              const loadingTask = pdfjsLib.getDocument({ url: data.pdfUrl, withCredentials: false });
+              const loadingTask = pdfjsLib.getDocument({ url: currentBookData.pdfUrl, withCredentials: false });
               pdfDoc = await loadingTask.promise;
               totalPages = pdfDoc.numPages;
               currentBookData.pages = totalPages;
+              currentBookData.pageCount = totalPages;
             } catch (_) {}
           }
 
@@ -1280,13 +1297,13 @@ async function loadPublicationAndInit() {
             updateDoc(docRef, { reads: increment(1) });
           } catch (_) {}
         } else if (DEFAULT_PUBLICATIONS[lookupId]) {
-          currentBookData = DEFAULT_PUBLICATIONS[lookupId];
+          currentBookData = { ...DEFAULT_PUBLICATIONS[lookupId] };
         }
       } catch (err) {
-        if (DEFAULT_PUBLICATIONS[lookupId]) currentBookData = DEFAULT_PUBLICATIONS[lookupId];
+        if (DEFAULT_PUBLICATIONS[lookupId]) currentBookData = { ...DEFAULT_PUBLICATIONS[lookupId] };
       }
     } else if (DEFAULT_PUBLICATIONS[lookupId]) {
-      currentBookData = DEFAULT_PUBLICATIONS[lookupId];
+      currentBookData = { ...DEFAULT_PUBLICATIONS[lookupId] };
     }
   }
 
@@ -1300,6 +1317,7 @@ async function loadPublicationAndInit() {
         pdfDoc = await loadingTask.promise;
         totalPages = pdfDoc.numPages;
         currentBookData.pages = totalPages;
+        currentBookData.pageCount = totalPages;
       } catch (e) {
         console.warn("Direct PDF url failed, trying /api/proxy-pdf:", e);
         try {
@@ -1308,6 +1326,7 @@ async function loadPublicationAndInit() {
           pdfDoc = await loadingTask.promise;
           totalPages = pdfDoc.numPages;
           currentBookData.pages = totalPages;
+          currentBookData.pageCount = totalPages;
         } catch (proxyErr) {
           console.warn("Could not parse remote PDF URL via proxy:", proxyErr);
         }
@@ -1316,7 +1335,10 @@ async function loadPublicationAndInit() {
   }
 
   if (customTitle) currentBookData.title = customTitle;
-  totalPages = currentBookData.pages || (pdfDoc ? pdfDoc.numPages : 28);
+  const numP = (typeof currentBookData.pages === 'number' && currentBookData.pages > 0)
+    ? currentBookData.pages
+    : (pdfDoc ? pdfDoc.numPages : 20);
+  totalPages = Math.max(1, parseInt(numP, 10) || 20);
 
   // Update UI Elements
   if (els.bookTitleText) els.bookTitleText.textContent = currentBookData.title;
