@@ -49,6 +49,7 @@ let currentBookData = {
 const DEFAULT_PUBLICATIONS = {
   'p1': {
     id: 'p1',
+    slug: 'sustainability-2026',
     title: 'Annual Sustainability Report 2026',
     pages: 28,
     planTier: 'paid',
@@ -68,6 +69,7 @@ const DEFAULT_PUBLICATIONS = {
   },
   'p2': {
     id: 'p2',
+    slug: 'spring-lookbook',
     title: 'Spring Lookbook & Product Catalog',
     pages: 44,
     planTier: 'paid',
@@ -84,6 +86,7 @@ const DEFAULT_PUBLICATIONS = {
   },
   'p3': {
     id: 'p3',
+    slug: 'brand-architecture',
     title: 'Brand Architecture & Design System',
     pages: 18,
     planTier: 'free',
@@ -99,6 +102,7 @@ const DEFAULT_PUBLICATIONS = {
   },
   'p4': {
     id: 'p4',
+    slug: 'pitch-deck-q3',
     title: 'Executive Pitch Deck Q3',
     pages: 14,
     planTier: 'free',
@@ -113,6 +117,18 @@ const DEFAULT_PUBLICATIONS = {
     ]
   }
 };
+
+function getFallbackPublication(lookupKey) {
+  if (!lookupKey) return DEFAULT_PUBLICATIONS['p1'];
+  if (DEFAULT_PUBLICATIONS[lookupKey]) return DEFAULT_PUBLICATIONS[lookupKey];
+  for (const k in DEFAULT_PUBLICATIONS) {
+    const pub = DEFAULT_PUBLICATIONS[k];
+    if (pub && (pub.id === lookupKey || pub.slug === lookupKey)) {
+      return pub;
+    }
+  }
+  return DEFAULT_PUBLICATIONS['p1'];
+}
 
 // ============ STATE ============
 let pdfDoc = null;
@@ -1296,14 +1312,14 @@ async function loadPublicationAndInit() {
           try {
             updateDoc(docRef, { reads: increment(1) });
           } catch (_) {}
-        } else if (DEFAULT_PUBLICATIONS[lookupId]) {
-          currentBookData = { ...DEFAULT_PUBLICATIONS[lookupId] };
+        } else {
+          currentBookData = { ...getFallbackPublication(lookupId) };
         }
       } catch (err) {
-        if (DEFAULT_PUBLICATIONS[lookupId]) currentBookData = { ...DEFAULT_PUBLICATIONS[lookupId] };
+        currentBookData = { ...getFallbackPublication(lookupId) };
       }
-    } else if (DEFAULT_PUBLICATIONS[lookupId]) {
-      currentBookData = { ...DEFAULT_PUBLICATIONS[lookupId] };
+    } else {
+      currentBookData = { ...getFallbackPublication(lookupId) };
     }
   }
 

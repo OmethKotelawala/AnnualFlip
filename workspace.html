@@ -48,12 +48,12 @@
           <div class="sidebar-category-label">Workspace</div>
           <ul class="sidebar-menu-list">
             <li>
-              <button class="sidebar-item-link is-active" id="nav-tab-preview" type="button" title="Flipbook Preview">
+              <button class="sidebar-item-link is-active" id="nav-tab-preview" type="button" title="Flipbook Publications">
                 <div class="sidebar-item-main">
                   <span class="sidebar-item-icon-wrap">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
                   </span>
-                  <span class="sidebar-item-text">Preview</span>
+                  <span class="sidebar-item-text">Publications</span>
                 </div>
               </button>
             </li>
@@ -214,12 +214,7 @@
               <span>FlipPage</span>
             </span>
             <span>/</span>
-            <span class="breadcrumb-chip">
-              <span class="chip-avatar" style="background:#4F46E5;">F</span>
-              <span id="breadcrumb-brand-name">FlipPage Executive Team</span>
-            </span>
-            <span>/</span>
-            <strong style="color: #0F172A; margin-left: 2px;" id="current-view-title">Live Preview</strong>
+            <strong style="color: #0F172A; margin-left: 2px;" id="current-view-title">Publications &amp; Studio</strong>
           </div>
         </div>
 
@@ -237,22 +232,15 @@
         </div>
       </header>
 
-      <!-- =======================================================
-           TWO-COLUMN STUDIO SPLIT (Matches User Red Boxes)
-           ======================================================= -->
-      <div class="workspace-studio-split">
+      <!-- MAIN CONTENT STAGE (Full Width Workspace Studio) -->
+      <main class="workspace-tab-stage" id="main-tab-stage">
 
-        <!-- =====================================================
-             LEFT COLUMN: Each tab <main>
-             ===================================================== -->
-        <main class="workspace-tab-stage" id="main-tab-stage">
-
-          <!-- ===== PANEL: PREVIEW ===== -->
-          <div class="tab-panel active" id="panel-preview">
-            <div class="panel-header-block">
-              <h2 class="panel-headline">Live Preview & Flipbook Controls</h2>
-              <p class="panel-subtext">Manage publications, upload PDFs, and generate custom reader URLs.</p>
-            </div>
+        <!-- ===== PANEL: PREVIEW / PUBLICATIONS ===== -->
+        <div class="tab-panel active" id="panel-preview">
+          <div class="panel-header-block">
+            <h2 class="panel-headline">Publications &amp; Flipbook Management</h2>
+            <p class="panel-subtext">Manage publications, upload PDFs, configure custom styles, and launch readers in full tabs.</p>
+          </div>
 
             <!-- Quick PDF Drag-and-Drop Dropzone -->
             <div class="customize-card" style="border: 2px dashed #CBD5E1; background: #F8FAFC; text-align: center; cursor: pointer; transition: all 0.2s;" id="quick-pdf-dropzone">
@@ -347,13 +335,13 @@
             </div>
 
             <div class="customize-card">
-              <h4 class="customize-card-title">🚀 Quick Actions & Distribution</h4>
+              <h4 class="customize-card-title">🚀 Quick Actions &amp; Distribution</h4>
               <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <a href="reader.html" target="_blank" class="btn-new-pub" id="btn-detail-open-reader" style="flex:1; justify-content:center;">
-                  <span>📖 Open in Full Reader</span>
+                <a href="/reader.html" target="_blank" class="btn-new-pub" id="btn-detail-open-reader" style="flex:1; justify-content:center; padding:10px 16px; font-size:0.88rem;">
+                  <span>📖 Launch 3D Digital Flipbook ↗</span>
                 </a>
                 <button type="button" class="btn-new-pub" id="btn-detail-share" style="background:#F1F5F9; color:#0F172A; border:1px solid #CBD5E1;">
-                  <span>🔗 Share</span>
+                  <span>🔗 Share Link</span>
                 </button>
                 <button type="button" class="btn-new-pub" id="btn-quick-toggle-tier" style="background:#FEF3C7; color:#B45309; border:1px solid #FCD34D;">
                   <span>👑 Toggle Pro</span>
@@ -774,16 +762,7 @@
           </div>
 
         </main>
-
-        <!-- =====================================================
-             RIGHT COLUMN: FlipBook Preview (iframe only)
-             ===================================================== -->
-        <section class="workspace-preview-stage" id="preview-stage" aria-label="FlipBook Live Preview Stage">
-          <iframe id="preview-reader-frame" class="preview-stage-iframe" src="reader.html?id=p1" title="Interactive 3D FlipBook Live Preview" allowfullscreen allow="clipboard-read; clipboard-write"></iframe>
-        </section>
-
       </div>
-
     </div>
 
   </div>

@@ -318,8 +318,8 @@ function updateActivePublicationDisplay() {
   // 2. Right pane Live Preview stage iframe
   const previewFrame = document.getElementById('preview-reader-frame');
   if (previewFrame) {
-    const targetSrc = readerUrl;
-    if (previewFrame.dataset.currentPubId !== pub.id || !previewFrame.src) {
+    const targetSrc = `/reader.html?id=${encodeURIComponent(pub.id)}&slug=${encodeURIComponent(pub.slug || '')}`;
+    if (previewFrame.dataset.currentPubId !== pub.id || !previewFrame.src || previewFrame.src.includes('about:blank')) {
       previewFrame.dataset.currentPubId = pub.id;
       previewFrame.src = targetSrc;
     }
